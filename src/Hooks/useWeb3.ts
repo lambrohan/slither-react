@@ -35,7 +35,13 @@ export function useWeb3() {
 			network: 'mainnet', // optional
 			cacheProvider: true, // optional
 			providerOptions, // required
-			theme: 'dark',
+			theme: {
+				background: '#7c019a',
+				main: '#fff',
+				secondary: '#cfcfcf',
+				border: 'rgba(195, 195, 195, 0.14)',
+				hover: '#4a025c',
+			},
 		})
 
 		const provider = await web3Modal.connect()
