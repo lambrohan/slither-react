@@ -1,10 +1,12 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { GameQualityOptions } from '../../Utils'
 import { Button } from '../Button/Button'
 import { Select } from '../Select/Select'
 
 interface HeaderProps {}
 
 export const Header: React.FC<HeaderProps> = ({}) => {
+	const [quality, setQuality] = useState(GameQualityOptions[0])
 	return (
 		<header
 			id="header"
@@ -13,9 +15,13 @@ export const Header: React.FC<HeaderProps> = ({}) => {
 			<img src="/doge.png" className="w-6 " />
 			<div className="flex items-center">
 				<Select
-					options={['Low', 'Medium', 'High']}
+					options={GameQualityOptions}
 					label="GRAPHICS"
 					className="md:mr-8 mr-2"
+					handleSelect={(val) => {
+						setQuality(val)
+					}}
+					selection={quality}
 				/>
 				<Button className="ml-4">Connect Wallet </Button>
 			</div>
