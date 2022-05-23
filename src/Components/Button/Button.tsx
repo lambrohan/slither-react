@@ -6,12 +6,17 @@ interface ButtonProps extends React.HTMLProps<HTMLButtonElement> {
 	type?: ButtonType
 }
 
-export const Button: React.FC<ButtonProps> = ({
-	type = 'default',
-	children,
-	className,
-}: PropsWithChildren<ButtonProps>) => {
+export const Button: React.FC<ButtonProps> = (
+	props: PropsWithChildren<ButtonProps>
+) => {
+	const { type = 'default', children, className } = props
 	return (
-		<button className={`mybtn btn-${type} ${className}`}>{children}</button>
+		<button
+			className={`mybtn btn-${type} ${className}`}
+			onClick={props.onClick}
+			disabled={props.disabled}
+		>
+			{children}
+		</button>
 	)
 }
