@@ -27,7 +27,6 @@ export function useWeb3() {
 					infuraId: '3a6c24b4ff074a3cb9ae9a74f3473db2', // Required
 					rpc: '', // Optional if `infuraId` is provided; otherwise it's required
 					chainId: 1, // Optional. It defaults to 1 if not provided
-					darkMode: false, // Optional. Use dark theme, defaults to false
 				},
 			},
 		}
@@ -36,6 +35,7 @@ export function useWeb3() {
 			network: 'mainnet', // optional
 			cacheProvider: true, // optional
 			providerOptions, // required
+			theme: 'dark',
 		})
 
 		const provider = await web3Modal.connect()
