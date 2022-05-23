@@ -1,0 +1,11 @@
+.mybtn{
+  @apply rounded-full p-3 text-xs font-bold text-primaryText transition ease-in;
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.btn-default{
+  @apply bg-white;
+}
