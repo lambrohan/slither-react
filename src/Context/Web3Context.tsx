@@ -41,10 +41,7 @@ export type Web3ContextType = {
 	openModal: () => void
 	account: string | null
 }
-export const Web3Context = createContext<Web3ContextType>({
-	account: null,
-	openModal: () => {},
-})
+export const Web3Context = createContext<Web3ContextType | null>(null)
 
 export const Web3Provider: React.FC<any> = (props) => {
 	const [account, setAccount] = useState<string | null>(null)
