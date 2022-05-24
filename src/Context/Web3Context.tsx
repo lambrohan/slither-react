@@ -20,7 +20,6 @@ const providerOptions = {
 		options: {
 			appName: 'My Awesome App', // Required
 			infuraId: '3a6c24b4ff074a3cb9ae9a74f3473db2', // Required
-			rpc: '', // Optional if `infuraId` is provided; otherwise it's required
 			chainId: 1, // Optional. It defaults to 1 if not provided
 		},
 	},
