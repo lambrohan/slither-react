@@ -29,22 +29,36 @@ const providerOptions = {
 const web3Modal = new Web3Modal({
 	network: 'mainnet', // optional
 	providerOptions, // required
+	theme: {
+		background: '#fff',
+		main: '#002636',
+		secondary: 'rgb(136, 136, 136)',
+		border: 'rgba(195, 195, 195, 0.14)',
+		hover: '#f5f5f5',
+	},
 })
 export type Web3ContextType = {
 	openModal: () => void
 	account: string | null
 }
-export const Web3Context = createContext<Web3ContextType | null>(null)
+export const Web3Context = createContext<Web3ContextType>({
+	account: null,
+	openModal: () => {},
+})
 
 export const Web3Provider: React.FC<any> = (props) => {
 	const [account, setAccount] = useState<string | null>(null)
 
 	const openModal = async () => {
-		const provider = await web3Modal.connect()
-		const web3 = new Web3(provider)
-		const [account] = await web3.eth.getAccounts()
-		setAccount(account)
-		console.log('Account Address', account)
+		try {
+			const provider = await web3Modal.connect()
+			const web3 = new Web3(provider)
+			const [account] = await web3.eth.getAccounts()
+			setAccount(account)
+			console.log('Account Address', account)
+		} catch (error) {
+			console.log(error)
+		}
 	}
 
 	return (
