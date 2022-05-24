@@ -50,15 +50,11 @@ export const Web3Provider: React.FC<any> = (props) => {
 	const [account, setAccount] = useState<string | null>(null)
 
 	const openModal = async () => {
-		try {
-			const provider = await web3Modal.connect()
-			const web3 = new Web3(provider)
-			const [account] = await web3.eth.getAccounts()
-			setAccount(account)
-			console.log('Account Address', account)
-		} catch (error) {
-			console.log(error)
-		}
+		const provider = await web3Modal.connect()
+		const web3 = new Web3(provider)
+		const [account] = await web3.eth.getAccounts()
+		setAccount(account)
+		console.log('Account Address', account)
 	}
 
 	return (
