@@ -1,7 +1,7 @@
 import React, { PropsWithChildren } from 'react'
 import './Button.scss'
 
-export type ButtonType = 'default' | 'primary' | 'accent'
+export type ButtonType = 'default' | 'primary' | 'accent' | 'transparent'
 interface ButtonProps extends React.HTMLProps<HTMLButtonElement> {
 	type?: ButtonType
 }

@@ -1,5 +1,5 @@
 .mybtn{
-  @apply rounded-full p-3 text-xs font-bold text-primaryText transition ease-in;
+  @apply rounded-full p-3 text-xs font-bold text-primaryText transition ease-in uppercase;
 
   &:active {
     transform: scale(0.95);
@@ -8,4 +8,12 @@
 
 .btn-default{
   @apply bg-white;
+}
+
+.btn-transparent{
+  @apply text-white border border-white;
+  &:hover{
+    @apply text-primaryText bg-white;
+  }
+
 }

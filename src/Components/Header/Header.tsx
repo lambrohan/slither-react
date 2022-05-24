@@ -1,14 +1,14 @@
 import React, { useState } from 'react'
-import { useWeb3 } from '../../Hooks/useWeb3'
 import { GameQualityOptions } from '../../Utils'
 import { Button } from '../Button/Button'
 import { Select } from '../Select/Select'
 import Web3Modal from 'web3modal'
+import useWeb3Ctx from '../../Context/Web3Context'
 interface HeaderProps {}
 
 export const Header: React.FC<HeaderProps> = ({}) => {
 	const [quality, setQuality] = useState(GameQualityOptions[0])
-	const { toggleModal } = useWeb3()
+	const { account, openModal } = useWeb3Ctx()
 	return (
 		<header
 			id="header"
@@ -25,9 +25,20 @@ export const Header: React.FC<HeaderProps> = ({}) => {
 					}}
 					selection={quality}
 				/>
-				<Button className="ml-4" onClick={toggleModal}>
-					Connect Wallet
-				</Button>
+
+				{account ? (
+					<h4 className="text-xs md:max-w-[200px] max-w-[80px] text-ellipsis overflow-hidden text-white">
+						{account}
+					</h4>
+				) : (
+					<Button
+						className="ml-4"
+						disabled={account !== null}
+						onClick={openModal}
+					>
+						Connect Wallet
+					</Button>
+				)}
 			</div>
 		</header>
 	)
