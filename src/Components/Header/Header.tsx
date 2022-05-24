@@ -12,14 +12,14 @@ export const Header: React.FC<HeaderProps> = ({}) => {
 	return (
 		<header
 			id="header"
-			className="w-full bg-primary py-3 flex items-center justify-between md:pl-[9.875rem] md:pr-[8.563rem] px-4"
+			className="w-full bg-primary py-2 flex items-center justify-between md:pl-[9.875rem] md:pr-[8.563rem] px-4"
 		>
 			<img src="/doge.png" className="w-6 " />
 			<div className="flex items-center">
 				<Select
 					options={GameQualityOptions}
 					label="GRAPHICS"
-					className="md:mr-8 mr-2"
+					className="md:mr-8 mr-2 text-sm"
 					handleSelect={(val) => {
 						setQuality(val)
 					}}
