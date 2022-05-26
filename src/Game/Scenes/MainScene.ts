@@ -13,11 +13,6 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	preload() {
-		this.load.setBaseURL(
-			process.env.BASE_URL ||
-				process.env.VITE_VERCEL_URL ||
-				'http://localhost:3000'
-		)
 		this.load.image('hex', '/hex.svg')
 	}
 
