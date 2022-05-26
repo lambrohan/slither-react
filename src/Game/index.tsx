@@ -1,13 +1,13 @@
-import Phaser from 'phaser'
+const Phaser = await import('phaser')
 import MainScene from './Scenes/MainScene'
-const config: Phaser.Types.Core.GameConfig = {
+export const GameConfig: Phaser.Types.Core.GameConfig = {
 	type: Phaser.AUTO,
 	parent: 'game-area',
-	backgroundColor: '#DC143C',
+	backgroundColor: '#651626',
+	width: window.innerWidth,
+	height: window.innerHeight,
 	scale: {
 		mode: Phaser.Scale.ScaleModes.FIT,
-		width: window.innerWidth,
-		height: window.innerHeight,
 	},
 	physics: {
 		default: 'arcade',
@@ -17,6 +17,3 @@ const config: Phaser.Types.Core.GameConfig = {
 	},
 	scene: [MainScene],
 }
-const canvasExists = document.querySelector('canvas')
-canvasExists?.remove()
-export default new Phaser.Game(config)

@@ -1,4 +1,6 @@
-import Phaser from 'phaser'
+import { isMobileDevice } from '../../Utils'
+
+const Phaser = await import('phaser')
 export default class MainScene extends Phaser.Scene {
 	hexWidth = 70
 	border = 2
@@ -14,6 +16,7 @@ export default class MainScene extends Phaser.Scene {
 
 	preload() {
 		this.load.image('hex', '/hex.svg')
+		this.load.image('hex1', '/hex_1.svg')
 	}
 
 	create() {
@@ -80,8 +83,8 @@ export default class MainScene extends Phaser.Scene {
 					targets: hexagon,
 					alpha: 1,
 					angle: 0,
-					scaleX: 1,
-					scaleY: 1,
+					scaleX: scale,
+					scaleY: scale,
 					duration: 400,
 					ease: 'Linear',
 					delay,

@@ -1,22 +1,29 @@
-import React, { useEffect } from 'react'
-import { Header } from '../Components/Header/Header'
-import phaserGame from '../Game/index'
-import MainScene from '../Game/Scenes/MainScene'
+import React, { useEffect, useState } from 'react'
+import { GameConfig } from '../Game/index'
+import { useEffectOnce } from '../Hooks/useEffectOnce'
+
+import { motion } from 'framer-motion'
 
 interface GameProps {}
 
 export const GameLayout: React.FC<GameProps> = ({}) => {
-	const handleGame = () => {
-		const scene = phaserGame.scene.keys.main as MainScene
-		console.log(scene)
+	const handleGame = async () => {
+		const canvasExists = document.querySelectorAll('#gamearea canvas')
+		canvasExists.forEach((el) => {
+			el.remove()
+		})
+		const Phaser = await import('phaser')
+		new Phaser.Game(GameConfig)
 	}
-	useEffect(() => {
-		console.log('mounted')
+
+	useEffectOnce(() => {
 		handleGame()
 	})
+
 	return (
-		<div id="game-view">
-			<div id="game-area"></div>
-		</div>
+		<div
+			id="game-area"
+			className="w-full max-h-screen overflow-hidden duration-300 linear"
+		></div>
 	)
 }
