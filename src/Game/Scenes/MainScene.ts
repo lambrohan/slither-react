@@ -1,5 +1,5 @@
 import { isMobileDevice } from '../../Utils'
-import Phase from 'phaser'
+import Phaser from 'phaser'
 export default class MainScene extends Phaser.Scene {
 	hexWidth = 70
 	border = 2
