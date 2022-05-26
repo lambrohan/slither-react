@@ -1,6 +1,5 @@
 import { isMobileDevice } from '../../Utils'
 
-const Phaser = await import('phaser')
 export default class MainScene extends Phaser.Scene {
 	hexWidth = 70
 	border = 2
