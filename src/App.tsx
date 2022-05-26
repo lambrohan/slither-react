@@ -6,6 +6,7 @@ import {
 	useLocation,
 	Routes,
 } from 'react-router-dom'
+import { AnimatePresence } from 'framer-motion'
 
 import './App.css'
 import { GameLayout } from './Layouts/Game'
@@ -16,13 +17,15 @@ import { Home } from './Pages/Home'
 function App() {
 	return (
 		<div className="app">
-			<Routes>
-				<Route path="/" element={<Lobby />}>
-					<Route index element={<Home />} />
-				</Route>
-				<Route path="/game" element={<GameLayout />}></Route>
-				<Route path="*" element={<Error />} />
-			</Routes>
+			<AnimatePresence>
+				<Routes>
+					<Route path="/" element={<Lobby />}>
+						<Route index element={<Home />} />
+					</Route>
+					<Route path="/game" element={<GameLayout />}></Route>
+					<Route path="*" element={<Error />} />
+				</Routes>
+			</AnimatePresence>
 		</div>
 	)
 }

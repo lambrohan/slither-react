@@ -11,6 +11,8 @@
     "@coinbase/wallet-sdk": "^3.1.0",
     "@headlessui/react": "^1.6.2",
     "@walletconnect/web3-provider": "^1.7.8",
+    "framer-motion": "^6.3.4",
+    "phaser": "^3.55.2",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-router-dom": "^6.3.0",
