@@ -1,4 +1,3 @@
-const Phaser = await import('phaser')
 import MainScene from './Scenes/MainScene'
 export const GameConfig: Phaser.Types.Core.GameConfig = {
 	type: Phaser.AUTO,
