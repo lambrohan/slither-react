@@ -3,7 +3,7 @@ import Phaser from 'phaser'
 export const GameConfig: Phaser.Types.Core.GameConfig = {
 	type: Phaser.AUTO,
 	parent: 'game-area',
-	backgroundColor: '#651626',
+	backgroundColor: '#230B0B',
 	width: window.innerWidth,
 	height: window.innerHeight,
 	scale: {
@@ -12,7 +12,10 @@ export const GameConfig: Phaser.Types.Core.GameConfig = {
 	physics: {
 		default: 'arcade',
 		arcade: {
-			gravity: { y: 200 },
+			gravity:{
+				y:0,
+				x:0,
+			}
 		},
 	},
 	scene: [MainScene],
