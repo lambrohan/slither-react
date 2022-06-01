@@ -4,7 +4,7 @@ export interface FoodOptions {
   scene: Phaser.Scene;
   x: number;
   y: number;
-  color: string;
+  asset?: string;
   size: number;
   id: string|number;
 }
@@ -13,17 +13,17 @@ export interface FoodOptions {
 export class Food extends Phaser.Physics.Arcade.Sprite  {
   x: number=0;
   y: number=0;
-  color: string='';
+  asset: string='coin';
   size: number=0;
   id: string|number=0;
-  constructor({scene,x,y,color, size, id}: FoodOptions){
-    super(scene, x,y,'coin')
+  constructor({scene,x,y,asset='coin', size, id}: FoodOptions){
+    super(scene, x,y,asset)
     this.id = id;
     this.size = size;
     this.scene = scene
     this.x = x;
     this.y = y
-    this.color = 'coin';
+    this.asset = asset
     this.init()
 
   }

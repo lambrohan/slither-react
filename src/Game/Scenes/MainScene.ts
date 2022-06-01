@@ -112,7 +112,7 @@ export default class MainScene extends Phaser.Scene {
 	_onFoodEvent(items: Array<FoodItem>){
 		items.forEach((item)=>{
 			const food = new Food({
-			scene: this, x: item.x, y: item.y, color:item.color,
+			scene: this, x: item.x, y: item.y,
 			size: item.size,
 			id: item.id,
 			})

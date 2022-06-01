@@ -42,7 +42,7 @@ export function generateFood(canvasW: number, canvasY: number) {
       x: getRandomArbitrary(0, canvasW), 
       y: getRandomArbitrary(0, canvasY), 
       color: 'foodBlue',
-      size: 5
+      size: 1
     }))
 
     foodGroup.push(new FoodItem({
@@ -50,7 +50,7 @@ export function generateFood(canvasW: number, canvasY: number) {
       x: getRandomArbitrary(0, canvasW), 
       y: getRandomArbitrary(0, canvasY), 
       color: 'foodGreen',
-      size: 5
+      size: 1
     }))
   }
 
@@ -60,7 +60,7 @@ export function generateFood(canvasW: number, canvasY: number) {
       x: getRandomArbitrary(0, canvasW), 
       y: getRandomArbitrary(0, canvasY), 
       color: 'foodLime',
-      size: 10
+      size: 1
     }))
   }
 
@@ -70,7 +70,7 @@ export function generateFood(canvasW: number, canvasY: number) {
       x: getRandomArbitrary(0, canvasW), 
       y: getRandomArbitrary(0, canvasY), 
       color: 'foodRed',
-      size: 15
+      size: 1
     }))
   }
 
