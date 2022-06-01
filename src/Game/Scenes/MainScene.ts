@@ -30,6 +30,8 @@ export default class MainScene extends Phaser.Scene {
 		this.load.image('foodLime', '/food/glowy-lime.png')
 		this.load.image('foodRed', '/food/glowy-red.png')
 		this.load.image('foodGreen', '/food/glowy-green.png')
+		this.load.image('coin', '/coin.png')
+
 
 	}
 

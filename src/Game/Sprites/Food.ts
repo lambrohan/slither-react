@@ -17,13 +17,13 @@ export class Food extends Phaser.Physics.Arcade.Sprite  {
   size: number=0;
   id: string|number=0;
   constructor({scene,x,y,color, size, id}: FoodOptions){
-    super(scene, x,y,color)
+    super(scene, x,y,'coin')
     this.id = id;
     this.size = size;
     this.scene = scene
     this.x = x;
     this.y = y
-    this.color = color;
+    this.color = 'coin';
     this.init()
 
   }
