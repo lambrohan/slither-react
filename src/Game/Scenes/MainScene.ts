@@ -1,5 +1,5 @@
-import { GameMeta, generateFood, getCenter, getRandomNumber, isMobileDevice } from '../../Utils'
-import Phaser, { GameObjects } from 'phaser'
+import { GameMeta, generateFood, getCenter } from '../../Utils'
+import Phaser from 'phaser'
 import { Player } from '../GameOjbects/Player'
 import { Food } from '../Sprites/Food'
 import { FoodItem } from '../Models'
@@ -12,9 +12,9 @@ export default class MainScene extends Phaser.Scene {
 	gridSizeX: number = 0
 	gridSizeY: number = 0
 	hexConeHeight: number = 0
-	player: Player|null= null;
-	foodGroup: Phaser.GameObjects.Group|null=null;
-	players : Array<Player> = []
+	player: Player | null = null
+	foodGroup: Phaser.GameObjects.Group | null = null
+	players: Array<Player> = []
 
 	constructor() {
 		super('main')
@@ -22,17 +22,8 @@ export default class MainScene extends Phaser.Scene {
 
 	preload() {
 		this.load.image('hex', '/hex.svg')
-		this.load.image('hex1', '/hex_1.svg')
-		this.load.image('head', '/head1.png' )
-		this.load.image('body', '/body1.png' )
-		this.load.image('foodPink', '/food/glowy-pink.png')
-		this.load.image('foodBlue', '/food/glowy-blue.png')
-		this.load.image('foodLime', '/food/glowy-lime.png')
-		this.load.image('foodRed', '/food/glowy-red.png')
-		this.load.image('foodGreen', '/food/glowy-green.png')
-		this.load.image('coin', '/coin.png')
-
-
+		this.load.atlas('slither', '/spritesheet.png', '/slither.json')
+		this.load.json('shapes', '/slither_physics.json')
 	}
 
 	create() {
@@ -43,87 +34,103 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	update(time: number, delta: number): void {
-		if(this.physics.collide(this.player?.snakeHead as any, this.foodGroup as any, this._handleFoodCollision, this._processhandler, this)){}
-		
-		
+		// if (
+		// 	this.physics.collide(
+		// 		this.player?.snakeHead as any,
+		// 		this.foodGroup as any,
+		// 		this._handleFoodCollision,
+		// 		this._processhandler,
+		// 		this
+		// 	)
+		// ) {
+		// }
+
 		// update player
 		this.player?.update()
 
 		// update other players
-		for (let i = 0; i < this.players.length; i++) {
-					
-			if(this.players[i].snakeHead?.active){
-				this.players[i].update()
-				if(this.physics.collide(this.players[i]?.snakeHead as any, this.foodGroup as any, this._handlePlayerCollision, this._processhandler, this)){}
-
-			}
-		}
+		// for (let i = 0; i < this.players.length; i++) {
+		// 	if (this.players[i].snakeHead?.active) {
+		// 		this.players[i].update()
+		// 		if (
+		// 			this.physics.collide(
+		// 				this.players[i]?.snakeHead as any,
+		// 				this.foodGroup as any,
+		// 				this._handlePlayerCollision,
+		// 				this._processhandler,
+		// 				this
+		// 			)
+		// 		) {
+		// 		}
+		// 	}
+		// }
 	}
 
-	_processhandler(head: any,food:any){
-
-    return true;
+	_processhandler(head: any, food: any) {
+		return true
 	}
 
-	_handleFoodCollision(player: Phaser.GameObjects.GameObject, foodObject: Phaser.GameObjects.GameObject){
+	_handleFoodCollision(
+		player: Phaser.GameObjects.GameObject,
+		foodObject: Phaser.GameObjects.GameObject
+	) {
 		this.player?.grow(foodObject as Food)
-    foodObject.destroy()
+		foodObject.destroy()
 	}
 
-	_handlePlayerCollision (me: Phaser.GameObjects.GameObject, them: Phaser.GameObjects.GameObject) {
-    console.log('_handlePlayerColision', me, them)
-  }
+	_handlePlayerCollision(
+		me: Phaser.GameObjects.GameObject,
+		them: Phaser.GameObjects.GameObject
+	) {
+		console.log('_handlePlayerColision', me, them)
+	}
 
-
-	_onSocketConnected(){
+	_onSocketConnected() {
 		console.log('_onSocketConnected')
 		// Reset enemies on reconnect
 
-    this.players = [];
+		this.players = []
 
-    // Send local player data to the game server
+		// Send local player data to the game server
 	}
 
-
-	createPlayer(){
+	createPlayer() {
 		const center = getCenter(this)
 		this.player = new Player({
-			index:0,
+			index: 0,
 			scene: this,
 			x: center.x,
 			y: center.y,
-			
+
 			numSnakeSections: 30,
 			assets: {
 				head: 'head',
-				body: 'body'
-			}
+				body: 'body',
+			},
 		})
-		this.cameras.main.setBounds(0,0, GameMeta.boundX, GameMeta.boundY );
+		this.cameras.main.setBounds(0, 0, GameMeta.boundX, GameMeta.boundY)
 		this.cameras.main.startFollow(this.player.snakeHead as any)
 	}
 
-	createFood(){
-		this.foodGroup = this.physics.add.group()
-		const items = generateFood(GameMeta.boundX, GameMeta.boundY);
-		this._onFoodEvent(items);
+	createFood() {
+		this.foodGroup = this.matter.composite.create()
+		const items = generateFood(GameMeta.boundX, GameMeta.boundY)
+		this._onFoodEvent(items)
 	}
-	
-	_onFoodEvent(items: Array<FoodItem>){
-		items.forEach((item)=>{
+
+	_onFoodEvent(items: Array<FoodItem>) {
+		items.forEach((item) => {
 			const food = new Food({
-			scene: this, x: item.x, y: item.y,
-			size: item.size,
-			id: item.id,
+				world: this.matter.world,
+				x: item.x,
+				y: item.y,
+				size: item.size,
+				id: item.id,
 			})
-
-
-			this.foodGroup?.add(food)
 		})
 	}
 
-
-	createHex(){
+	createHex() {
 		this.hexConeHeight = (Math.tan(Math.PI / 6) * this.hexWidth) / 2
 		this.hexGroup = this.add.group()
 		this.gridSizeX = Math.floor(GameMeta.boundX / this.hexWidth)
