@@ -25,10 +25,12 @@ const Switch = (props: any) => {
 export const Home: React.FC<HomeProps> = ({}) => {
 	const { account, openModal } = useWeb3Ctx()
 	const [modal, setModal] = useState(false)
-	const [TempOptions, setTempOptions] = useState()
+	const [TempOptions, setTempOptions] = useState(null)
 
 	useEffect(() => {
-		setModal(true)
+		if (TempOptions) {
+			setModal(true)
+		}
 	}, [TempOptions])
 	return (
 		<main id="home-page" className="relative flex flex-col items-center py-16">
