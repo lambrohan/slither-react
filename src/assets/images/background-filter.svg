@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="435" height="435" viewBox="0 0 435 435">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: url(#radial-gradient);
+      }
+    </style>
+    <radialGradient id="radial-gradient" cx="0.5" cy="0.5" r="0.426" gradientTransform="matrix(0.999, -0.034, 0.034, 0.999, -0.017, 0.017)" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#ffd1fb"/>
+      <stop offset="1" stop-color="#fc7c9f" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <circle id="Ellipse_24" data-name="Ellipse 24" class="cls-1" cx="217.5" cy="217.5" r="217.5"/>
+</svg>

@@ -24,6 +24,7 @@ export const Header: React.FC<HeaderProps> = ({}) => {
 						<span className="tracking-normal ml-2 font-normal uppercase text-sm">
 							Baby Doge Coin
 						</span>
+						
 					</h4>
 				)}
 			</div>

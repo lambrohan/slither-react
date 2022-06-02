@@ -4,11 +4,13 @@ import './Modal.scss'
 interface ModalProps extends React.HTMLProps<HTMLDivElement> {
 	visible: boolean
 	dismiss: () => void
+	transparent: boolean
 }
 export const Modal: React.FC<ModalProps> = ({
 	children,
 	visible = false,
 	dismiss,
+	transparent
 }: ModalProps) => {
 	return (
 		<>
@@ -23,7 +25,7 @@ export const Modal: React.FC<ModalProps> = ({
 							e.stopPropagation()
 						}}
 					>
-						<div className="modal-content p-4 rounded-xl">{children}</div>
+						<div className={transparent ? "modal-content p-4 rounded-xl" : "moadal-background modal-content p-4 rounded-xl"}>{children}</div>
 					</div>
 				</div>
 			) : null}

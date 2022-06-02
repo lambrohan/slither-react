@@ -5,6 +5,7 @@ import { GameLayout } from '../Layouts/Game'
 import { Lobby } from '../Layouts/Lobby/Lobby'
 import { Error } from '../Pages/Error'
 import { Home } from '../Pages/Home'
+import { FollowUs } from '../Pages/FollowUs';
 
 interface AnimatedRoutesProps {}
 
@@ -15,8 +16,10 @@ export const AnimatedRoutes: React.FC<AnimatedRoutesProps> = ({}) => {
 			<Routes location={location} key={location.pathname}>
 				<Route path="/" element={<Lobby />}>
 					<Route index element={<Home />} />
+					<Route path="follow-us" element={<FollowUs />}></Route>
 				</Route>
 				<Route path="/game" element={<GameLayout />}></Route>
+				
 				<Route path="*" element={<Error />} />
 			</Routes>
 		</AnimatePresence>
