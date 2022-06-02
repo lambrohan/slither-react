@@ -9,8 +9,8 @@ interface CongratulationProps {}
 export const Congratulation: React.FC<CongratulationProps> = ({}) => {
 	return (
 		<>
-			<div className="w-100 px-[200px]">
-        <h1 className="text-5xl font-bold text-white">Congratulations!</h1>
+			<div className="w-100 px-6 md:px-10 lg:px-[200px]">
+        <h1 className="text-3xl lg:text-5xl font-bold text-white">Congratulations!</h1>
         <div className="relative min-h-[400px] flex items-center justify-center">
           <p className="absolute top-[20px] text-[17px] text-white font-bold">No one can stop you!</p>
           <img className="absolute" src={BackgroundFilter} alt="babydoge" />
@@ -34,7 +34,7 @@ export const Congratulation: React.FC<CongratulationProps> = ({}) => {
           
         </div>
         <div className='h-[34px] relative '> 
-            <button className='next-btn absolute right-[-150px] text-white font-bold rounded-full border-white'>Next</button>
+            <button className='next-btn absolute right-[-10px] lg:right-[-150px] text-white font-bold rounded-full border-white'>Next</button>
           </div>
       </div>
 		</>
