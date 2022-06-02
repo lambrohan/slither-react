@@ -1,5 +1,5 @@
-import { GameMeta, generateFood, getCenter } from '../../Utils'
-import Phaser from 'phaser'
+import { GameMeta, generateFood, getCenter, SPRITE_LABELS } from '../../Utils'
+import Phaser, { GameObjects } from 'phaser'
 import { Player } from '../GameOjbects/Player'
 import { Food } from '../Sprites/Food'
 import { FoodItem } from '../Models'
@@ -13,7 +13,7 @@ export default class MainScene extends Phaser.Scene {
 	gridSizeY: number = 0
 	hexConeHeight: number = 0
 	player: Player | null = null
-	foodGroup: Phaser.GameObjects.Group | null = null
+	foodGroup: any | null = null
 	players: Array<Player> = []
 
 	constructor() {
@@ -27,10 +27,30 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	create() {
+		this.matter.world.disableGravity()
 		this.createHex()
 		this.scaleDiagonalHexagons(1)
 		this.createPlayer()
 		this.createFood()
+
+		this.matter.world.on(
+			'collisionstart',
+			(
+				event: Phaser.Physics.Matter.Events.CollisionStartEvent,
+				bodyA: Matter.Body | any,
+				bodyB: Matter.Body | any
+			) => {
+				if (
+					bodyA.label !== bodyB.label &&
+					bodyA.label === SPRITE_LABELS.HEAD &&
+					bodyB.label === SPRITE_LABELS.FOOD
+				) {
+					this.player?.grow(bodyB.gameObject)
+					;(bodyB.gameObject as Food).destroy()
+					this.matter.world.remove(bodyB)
+				}
+			}
+		)
 	}
 
 	update(time: number, delta: number): void {
@@ -113,7 +133,6 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	createFood() {
-		this.foodGroup = this.matter.composite.create()
 		const items = generateFood(GameMeta.boundX, GameMeta.boundY)
 		this._onFoodEvent(items)
 	}

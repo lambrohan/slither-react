@@ -1,4 +1,5 @@
 import Phaser from 'phaser'
+import { SPRITE_LABELS } from '../../Utils'
 
 export interface FoodOptions {
 	world: Phaser.Physics.Matter.World
@@ -16,7 +17,7 @@ export class Food extends Phaser.Physics.Matter.Sprite {
 	size: number = 0
 	id: string | number = 0
 	constructor({ world, x, y, asset = 'slither', size, id }: FoodOptions) {
-		super(world, x, y, asset, 'food/coin.png')
+		super(world, x, y, asset, 'food/coin.png', { label: SPRITE_LABELS.FOOD })
 		this.id = id
 		this.size = size
 		this.world = world

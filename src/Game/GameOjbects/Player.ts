@@ -1,5 +1,5 @@
 import Phaser, { Game } from 'phaser'
-import { GameMeta } from '../../Utils'
+import { GameMeta, SPRITE_LABELS } from '../../Utils'
 import { Food } from '../Sprites/Food'
 import { SnakeHead } from '../Sprites/SnakeHead'
 
@@ -13,7 +13,7 @@ export interface PlayerOptions {
 }
 export class Player {
 	snakeHead: Phaser.Physics.Matter.Sprite | null = null
-	snakeSection: Array<SnakeHead> = []
+	snakeSection: Array<Phaser.GameObjects.Sprite> = []
 	snakePath: Array<any> = []
 	numSnakeSections: number = 30
 	snakeSpacer = 1
@@ -36,7 +36,8 @@ export class Player {
 			400,
 			300,
 			'slither',
-			'snake/head.png'
+			'snake/head.png',
+			{ label: SPRITE_LABELS.HEAD }
 		)
 		this.snakeHead.setOrigin(0.5, 0.5)
 

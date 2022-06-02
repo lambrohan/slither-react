@@ -40,3 +40,29 @@
 button {
   font-size: calc(10px + 2vmin);
 }
+
+#WEB3_CONNECT_MODAL_ID .web3modal-modal-lightbox{
+  background: transparent;
+}
+
+#WEB3_CONNECT_MODAL_ID .web3modal-modal-lightbox .web3modal-modal-container .web3modal-modal-card{
+  background-color: rgba(255, 255, 255, 0.452);  
+  backdrop-filter: blur(17px);
+  min-height: 400px;
+  @apply p-4;
+  @apply border-none;
+}
+
+#WEB3_CONNECT_MODAL_ID .web3modal-modal-lightbox .web3modal-modal-container .web3modal-modal-card .web3modal-provider-wrapper{
+
+  @apply border-none;
+
+
+
+}
+
+#WEB3_CONNECT_MODAL_ID .web3modal-modal-lightbox .web3modal-modal-container .web3modal-modal-card .web3modal-provider-wrapper .web3modal-provider-container{
+  background-color: rgba(255, 255, 255, 0.062);  
+  backdrop-filter: blur(17px);
+}
+
