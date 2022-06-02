@@ -3,6 +3,8 @@ import Phaser, { GameObjects } from 'phaser'
 import { Player } from '../GameOjbects/Player'
 import { Food } from '../Sprites/Food'
 import { FoodItem } from '../Models'
+import { DebugInfo } from '../GameOjbects/Debug'
+import { GamePad } from '../GameOjbects/Gamepad'
 export default class MainScene extends Phaser.Scene {
 	hexWidth = 70
 	border = 4
@@ -15,6 +17,8 @@ export default class MainScene extends Phaser.Scene {
 	player: Player | null = null
 	foodGroup: any | null = null
 	players: Array<Player> = []
+	debugView: DebugInfo | null = null
+	gamepad: GamePad | null = null
 
 	constructor() {
 		super('main')
@@ -24,6 +28,7 @@ export default class MainScene extends Phaser.Scene {
 		this.load.image('hex', '/hex.svg')
 		this.load.atlas('slither', '/spritesheet.png', '/slither.json')
 		this.load.json('shapes', '/slither_physics.json')
+		this.load.atlas('gamepad', '/gamepad.png', '/gamepad.json')
 	}
 
 	create() {
@@ -32,7 +37,19 @@ export default class MainScene extends Phaser.Scene {
 		this.scaleDiagonalHexagons(1)
 		this.createPlayer()
 		this.createFood()
+		this._handleCollision()
+		this.debugView = new DebugInfo(this.scene)
+		this.gamepad = new GamePad(this)
+		this.gamepad.setPlayer(this.player)
+	}
 
+	update(time: number, delta: number): void {
+		// update player
+		this.player?.update()
+		this.debugView?.updateScore(this.player?.numSnakeSections || 0)
+	}
+
+	_handleCollision() {
 		this.matter.world.on(
 			'collisionstart',
 			(
@@ -53,56 +70,8 @@ export default class MainScene extends Phaser.Scene {
 		)
 	}
 
-	update(time: number, delta: number): void {
-		// if (
-		// 	this.physics.collide(
-		// 		this.player?.snakeHead as any,
-		// 		this.foodGroup as any,
-		// 		this._handleFoodCollision,
-		// 		this._processhandler,
-		// 		this
-		// 	)
-		// ) {
-		// }
-
-		// update player
-		this.player?.update()
-
-		// update other players
-		// for (let i = 0; i < this.players.length; i++) {
-		// 	if (this.players[i].snakeHead?.active) {
-		// 		this.players[i].update()
-		// 		if (
-		// 			this.physics.collide(
-		// 				this.players[i]?.snakeHead as any,
-		// 				this.foodGroup as any,
-		// 				this._handlePlayerCollision,
-		// 				this._processhandler,
-		// 				this
-		// 			)
-		// 		) {
-		// 		}
-		// 	}
-		// }
-	}
-
 	_processhandler(head: any, food: any) {
 		return true
-	}
-
-	_handleFoodCollision(
-		player: Phaser.GameObjects.GameObject,
-		foodObject: Phaser.GameObjects.GameObject
-	) {
-		this.player?.grow(foodObject as Food)
-		foodObject.destroy()
-	}
-
-	_handlePlayerCollision(
-		me: Phaser.GameObjects.GameObject,
-		them: Phaser.GameObjects.GameObject
-	) {
-		console.log('_handlePlayerColision', me, them)
 	}
 
 	_onSocketConnected() {

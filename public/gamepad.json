@@ -1,0 +1,62 @@
+{
+	"textures": [
+		{
+			"image": "gamepad.png",
+			"format": "RGBA8888",
+			"size": {
+				"w": 208,
+				"h": 119
+			},
+			"scale": 1,
+			"frames": [
+				{
+					"filename": "base.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 117,
+						"h": 117
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 117,
+						"h": 117
+					},
+					"frame": {
+						"x": 1,
+						"y": 1,
+						"w": 117,
+						"h": 117
+					}
+				},
+				{
+					"filename": "thumb.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 87,
+						"h": 87
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 87,
+						"h": 87
+					},
+					"frame": {
+						"x": 120,
+						"y": 1,
+						"w": 87,
+						"h": 87
+					}
+				}
+			]
+		}
+	],
+	"meta": {
+		"app": "https://www.codeandweb.com/texturepacker",
+		"version": "3.0",
+		"smartupdate": "$TexturePacker:SmartUpdate:39d3fa531d368f5e936543137cf2f0fe:a345a6e6e8269cf6854164a3e2e3d1df:1c9586ece4449c8026f8e901f073f4a8$"
+	}
+}

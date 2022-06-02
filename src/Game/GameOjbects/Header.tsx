@@ -1,2 +1,0 @@
-// update later
-export default {}
