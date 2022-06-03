@@ -1,4 +1,4 @@
-import './App.css'
+import './App.scss'
 import { AnimatedRoutes } from './Components/AnimatedRoutes'
 
 function App() {
