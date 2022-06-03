@@ -2,8 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { GameConfig } from '../Game/index'
 import { useEffectOnce } from '../Hooks/useEffectOnce'
 
-import { motion } from 'framer-motion'
-
 interface GameProps {}
 
 export const GameLayout: React.FC<GameProps> = ({}) => {

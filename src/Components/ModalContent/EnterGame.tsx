@@ -11,7 +11,7 @@ interface EnterGameProps {}
 export const EnterGame: React.FC<EnterGameProps> = ({}) => {
     return (
         <>
-            <div className="w-100">
+            <div className="w-100 blur-background rounded-lg">
                 <p className="text-white font-medium my-5 text-center">
                     ENTER THE GAME
                 </p>

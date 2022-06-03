@@ -9,7 +9,7 @@ interface CongratulationProps {}
 export const Congratulation: React.FC<CongratulationProps> = ({}) => {
 	return (
 		<>
-			<div className="w-100 px-6 md:px-10 lg:px-[200px]">
+			<div className="w-100 px-6 md:px-10 lg:px-[200px] blur-background rounded-lg py-2">
         <h1 className="text-3xl lg:text-5xl font-bold text-white">Congratulations!</h1>
         <div className="relative min-h-[400px] flex items-center justify-center">
           <p className="absolute top-[20px] text-[17px] text-white font-bold">No one can stop you!</p>

@@ -11,6 +11,7 @@ import {Dashboard} from "../Components/ModalContent/Dashboard"
 import { Select } from '../Components/Select/Select'
 import { FollowUs } from './FollowUs'
 
+
 interface HomeProps {}
 
 const Switch = (props:any) => {

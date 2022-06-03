@@ -11,8 +11,8 @@ interface GameOverProps {}
 export const GameOver: React.FC<GameOverProps> = ({}) => {
     return (
         <>
-            <div className="BigBox2">
-                <div className="PFBothBox">
+            <div className="BigBox2 blur-background  flex items-center justify-center flex-col">
+                <div className="PFBothBox  flex items-center justify-center flex-row">
                     <div className="LeftBox">
                         <div className="WhiteHead">
                             <h1 className="WhiteHeadContent">OVERVIEW</h1>
@@ -61,7 +61,7 @@ export const GameOver: React.FC<GameOverProps> = ({}) => {
                 </div>
                 <br />
                 {/* Buttons */}
-                <div className="Buttons">
+                <div className="Buttons ">
                     <button className="TransferTokenBtn">Transfer Tokens</button>
                     <button className="PlayAgainBtn">Play again</button>
                     <button className="ExitBtn">Exit</button>

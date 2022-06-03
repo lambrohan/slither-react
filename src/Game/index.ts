@@ -1,4 +1,6 @@
 import MainScene from './Scenes/MainScene'
+import VirtualJoystickPlugin from 'phaser3-rex-plugins/plugins/virtualjoystick-plugin.js'
+
 import Phaser from 'phaser'
 export const GameConfig: Phaser.Types.Core.GameConfig = {
 	type: Phaser.AUTO,
@@ -10,13 +12,15 @@ export const GameConfig: Phaser.Types.Core.GameConfig = {
 		mode: Phaser.Scale.ScaleModes.FIT,
 	},
 	physics: {
-		default: 'arcade',
-		arcade: {
-			gravity:{
-				y:0,
-				x:0,
-			}
+		default: 'matter',
+		matter: {
+			gravity: {
+				x: 0,
+				y: 0,
+			},
+			debug: true,
 		},
 	},
+
 	scene: [MainScene],
 }

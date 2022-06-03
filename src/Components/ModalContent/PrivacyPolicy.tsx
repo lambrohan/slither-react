@@ -1,4 +1,5 @@
-import React from "react";
+import React from "react"
+import BabyDoge2 from "../../assets/images/babyDoge-2.svg"
 
 import "./ModalContent.scss";
 interface PrivacyPolicyProps {}
@@ -7,12 +8,11 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({}) => {
     return (
         <>
                 <div className="backdrop-blur-md p-2 bg-black/80  mx-auto rounded-lg ">
-                    <img src="images/Image 33.png" className="mx-auto" alt="" />{" "}
-                    <br />
+                    <img src={BabyDoge2} className="mx-auto my-2" alt="" />{" "}
                     <p className="mx-auto w-56 font-medium text-lg text-white">
                         Babydoge.io PrivacyPolicy
                     </p>
-                    <p className="my-20 text-xs text-center sm:text-base text-white w-[320px] sm:w-[448px]">
+                    <p className="my-16 text-xs text-center sm:text-base text-white w-[320px] sm:w-[448px]">
                         Sed ut perspiciatis unde omnis iste natus error sit
                         voluptatem accusantium doloremque laudantium, totam rem
                         aperiam, eaque ipsa quae ab illo inventore veritatis et
