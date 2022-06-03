@@ -56,7 +56,6 @@ export const GameOver: React.FC<GameOverProps> = ({}) => {
 						<br />
 						<p className="whiteColor">Tokens Eaten</p>
 
-<<<<<<< HEAD
                         <h2 className="StatsTime">102</h2>
                     </div>
                 </div>
@@ -71,19 +70,3 @@ export const GameOver: React.FC<GameOverProps> = ({}) => {
         </>
     );
 };
-=======
-						<h2 className="StatsTime">102</h2>
-					</div>
-				</div>
-				<br />
-				{/* Buttons */}
-				<div className="Buttons">
-					<button className="TransferTokenBtn">Transfer Tokens</button>
-					<button className="PlayAgainBtn">Play again</button>
-					<button className="ExitBtn">Exit</button>
-				</div>
-			</div>
-		</>
-	)
-}
->>>>>>> 3760ea0f4811e6593e98e0caad3aa3797c401e1d
