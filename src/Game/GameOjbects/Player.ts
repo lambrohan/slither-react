@@ -1,5 +1,5 @@
 import Phaser, { Game } from 'phaser'
-import { GameMeta, SPRITE_LABELS } from '../../Utils'
+import { GameMeta } from '../../Utils'
 import { Food } from '../Sprites/Food'
 import { SnakeHead } from '../Sprites/SnakeHead'
 
@@ -12,8 +12,8 @@ export interface PlayerOptions {
 	assets: any
 }
 export class Player {
-	snakeHead: Phaser.Physics.Matter.Sprite | null = null
-	snakeSection: Array<Phaser.GameObjects.Sprite> = []
+	snakeHead: Phaser.GameObjects.Sprite | null | any = null
+	snakeSection: Array<SnakeHead> = []
 	snakePath: Array<any> = []
 	numSnakeSections: number = 30
 	snakeSpacer = 1
@@ -32,24 +32,13 @@ export class Player {
 		this.cursors = this.scene.input.keyboard.createCursorKeys()
 
 		// Snake and its head
-		this.snakeHead = this.scene.matter.add.sprite(
-			400,
-			300,
-			'slither',
-			'snake/head.png',
-			{ label: SPRITE_LABELS.HEAD }
-		)
+		this.snakeHead = this.scene.physics.add.sprite(400, 300, assets.head)
 		this.snakeHead.setOrigin(0.5, 0.5)
 
 		// this.scene.physics.enable(this.snakeHead, Phaser.Physics.ARCADE);
 
 		for (let i = 1; i <= this.numSnakeSections - 1; i++) {
-			this.snakeSection[i] = this.scene.add.sprite(
-				400,
-				300,
-				'slither',
-				'snake/body.png'
-			)
+			this.snakeSection[i] = this.scene.add.sprite(400, 300, assets.body)
 			this.snakeSection[i].setOrigin(0.5, 0.5)
 		}
 
@@ -63,8 +52,8 @@ export class Player {
 			this.movePlayer(this.snakeHead.x, this.snakeHead.y)
 		}
 
-		if (this.cursors?.left.isDown) this.rotateHead(-0.1)
-		else if (this.cursors?.right.isDown) this.rotateHead(0.1)
+		if (this.cursors?.left.isDown) this.rotateHead(-300)
+		else if (this.cursors?.right.isDown) this.rotateHead(300)
 
 		this.checkBounds()
 	}
@@ -73,36 +62,32 @@ export class Player {
 		if (!this.snakeHead) return
 		if (this.snakeHead?.x < GameMeta.boundPadding) {
 			// determind if angle has to be positive or negative
-
-			this.rotateHead(this.snakeHead?.angle < 0 ? 0.15 : -0.15)
+			this.rotateHead(this.snakeHead?.angle < 0 ? 300 : -300)
 		}
 
 		if (this.snakeHead?.x > GameMeta.boundX - GameMeta.boundPadding) {
-			this.rotateHead(this.snakeHead?.angle < 0 ? -0.15 : 0.15)
+			this.rotateHead(this.snakeHead?.angle > -90 ? 300 : -300)
 		}
 
 		if (this.snakeHead?.y < GameMeta.boundPadding) {
 			const angle = Math.abs(this.snakeHead?.angle)
-			this.rotateHead(angle < 90 ? 0.15 : -0.15)
+			this.rotateHead(angle < 90 ? 360 : -360)
 		}
 
 		if (this.snakeHead?.y > GameMeta.boundY - GameMeta.boundPadding) {
 			const angle = Math.abs(this.snakeHead?.angle)
 
-			this.rotateHead(angle > 90 ? 0.15 : -0.15)
+			this.rotateHead(angle > 90 ? 300 : -300)
 		}
 	}
 
 	movePlayer(x: number, y: number) {
 		if (!this.snakeHead) return
-		this.snakeHead.setAngularVelocity(0)
-		const vec = new Phaser.Math.Vector2(
-			this.snakeHead.body.position.x,
-			this.snakeHead.body.position.y
+		if (!this.scene) return
+		this.snakeHead.body.angularVelocity = 0
+		this.snakeHead.body.velocity.copy(
+			this.scene.physics.velocityFromAngle(this.snakeHead.angle, 300)
 		)
-		vec.setToPolar(Phaser.Math.DegToRad(this.snakeHead.angle), 3)
-		this.snakeHead.setVelocity(vec.x, vec.y)
-
 		this.snakeHead.x = x !== this.snakeHead.x ? x : this.snakeHead.x
 		this.snakeHead.y = y !== this.snakeHead.y ? y : this.snakeHead.y
 
@@ -117,7 +102,7 @@ export class Player {
 	}
 
 	rotateHead(angle: number) {
-		this.snakeHead?.setAngularVelocity(angle)
+		this.snakeHead.body.angularVelocity = angle
 	}
 
 	grow(food: Food) {
@@ -126,8 +111,7 @@ export class Player {
 			this.snakeSection[this.numSnakeSections] = this.scene?.add.sprite(
 				this.snakeSection[this.numSnakeSections - 1].x + this.snakeSpacer,
 				this.snakeSection[this.numSnakeSections - 1].y + this.snakeSpacer,
-				'slither',
-				0
+				'body'
 			)
 			this.snakeSection[this.numSnakeSections].setOrigin(0.5, 0.5)
 			this.numSnakeSections++

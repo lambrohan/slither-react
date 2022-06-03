@@ -1,10 +1,10 @@
-import React from "react";
-import BabyDoge from "../../assets/images/babyAlt.svg";
-import Coin from "../../assets/images/coin.svg";
-import Firework1 from "../../assets/images/firework-1.svg";
-import Firework2 from "../../assets/images/firework-2.svg";
+import React from 'react'
+import BabyDoge from '../../assets/images/babyAlt.webp'
+import Coin from '../../assets/images/coin.webp'
+import Firework1 from '../../assets/images/firework-1.svg'
+import Firework2 from '../../assets/images/firework-2.svg'
 
-import "./ModalContent.scss";
+import './ModalContent.scss'
 
 interface GameOverProps {}
 
@@ -46,16 +46,17 @@ export const GameOver: React.FC<GameOverProps> = ({}) => {
                         <br />
                         <p className="whiteColor">Survival Time</p>
 
-                        <h2 className="StatsTime">6m 42s</h2>
-                        <br />
-                        <br />
-                        <p className="whiteColor">Player Killed</p>
+						<h2 className="StatsTime">6m 42s</h2>
+						<br />
+						<br />
+						<p className="whiteColor">Player Killed</p>
 
-                        <h2 className="StatsTime">08</h2>
-                        <br />
-                        <br />
-                        <p className="whiteColor">Tokens Eaten</p>
+						<h2 className="StatsTime">08</h2>
+						<br />
+						<br />
+						<p className="whiteColor">Tokens Eaten</p>
 
+<<<<<<< HEAD
                         <h2 className="StatsTime">102</h2>
                     </div>
                 </div>
@@ -70,3 +71,19 @@ export const GameOver: React.FC<GameOverProps> = ({}) => {
         </>
     );
 };
+=======
+						<h2 className="StatsTime">102</h2>
+					</div>
+				</div>
+				<br />
+				{/* Buttons */}
+				<div className="Buttons">
+					<button className="TransferTokenBtn">Transfer Tokens</button>
+					<button className="PlayAgainBtn">Play again</button>
+					<button className="ExitBtn">Exit</button>
+				</div>
+			</div>
+		</>
+	)
+}
+>>>>>>> 3760ea0f4811e6593e98e0caad3aa3797c401e1d

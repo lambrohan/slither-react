@@ -1,9 +1,9 @@
 import React from 'react'
-import BabyDoge from "../../assets/images/babydoge.svg";
-import BackgroundFilter from "../../assets/images/background-filter.svg"
-import Coin from "../../assets/images/coin.svg"
-import Increase from "../../assets/images/increase.svg"
-import "./ModalContent.scss"
+import BabyDoge from '../../assets/images/babydoge.webp'
+import BackgroundFilter from '../../assets/images/background-filter.svg'
+import Coin from '../../assets/images/coin.webp'
+import Increase from '../../assets/images/increase.svg'
+import './ModalContent.scss'
 interface CongratulationProps {}
 
 export const Congratulation: React.FC<CongratulationProps> = ({}) => {
