@@ -1,5 +1,4 @@
 import MainScene from './Scenes/MainScene'
-import VirtualJoystickPlugin from 'phaser3-rex-plugins/plugins/virtualjoystick-plugin.js'
 
 import Phaser from 'phaser'
 export const GameConfig: Phaser.Types.Core.GameConfig = {
