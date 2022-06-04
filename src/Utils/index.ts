@@ -25,64 +25,16 @@ export const GameMeta = {
 
 export function generateFood(canvasW: number, canvasY: number) {
 	const foodGroup: Array<any> = []
-	for (var i = 0; i < 100; i++) {
+	for (var i = 0; i < 400; i++) {
 		foodGroup.push(
 			new FoodItem({
 				id: 'pink' + i,
 				x: getRandomArbitrary(0, canvasW),
 				y: getRandomArbitrary(0, canvasY),
-				color: 'foodPink',
 				size: 1,
 			})
 		)
 	}
-
-	for (var i = 0; i < 40; i++) {
-		foodGroup.push(
-			new FoodItem({
-				id: 'blue' + i,
-				x: getRandomArbitrary(0, canvasW),
-				y: getRandomArbitrary(0, canvasY),
-				color: 'foodBlue',
-				size: 1,
-			})
-		)
-
-		foodGroup.push(
-			new FoodItem({
-				id: 'green' + i,
-				x: getRandomArbitrary(0, canvasW),
-				y: getRandomArbitrary(0, canvasY),
-				color: 'foodGreen',
-				size: 1,
-			})
-		)
-	}
-
-	for (var i = 0; i < 20; i++) {
-		foodGroup.push(
-			new FoodItem({
-				id: 'lime' + i,
-				x: getRandomArbitrary(0, canvasW),
-				y: getRandomArbitrary(0, canvasY),
-				color: 'foodLime',
-				size: 1,
-			})
-		)
-	}
-
-	for (var i = 0; i < 10; i++) {
-		foodGroup.push(
-			new FoodItem({
-				id: 'red' + i,
-				x: getRandomArbitrary(0, canvasW),
-				y: getRandomArbitrary(0, canvasY),
-				color: 'foodRed',
-				size: 1,
-			})
-		)
-	}
-
 	return foodGroup
 }
 

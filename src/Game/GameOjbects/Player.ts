@@ -1,7 +1,6 @@
 import Phaser, { Game } from 'phaser'
 import { GameMeta, SPRITE_LABELS } from '../../Utils'
-import { Food } from '../Sprites/Food'
-import { SnakeHead } from '../Sprites/SnakeHead'
+import { Food } from './Food'
 
 export interface PlayerOptions {
 	index: number
@@ -122,7 +121,7 @@ export class Player {
 
 	grow(food: Food) {
 		if (!this.scene) return
-		for (let i = 0; i <= food.size; i++) {
+		for (let i = 0; i <= food.getSize(); i++) {
 			this.snakeSection[this.numSnakeSections] = this.scene?.add.sprite(
 				this.snakeSection[this.numSnakeSections - 1].x + this.snakeSpacer,
 				this.snakeSection[this.numSnakeSections - 1].y + this.snakeSpacer,

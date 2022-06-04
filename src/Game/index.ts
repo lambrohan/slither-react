@@ -1,6 +1,7 @@
 import MainScene from './Scenes/MainScene'
 
 import Phaser from 'phaser'
+import { GameState } from './Models/GameState'
 export const GameConfig: Phaser.Types.Core.GameConfig = {
 	type: Phaser.AUTO,
 	parent: 'game-area',
