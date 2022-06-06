@@ -8,7 +8,7 @@ export const CongratulationPage: React.FC<CongratulationPageProps> = ({}) => {
 
 	return (
 	<>
-  <div className=" lg:h-full my-6 flex items-center flex-col justify-center overflow-y-auto" >
+  <div className=" lg:h-full my-6 mx-2 flex items-center flex-col justify-center" >
     <img className="mx-auto mb-1" src={SlitherImage} alt="SlitherImage"/>
     <Congratulation />
     </div>

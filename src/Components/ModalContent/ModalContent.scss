@@ -37,7 +37,7 @@
   // width: 100%;
   border-radius: 20px;
   padding: 10px 10px 10px 10px;
-  margin: 0 auto;
+  margin: 10px auto;
 }
 
 .PFBothBox {
@@ -51,8 +51,9 @@
 .LeftBox,
 .RightBox {
   height: 100%;
-  width: 394px;
+  // width: 394px;
   border-radius: 10px;
+  padding-bottom:10px;
   gap: 10px;
   border: 1px solid white;
   text-align: center;
@@ -182,7 +183,30 @@
     height: 3rem;
   }
 
-  
+  .TransferTokenBtn {
+    border: none;
+    color: black;
+    border-radius: 26px;
+    padding: 6px 20px;
+    background-color: #FFCE00;
+    font-weight: 600;
+    margin-right: 10px;
+  }
+  .PlayAgainBtn {
+    margin-right:10px;
+  }
+  .PlayAgainBtn,
+  .ExitBtn {
+    border: none;
+    color: white;
+    border-radius: 26px;
+    border: 2px solid white;
+    padding: 6px 20px;
+    font-weight: 600;
+  }
+  .hoverGameImage {
+    height:68px;
+  }
 }
 
 

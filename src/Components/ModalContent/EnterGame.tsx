@@ -19,14 +19,21 @@ export const EnterGame: React.FC<EnterGameProps> = ({}) => {
                 <img src={borderLine} alt="border-line" />
 
                 <div className="flex justify-around items-center  my-4">
-                    <img className="h-[32px] cursor-pointer" src={LeftSolid} alt="LeftSolid"/>
-                    <img
-                        src={Ice}
-                        alt=""
-                        className="hoverGameImage mr-4 hover:outline-offset-4"
-                    />
-                    <img src={Fire} alt="" className="hoverGameImage hover:outline-offset-4" />
-                    <img className=" h-[32px] cursor-pointer" src={RightSolid} />
+                    <img className="h-[16px] lg:h-[32px] cursor-pointer" src={LeftSolid} alt="LeftSolid"/>
+                    <div className="relative">
+                        <img
+                            src={Ice}
+                            alt=""
+                            className="hoverGameImage mr-2 lg:mr-4 hover:outline-offset-4"
+                        />
+                        <p className="absolute bottom-[20px] left-[24px] text-lg lg:text-2xl text-white  font-bold flex flex-col">Ice Room<span className="hidden lg:text-xs font-normal">Game Token 0.50 standard</span></p>
+                    </div>
+                    <div className="relative">
+                        <img src={Fire} alt="" className="hoverGameImage hover:outline-offset-4" />
+                        <p className="absolute bottom-[20px] left-[24px] text-lg lg:text-2xl  text-white font-bold flex flex-col">Fire Room<span className="hidden lg:text-xs font-normal">Game Token 0.50 - 500 standard</span></p>
+
+                    </div>
+                    <img className="h-[16px] lg:h-[32px] cursor-pointer" src={RightSolid} />
                 </div>
 
                 <img  src={borderLine} alt="border-line" />
@@ -71,9 +78,9 @@ export const EnterGame: React.FC<EnterGameProps> = ({}) => {
                 <div className="flex flex-col justify-start mt-4 mx-7">
                     <p className="text-white font-medium">USERNAME</p>
                     <input
-                        type="number"
+                        type="text"
                         placeholder="GUSOBRAL"
-                        className="indent-6 h-[57px] w-full backdrop-blur-md p-2 bg-black/50 text-white font-bold text-2xl rounded-lg focus:outline-none"
+                        className="customInput indent-6 h-[57px] w-full backdrop-blur-md p-2 bg-black/50 text-white font-bold text-2xl rounded-lg focus:outline-none"
                     />
                 </div>
                 <div className="flex justify-center my-6">

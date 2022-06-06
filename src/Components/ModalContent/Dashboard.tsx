@@ -74,7 +74,7 @@ export const Dashboard: React.FC<DashboardProps> = ({}) => {
 
                         {/* if data */}
                         {dashboardData && (
-                            <div className="flex flex-row overflow-y-auto">
+                            <div className="flex flex-row overflow-y-auto lg:overflow-y-hidden">
                                 <div className="w-1/4 lg:w-1/2 dash-border-right">
                                     <div className="flex flex-col lg:flex-row items-center p-5">
                                         <img

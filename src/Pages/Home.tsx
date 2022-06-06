@@ -71,7 +71,7 @@ export const Home: React.FC<HomeProps> = ({}) => {
 					</div>
 				</Switch>
 			</Modal> */}
-			<div className="absolute right-[20px] top-[50px]">
+			{/* <div className="absolute right-[20px] top-[50px]">
 				<Select
 					options={[
 						'Dashboard',
@@ -87,7 +87,7 @@ export const Home: React.FC<HomeProps> = ({}) => {
 					}}
 					selection={TempOptions}
 				/>
-			</div>
+			</div> */}
 		</main>
 	)
 }

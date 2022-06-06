@@ -8,7 +8,7 @@ interface LobbyProps {}
 export const Lobby: React.FC<LobbyProps> = ({}) => {
 	return (
 		<div
-			className="w-full min-h-screen max-h-screen overflow-hidden bg-no-repeat bg-cover bg-center"
+			className="w-full min-h-screen overflow-auto  bg-no-repeat bg-cover bg-center"
 			id="lobby"
 		>
 			<Header />
