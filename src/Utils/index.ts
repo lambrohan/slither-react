@@ -46,3 +46,34 @@ export enum SPRITE_LABELS {
 	'HEAD' = 'head',
 	'FOOD' = 'food',
 }
+
+/*
+ * Calculate distance between two points
+ * @param  {Number} x1 first point
+ * @param  {Number} y1 first point
+ * @param  {Number} x2 second point
+ * @param  {Number} y2 second point
+ */
+export function distanceFormula(
+	x1: number,
+	y1: number,
+	x2: number,
+	y2: number
+) {
+	var withinRoot = Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2)
+	var dist = Math.pow(withinRoot, 0.5)
+	return dist
+}
+
+export function velocityFromAngle(angle: number, speed = 1) {
+	const rad = degToRad(angle)
+	return new Phaser.Math.Vector2(Math.cos(rad) * speed, Math.sin(rad) * speed)
+}
+
+export function degToRad(angle: number): number {
+	return (angle * Math.PI) / 180
+}
+
+export const CONSTANTS = {
+	SNAKE_SPEED: 4,
+}

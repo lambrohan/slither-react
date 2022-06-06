@@ -4,16 +4,14 @@ import { SPRITE_LABELS } from '../../Utils'
 import { FoodItem, FoodItemOptions } from '../Models'
 
 export interface FoodOptions {
-	world: Phaser.Physics.Matter.World
+	world: Phaser.Scene
 	foodState: FoodItem
 }
 
-export class Food extends Phaser.Physics.Matter.Sprite {
+export class Food extends Phaser.GameObjects.Sprite {
 	foodState: FoodItem | null = null
 	constructor({ world, foodState }: FoodOptions) {
-		super(world, foodState.x, foodState.y, 'slither', 'food/coin.png', {
-			label: SPRITE_LABELS.FOOD,
-		})
+		super(world, foodState.x, foodState.y, 'slither', 'food/coin.png')
 		this.foodState = foodState
 		this.init()
 	}
@@ -21,8 +19,10 @@ export class Food extends Phaser.Physics.Matter.Sprite {
 	private init() {
 		if (!this.foodState) return
 		this.setOrigin(0.5, 0.5)
-		this.setSensor(true)
-		this.world.scene.add.existing(this)
+		// this.setSensor(true)
+		this.setDepth(0)
+		this.scene.add.existing(this)
+		// this.world.scene.add.existing(this)
 	}
 
 	getSize(): number {
