@@ -1,5 +1,6 @@
 import React from 'react'
 import BabyDoge from '../../assets/images/babyAlt.webp'
+// import BabyDogeOver from '../../assets/images/babyGameOver.svg'
 import Coin from '../../assets/images/coin.webp'
 import Firework1 from '../../assets/images/firework-1.svg'
 import Firework2 from '../../assets/images/firework-2.svg'
@@ -30,12 +31,12 @@ export const GameOver: React.FC<GameOverProps> = ({}) => {
                             <img
                                 src={Firework1}
                                 alt=""
-                                className="absolute z-[-1] left-[46px]"
+                                className="absolute z-[-1] left-[32px]"
                             />
                             <img
                                 src={Firework2}
                                 alt=""
-                                className="absolute h-[57px] right-[90px] top-[-24px]"
+                                className="absolute h-[57px] right-[62px] top-[-15px]"
                             />
                         </div>
                         <h2 id="NameTxt">Alex1234</h2>

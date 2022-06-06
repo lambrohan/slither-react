@@ -14,7 +14,6 @@ export const Dashboard: React.FC<DashboardProps> = ({}) => {
     return (
         <>
             <div className="">
-                <img className="mx-auto mb-3" src={SlitherImage} alt="SlitherImage"/>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
                     <div className="blur-background lg:w-[412px] rounded-3xl py-3 px-3">
                         <h2 className="font-bold text-lg text-white uppercase">

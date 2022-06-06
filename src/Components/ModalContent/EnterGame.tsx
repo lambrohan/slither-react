@@ -39,14 +39,14 @@ export const EnterGame: React.FC<EnterGameProps> = ({}) => {
                 <img  src={borderLine} alt="border-line" />
 
                 <div className="flex flex-col mx-7">
-                    <p className="text-white font-bold mt-[22px] mb-[12px]">
+                    <p className="text-white text-sm font-bold mt-[22px] mb-[12px]">
                         YOUR AMOUNT
                     </p>
                     <div className="relative h-[57px]">
                         <button
                             id="dropdownDefault"
                             data-dropdown-toggle="dropdown"
-                            className="text-black h-full absolute z-30 bg-white font-medium rounded-lg text-sm px-8 py-2.5 text-center inline-flex items-center"
+                            className="text-black h-full absolute z-30 bg-white font-bold rounded-lg text-sm px-8 py-2.5 text-center inline-flex items-center"
                             type="button"
                         >
                             USD{" "}
@@ -67,7 +67,7 @@ export const EnterGame: React.FC<EnterGameProps> = ({}) => {
                         </button>
                         <input
                             type="text"
-                            className="indent-32 absolute z-10 text-white font-bold text-2xl h-full w-full backdrop-blur-md p-2 bg-black/50 rounded-lg focus:outline-none"
+                            className="indent-32 absolute z-10 text-white font-bold text-2xl h-full w-full  p-2 bg-[#0000002c] rounded-lg focus:outline-none"
                         />
                         <button className="absolute z-30  right-[6px] top-[10px] text-white bg-[#46125D] text-[8px] py-2.5 px-10 rounded-full ">
                             SAVE
@@ -80,7 +80,7 @@ export const EnterGame: React.FC<EnterGameProps> = ({}) => {
                     <input
                         type="text"
                         placeholder="GUSOBRAL"
-                        className="customInput indent-6 h-[57px] w-full backdrop-blur-md p-2 bg-black/50 text-white font-bold text-2xl rounded-lg focus:outline-none"
+                        className="customInput indent-6 h-[57px] w-full  p-2 bg-[#0000002c] text-white font-bold text-2xl rounded-lg focus:outline-none"
                     />
                 </div>
                 <div className="flex justify-center my-6">
