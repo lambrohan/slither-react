@@ -7,7 +7,7 @@ interface PrivacyPolicyProps {}
 export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({}) => {
     return (
         <>
-                <div className="backdrop-blur-md p-2 bg-black/80  mx-auto rounded-lg ">
+                <div className="backdrop-blur-md p-2   mx-auto rounded-lg ">
                     <img src={BabyDoge2} className="mx-auto my-2" alt="" />{" "}
                     <p className="mx-auto w-56 font-medium text-lg text-white">
                         Babydoge.io PrivacyPolicy

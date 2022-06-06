@@ -48,7 +48,7 @@ export const Home: React.FC<HomeProps> = ({}) => {
 				</Button>
 			)}
 
-			<Modal
+			{/* <Modal
 				transparent={false}
 				visible={modal}
 				dismiss={() => setModal(false)}
@@ -70,7 +70,7 @@ export const Home: React.FC<HomeProps> = ({}) => {
 						<PrivacyPolicy />
 					</div>
 				</Switch>
-			</Modal>
+			</Modal> */}
 			<div className="absolute right-[20px] top-[50px]">
 				<Select
 					options={[

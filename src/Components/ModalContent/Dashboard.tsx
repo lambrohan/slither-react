@@ -5,6 +5,7 @@ import Copy from "../../assets/images/copy.svg"
 import ProfileImage from "../../assets/images/profileImage.svg"
 import {StarSvg} from "../../assets/Star"
 import {PieChartDraw} from "../PieChart/PieChart"
+import SlitherImage from "../../assets/images/SlitherImage.svg"
 
 interface DashboardProps {}
 
@@ -13,6 +14,7 @@ export const Dashboard: React.FC<DashboardProps> = ({}) => {
     return (
         <>
             <div className="">
+                <img className="mx-auto mb-3" src={SlitherImage} alt="SlitherImage"/>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
                     <div className="blur-background lg:w-[412px] rounded-3xl py-3 px-3">
                         <h2 className="font-bold text-lg text-white uppercase">
@@ -72,24 +74,24 @@ export const Dashboard: React.FC<DashboardProps> = ({}) => {
 
                         {/* if data */}
                         {dashboardData && (
-                            <div className="flex flex-row ">
-                                <div className="w-1/2 dash-border-right">
-                                    <div className="flex flex-row items-center p-5">
+                            <div className="flex flex-row overflow-y-auto">
+                                <div className="w-1/4 lg:w-1/2 dash-border-right">
+                                    <div className="flex flex-col lg:flex-row items-center p-5">
                                         <img
-                                            className="h-[56px] mr-2"
+                                            className="h-[42px] lg:h-[56px] mr-2"
                                             src={ProfileImage}
                                             alt="altImage"
                                         />
-                                        <p className="text-lg font-bold text-white">
+                                        <p className="text-medium lg:text-lg font-bold text-white">
                                             UserA1213
                                         </p>
                                     </div>
-                                    <div className="h-[180px]">
+                                    <div className="h-[110px] lg:h-[180px] mr-2">
                                         <PieChartDraw/>
                                     </div>
                                 </div>
-                                <div className="w-1/4 dash-border-right p-6 flex flex-col">
-                                    <div className="flex flex-row items-center justify-between mb-10">
+                                <div className="w-3/8 lg:w-1/4 dash-border-right p-4 lg:p-6 flex flex-col">
+                                    <div className="flex flex-row items-center justify-between mb-3 lg:mb-10">
                                          <div>
                                             <p className="font-bold text-xs text-[#FFCE01]">
                                                 Win
@@ -140,13 +142,13 @@ export const Dashboard: React.FC<DashboardProps> = ({}) => {
                                         </span>
                                     </div>
                                 </div>
-                                <div className="w-1/4">
-                                    <div className="dash-border-bottom h-1/2 flex flex-col items-center justify-center">
+                                <div className="w-3/8 lg:w-1/4">
+                                    <div className="dash-border-bottom h-1/3 my-2 lg:my-4 flex flex-col items-center justify-center">
                                         <span className="uppercase text-white text-sm font-medium">Rank</span>
-                                        <span className="uppercase text-white text-[73px] font-bold leading-[50px]">24</span>
+                                        <span className="uppercase text-white text-[60px] lg:text-[73px] font-bold leading-[50px]">24</span>
 
                                     </div>
-                                    <div className="h-1/2 items-center justify-center py-[18px] px-[24px]">
+                                    <div className="h-2/3 items-center justify-center py-[18px] px-[18px] lg:px-[24px]">
                                         <div className="flex flex-row items-center justify-between h-100">
                                             <span className='text-white text-xs mb-2 font-bold'>Fire Room</span>
                                             <span className="flex flex-row"><StarSvg repeat={2}/></span>
