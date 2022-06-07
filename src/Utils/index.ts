@@ -76,4 +76,5 @@ export function degToRad(angle: number): number {
 
 export const CONSTANTS = {
 	SNAKE_SPEED: 4,
+	FOOD_RADIUS_MULTIPLIER: 1,
 }

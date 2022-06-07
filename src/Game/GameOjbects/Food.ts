@@ -1,6 +1,6 @@
 import { DataChange } from '@colyseus/schema'
 import Phaser from 'phaser'
-import { SPRITE_LABELS } from '../../Utils'
+import { CONSTANTS, SPRITE_LABELS } from '../../Utils'
 import { FoodItem, FoodItemOptions } from '../Models'
 
 export interface FoodOptions {
@@ -22,6 +22,7 @@ export class Food extends Phaser.GameObjects.Sprite {
 		// this.setSensor(true)
 		this.setDepth(0)
 		this.scene.add.existing(this)
+		this.setScale(this.foodState.size * CONSTANTS.FOOD_RADIUS_MULTIPLIER)
 		// this.world.scene.add.existing(this)
 	}
 

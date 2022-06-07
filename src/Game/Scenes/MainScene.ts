@@ -80,14 +80,32 @@ export default class MainScene extends Phaser.Scene {
 
 	_onPlayerRemove(playerState: PlayerState) {
 		if (!playerState.sessionId) return
-		this.playerObjects.delete(playerState.sessionId)
+		if(this.player?.playerState.sessionId === playerState.sessionId){
+			this.debugView?.scoreText?.setText(
+				`Game Over, Your Score is ${playerState.score}`
+			)
 
+			this.player = null
+
+		}
+		this.debugView?.scoreText?.setText(
+			`Game Over, Your Score is ${playerState.score}`
+		)
 		this.playerObjects.get(playerState.sessionId)?.destroy()
-		console.log('player removed')
+
+		this.playerObjects.delete(playerState.sessionId)
 	}
 
 	_onRemoveFood(foodItem: FoodItem) {
-		this.foodObjects.get(foodItem.id)?.destroy()
+		const foodObj = this.foodObjects.get(foodItem.id)
+		this.tweens.add({
+			targets: foodObj,
+			scale: 0,
+			duration: 100,
+			onComplete: () => {
+				foodObj?.destroy()
+			},
+		})
 	}
 	_onAddFood(foodItem: FoodItem) {
 		const f = new Food({
@@ -98,11 +116,12 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	update(time: number, delta: number): void {
-		// this.player?.update()
-		this.debugView?.updateScore(this.player?.localSnakeLength!)
 		this.playerObjects.forEach((p) => {
-			p.update()
+			p.updateRemote()
 		})
+		if (this.player) {
+			this.debugView?.updateScore(this.player?.playerState.score)
+		}
 	}
 
 	_processhandler(head: any, food: any) {

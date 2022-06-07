@@ -1,5 +1,6 @@
 import { ArraySchema, Schema, type } from '@colyseus/schema'
 import { FoodItem } from './FoodItem'
+import { SnakeSectionState } from './SnakeSection'
 
 export class PlayerState extends Schema {
 	@type('string')
@@ -21,9 +22,9 @@ export class PlayerState extends Schema {
 	@type('float32')
 	angle: number = 0
 
-	@type('int16')
+	@type('int8')
 	snakeLength: number = 0
 
-	@type(['number'])
-	consumedFood: ArraySchema<number> = new ArraySchema()
+	@type([SnakeSectionState])
+	sections: ArraySchema<SnakeSectionState> = new ArraySchema()
 }
