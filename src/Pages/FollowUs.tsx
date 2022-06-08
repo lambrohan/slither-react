@@ -7,7 +7,10 @@ import Discord from '../assets/images/discord.svg'
 import Instagram from '../assets/images/instagram.svg'
 import Facebook from '../assets/images/facebook.svg'
 import './FollowUs.scss'
+import SlitherImage from "../assets/images/SlitherImage.svg"
+
 interface FollowUsProps {}
+
 
 export const FollowUs: React.FC<FollowUsProps> = ({}) => {
 	return (

@@ -71,3 +71,51 @@ button {
   
 }
 
+.customInput::placeholder {
+  color:white !important;
+}
+
+@supports (scrollbar-color: #3458d9a2 #3d66ff) {
+
+  html,
+  body {
+      scrollbar-width: thin !important;
+      scrollbar-color: #00398e transparent;
+  }
+}
+
+html,
+body {
+  scroll-behavior: smooth;
+  background-color: #ffffff0a !important;
+  font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, Roboto, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+
+  &::-webkit-scrollbar {
+      width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+      background: #ffffff0a;
+      width: 5%;
+  }
+
+  &::-webkit-scrollbar-thumb {
+      background: #cacdd515;
+      border-radius: 100vw;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: #ffffff0a;
+  width: 5%;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cacdd515;
+  border-radius: 100vw;
+}
