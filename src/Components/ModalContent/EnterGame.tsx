@@ -80,7 +80,7 @@ export const EnterGame: React.FC<EnterGameProps> = ({}) => {
                     <input
                         type="text"
                         placeholder="GUSOBRAL"
-                        className="customInput indent-5 h-[57px] w-full  p-2 bg-[#0000002c] text-white font-bold text-2xl rounded-lg focus:outline-none"
+                        className="customInput indent-5 h-[57px] w-full  p-2 bg-[#0000002c] text-white font-bold text-medium rounded-lg focus:outline-none"
                     />
                 </div>
                 <div className="flex justify-center my-6">
