@@ -46,7 +46,7 @@ export const EnterGame: React.FC<EnterGameProps> = ({}) => {
                         <button
                             id="dropdownDefault"
                             data-dropdown-toggle="dropdown"
-                            className="text-black h-full absolute z-30 bg-white font-bold rounded-lg text-sm px-8 py-2.5 text-center inline-flex items-center"
+                            className="text-black h-full absolute z-30 bg-white font-bold rounded-tl-lg rounded-bl-lg text-sm px-8 py-2.5 text-center inline-flex items-center"
                             type="button"
                         >
                             USD{" "}
