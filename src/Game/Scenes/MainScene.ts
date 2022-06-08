@@ -1,10 +1,16 @@
 import { GameMeta, generateFood, getCenter, SPRITE_LABELS } from '../../Utils'
 import Phaser, { GameObjects } from 'phaser'
 import { Player } from '../GameOjbects/Player'
-import { Food } from '../Sprites/Food'
 import { FoodItem } from '../Models'
 import { DebugInfo } from '../GameOjbects/Debug'
 import { GamePad } from '../GameOjbects/Gamepad'
+import { GameState } from '../Models/GameState'
+import { Food } from '../GameOjbects/Food'
+import { Room } from 'colyseus.js'
+import * as Colyseus from 'colyseus.js'
+import { PlayerState } from '../Models/PlayerState'
+import { PlayerV2 } from '../GameOjbects/PlayerV2'
+
 export default class MainScene extends Phaser.Scene {
 	hexWidth = 70
 	border = 4
@@ -14,11 +20,14 @@ export default class MainScene extends Phaser.Scene {
 	gridSizeX: number = 0
 	gridSizeY: number = 0
 	hexConeHeight: number = 0
-	player: Player | null = null
-	foodGroup: any | null = null
+	player: PlayerV2 | null = null
+	foodGroup: Phaser.GameObjects.Group | null = null
+	foodObjects: Map<String, Food> = new Map()
 	players: Array<Player> = []
 	debugView: DebugInfo | null = null
 	gamepad: GamePad | null = null
+	gameRoom!: Room<GameState>
+	playerObjects: Map<String, PlayerV2> = new Map()
 
 	constructor() {
 		super('main')
@@ -32,90 +41,91 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	create() {
+		this.matter.world.setBounds(0, 0, GameMeta.boundX, GameMeta.boundY)
+		this.cameras.main.setBounds(0, 0, GameMeta.boundX, GameMeta.boundY)
+		this.initRoom()
 		this.matter.world.disableGravity()
 		this.createHex()
 		this.scaleDiagonalHexagons(1)
-		this.createPlayer()
-		this.createFood()
-		this._handleCollision()
 		this.debugView = new DebugInfo(this.scene)
-		this.gamepad = new GamePad(this)
-		this.gamepad.setPlayer(this.player)
+		this.setInputs()
+	}
+
+	async initRoom() {
+		const client = new Colyseus.Client('ws://localhost:2567')
+		this.gameRoom = await client.joinOrCreate<GameState>('my_room')
+		this.gameRoom.state.foodItems.onAdd = (f) => this._onAddFood(f)
+		this.gameRoom.state.foodItems.onRemove = (f) => this._onRemoveFood(f)
+		this.gameRoom.state.players.onAdd = (p) => this._onPlayerAdd(p)
+		this.gameRoom.state.players.onRemove = (p) => this._onPlayerRemove(p)
+	}
+
+	_onPlayerAdd(playerState: PlayerState) {
+		console.log('player added', playerState)
+
+		if (!playerState?.sessionId) return
+
+		const player = new PlayerV2(
+			this,
+			playerState,
+			playerState.sessionId === this.gameRoom.sessionId
+		)
+
+		if (player.isCurrentPlayer) {
+			this.player = player
+		}
+
+		this.playerObjects.set(playerState.sessionId, player)
+	}
+
+	_onPlayerRemove(playerState: PlayerState) {
+		if (!playerState.sessionId) return
+		if(this.player?.playerState.sessionId === playerState.sessionId){
+			this.debugView?.scoreText?.setText(
+				`Game Over, Your Score is ${playerState.score}`
+			)
+
+			this.player = null
+
+		}
+		this.debugView?.scoreText?.setText(
+			`Game Over, Your Score is ${playerState.score}`
+		)
+		this.playerObjects.get(playerState.sessionId)?.destroy()
+
+		this.playerObjects.delete(playerState.sessionId)
+	}
+
+	_onRemoveFood(foodItem: FoodItem) {
+		const foodObj = this.foodObjects.get(foodItem.id)
+		this.tweens.add({
+			targets: foodObj,
+			scale: 0,
+			duration: 100,
+			onComplete: () => {
+				foodObj?.destroy()
+			},
+		})
+	}
+	_onAddFood(foodItem: FoodItem) {
+		const f = new Food({
+			world: this,
+			foodState: foodItem,
+		})
+		this.foodObjects.set(foodItem.id, f)
 	}
 
 	update(time: number, delta: number): void {
-		// update player
-		this.player?.update()
-		this.debugView?.updateScore(this.player?.numSnakeSections || 0)
-	}
-
-	_handleCollision() {
-		this.matter.world.on(
-			'collisionstart',
-			(
-				event: Phaser.Physics.Matter.Events.CollisionStartEvent,
-				bodyA: Matter.Body | any,
-				bodyB: Matter.Body | any
-			) => {
-				if (
-					bodyA.label !== bodyB.label &&
-					bodyA.label === SPRITE_LABELS.HEAD &&
-					bodyB.label === SPRITE_LABELS.FOOD
-				) {
-					this.player?.grow(bodyB.gameObject)
-					;(bodyB.gameObject as Food).destroy()
-					this.matter.world.remove(bodyB)
-				}
-			}
-		)
+		this.playerObjects.forEach((p) => {
+			p.updateRemote()
+		})
+		if (this.player) {
+			this.debugView?.updateScore(this.player?.playerState.score)
+		}
 	}
 
 	_processhandler(head: any, food: any) {
 		return true
-	}
-
-	_onSocketConnected() {
-		console.log('_onSocketConnected')
-		// Reset enemies on reconnect
-
-		this.players = []
-
-		// Send local player data to the game server
-	}
-
-	createPlayer() {
-		const center = getCenter(this)
-		this.player = new Player({
-			index: 0,
-			scene: this,
-			x: center.x,
-			y: center.y,
-
-			numSnakeSections: 30,
-			assets: {
-				head: 'head',
-				body: 'body',
-			},
-		})
-		this.cameras.main.setBounds(0, 0, GameMeta.boundX, GameMeta.boundY)
-		this.cameras.main.startFollow(this.player.snakeHead as any)
-	}
-
-	createFood() {
-		const items = generateFood(GameMeta.boundX, GameMeta.boundY)
-		this._onFoodEvent(items)
-	}
-
-	_onFoodEvent(items: Array<FoodItem>) {
-		items.forEach((item) => {
-			const food = new Food({
-				world: this.matter.world,
-				x: item.x,
-				y: item.y,
-				size: item.size,
-				id: item.id,
-			})
-		})
 	}
 
 	createHex() {
@@ -166,5 +176,13 @@ export default class MainScene extends Phaser.Scene {
 				})
 			}
 		}
+	}
+
+	setInputs() {
+		this.input.on('pointerup', () => {
+			const x = this.input.activePointer.worldX.toFixed(2)
+			const y = this.input.activePointer.worldY.toFixed(2)
+			this.gameRoom?.send('input', `${x}:${y}`)
+		})
 	}
 }

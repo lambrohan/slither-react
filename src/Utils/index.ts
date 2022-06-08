@@ -25,64 +25,16 @@ export const GameMeta = {
 
 export function generateFood(canvasW: number, canvasY: number) {
 	const foodGroup: Array<any> = []
-	for (var i = 0; i < 100; i++) {
+	for (var i = 0; i < 400; i++) {
 		foodGroup.push(
 			new FoodItem({
 				id: 'pink' + i,
 				x: getRandomArbitrary(0, canvasW),
 				y: getRandomArbitrary(0, canvasY),
-				color: 'foodPink',
 				size: 1,
 			})
 		)
 	}
-
-	for (var i = 0; i < 40; i++) {
-		foodGroup.push(
-			new FoodItem({
-				id: 'blue' + i,
-				x: getRandomArbitrary(0, canvasW),
-				y: getRandomArbitrary(0, canvasY),
-				color: 'foodBlue',
-				size: 1,
-			})
-		)
-
-		foodGroup.push(
-			new FoodItem({
-				id: 'green' + i,
-				x: getRandomArbitrary(0, canvasW),
-				y: getRandomArbitrary(0, canvasY),
-				color: 'foodGreen',
-				size: 1,
-			})
-		)
-	}
-
-	for (var i = 0; i < 20; i++) {
-		foodGroup.push(
-			new FoodItem({
-				id: 'lime' + i,
-				x: getRandomArbitrary(0, canvasW),
-				y: getRandomArbitrary(0, canvasY),
-				color: 'foodLime',
-				size: 1,
-			})
-		)
-	}
-
-	for (var i = 0; i < 10; i++) {
-		foodGroup.push(
-			new FoodItem({
-				id: 'red' + i,
-				x: getRandomArbitrary(0, canvasW),
-				y: getRandomArbitrary(0, canvasY),
-				color: 'foodRed',
-				size: 1,
-			})
-		)
-	}
-
 	return foodGroup
 }
 
@@ -93,4 +45,36 @@ function getRandomArbitrary(min: number, max: number) {
 export enum SPRITE_LABELS {
 	'HEAD' = 'head',
 	'FOOD' = 'food',
+}
+
+/*
+ * Calculate distance between two points
+ * @param  {Number} x1 first point
+ * @param  {Number} y1 first point
+ * @param  {Number} x2 second point
+ * @param  {Number} y2 second point
+ */
+export function distanceFormula(
+	x1: number,
+	y1: number,
+	x2: number,
+	y2: number
+) {
+	var withinRoot = Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2)
+	var dist = Math.pow(withinRoot, 0.5)
+	return dist
+}
+
+export function velocityFromAngle(angle: number, speed = 1) {
+	const rad = degToRad(angle)
+	return new Phaser.Math.Vector2(Math.cos(rad) * speed, Math.sin(rad) * speed)
+}
+
+export function degToRad(angle: number): number {
+	return (angle * Math.PI) / 180
+}
+
+export const CONSTANTS = {
+	SNAKE_SPEED: 4,
+	FOOD_RADIUS_MULTIPLIER: 1,
 }

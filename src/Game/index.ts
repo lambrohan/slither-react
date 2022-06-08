@@ -1,7 +1,7 @@
 import MainScene from './Scenes/MainScene'
-import VirtualJoystickPlugin from 'phaser3-rex-plugins/plugins/virtualjoystick-plugin.js'
 
 import Phaser from 'phaser'
+import { GameState } from './Models/GameState'
 export const GameConfig: Phaser.Types.Core.GameConfig = {
 	type: Phaser.AUTO,
 	parent: 'game-area',
@@ -18,7 +18,6 @@ export const GameConfig: Phaser.Types.Core.GameConfig = {
 				x: 0,
 				y: 0,
 			},
-			debug: true,
 		},
 	},
 

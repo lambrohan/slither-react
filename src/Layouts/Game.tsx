@@ -1,6 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { GameConfig } from '../Game/index'
 import { useEffectOnce } from '../Hooks/useEffectOnce'
+import { GameState } from '../Game/Models/GameState'
+import MainScene from '../Game/Scenes/MainScene'
+import { FoodItem } from '../Game/Models'
 
 interface GameProps {}
 
@@ -10,8 +13,8 @@ export const GameLayout: React.FC<GameProps> = ({}) => {
 		canvasExists.forEach((el) => {
 			el.remove()
 		})
-		const Phaser = await import('phaser')
-		new Phaser.Game(GameConfig)
+
+		const game = new Phaser.Game(GameConfig)
 	}
 
 	useEffectOnce(() => {

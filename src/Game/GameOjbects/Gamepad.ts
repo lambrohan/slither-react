@@ -1,13 +1,14 @@
 import VirtualJoystick from 'phaser3-rex-plugins/plugins/virtualjoystick.js'
+import MainScene from '../Scenes/MainScene'
 import { Player } from './Player'
 export class GamePad {
-	scene: Phaser.Scene | null = null
+	scene: MainScene | null = null
 	base: Phaser.GameObjects.Sprite | null = null
 	thumb: Phaser.GameObjects.Sprite | null = null
 	joystick: VirtualJoystick | null = null
 	updateCallback: Function = () => {}
 	player: Player | null = null
-	constructor(scene: Phaser.Scene) {
+	constructor(scene: MainScene) {
 		this.scene = scene
 		this.init()
 	}
@@ -20,7 +21,7 @@ export class GamePad {
 			x: 100,
 			y: this.scene.sys.canvas.height - 100,
 			fixed: true,
-			dir: 'left&right',
+			dir: '8dir',
 			base: this.base,
 			thumb: this.thumb,
 			radius: 30,
@@ -28,13 +29,10 @@ export class GamePad {
 
 		// @ts-ignore
 		this.joystick?.on('update', () => {
-			if (!this.player) return
-			this.joystick?.left ? this.player.rotateHead(-0.1) : ''
-			this.joystick?.right ? this.player.rotateHead(0.1) : ''
+			this.scene?.gameRoom?.send(
+				'joystick',
+				this.joystick?.noKey ? null : this.joystick?.angle
+			)
 		})
-	}
-
-	setPlayer(player: Player | null) {
-		this.player = player
 	}
 }
