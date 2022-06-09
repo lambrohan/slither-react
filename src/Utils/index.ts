@@ -78,3 +78,17 @@ export const CONSTANTS = {
 	SNAKE_SPEED: 4,
 	FOOD_RADIUS_MULTIPLIER: 1,
 }
+
+export class Point {
+	constructor(x: number, y: number) {
+		this.x = x
+		this.y = y
+	}
+	x: number
+	y: number
+
+	setTo(x: number, y: number) {
+		this.x = x
+		this.y = y
+	}
+}

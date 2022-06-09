@@ -28,6 +28,9 @@ export default class MainScene extends Phaser.Scene {
 	gamepad: GamePad | null = null
 	gameRoom!: Room<GameState>
 	playerObjects: Map<String, PlayerV2> = new Map()
+	elapsedTime = 0
+	fixedTimeStep = 1000 / 60
+	debugFPS!: Phaser.GameObjects.Text
 
 	constructor() {
 		super('main')
@@ -41,6 +44,10 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	create() {
+		this.debugFPS = this.add.text(4, 4, '', { color: '#ff0000' })
+		this.debugFPS.setDepth(10)
+		this.debugFPS.setScrollFactor(0, 0)
+		this.gamepad = new GamePad(this)
 		this.matter.world.setBounds(0, 0, GameMeta.boundX, GameMeta.boundY)
 		this.cameras.main.setBounds(0, 0, GameMeta.boundX, GameMeta.boundY)
 		this.initRoom()
@@ -52,7 +59,7 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	async initRoom() {
-		const client = new Colyseus.Client('ws://localhost:2567')
+		const client = new Colyseus.Client('ws://192.168.29.71:2567')
 		this.gameRoom = await client.joinOrCreate<GameState>('my_room')
 		this.gameRoom.state.foodItems.onAdd = (f) => this._onAddFood(f)
 		this.gameRoom.state.foodItems.onRemove = (f) => this._onRemoveFood(f)
@@ -80,13 +87,12 @@ export default class MainScene extends Phaser.Scene {
 
 	_onPlayerRemove(playerState: PlayerState) {
 		if (!playerState.sessionId) return
-		if(this.player?.playerState.sessionId === playerState.sessionId){
+		if (this.player?.playerState.sessionId === playerState.sessionId) {
 			this.debugView?.scoreText?.setText(
 				`Game Over, Your Score is ${playerState.score}`
 			)
 
 			this.player = null
-
 		}
 		this.debugView?.scoreText?.setText(
 			`Game Over, Your Score is ${playerState.score}`
@@ -116,8 +122,18 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	update(time: number, delta: number): void {
+		this.elapsedTime += delta
+
+		while (this.elapsedTime >= this.fixedTimeStep) {
+			this.elapsedTime -= this.fixedTimeStep
+			this.fixedTick()
+		}
+		this.debugFPS.text = `Frame rate: ${this.game.loop.actualFps}`
+	}
+
+	fixedTick() {
 		this.playerObjects.forEach((p) => {
-			p.updateRemote()
+			p.update()
 		})
 		if (this.player) {
 			this.debugView?.updateScore(this.player?.playerState.score)
@@ -180,9 +196,12 @@ export default class MainScene extends Phaser.Scene {
 
 	setInputs() {
 		this.input.on('pointerup', () => {
-			const x = this.input.activePointer.worldX.toFixed(2)
-			const y = this.input.activePointer.worldY.toFixed(2)
-			this.gameRoom?.send('input', `${x}:${y}`)
+			const x = this.input.activePointer.worldX
+			const y = this.input.activePointer.worldY
+			this.gameRoom?.send(
+				'pointerup',
+				Number(`${parseInt(x + '')}.${parseInt(y + '')}`)
+			)
 		})
 	}
 }

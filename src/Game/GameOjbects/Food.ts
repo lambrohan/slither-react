@@ -1,4 +1,3 @@
-import { DataChange } from '@colyseus/schema'
 import Phaser from 'phaser'
 import { CONSTANTS, SPRITE_LABELS } from '../../Utils'
 import { FoodItem, FoodItemOptions } from '../Models'
