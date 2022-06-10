@@ -1,6 +1,5 @@
 import { GameMeta, generateFood, getCenter, SPRITE_LABELS } from '../../Utils'
 import Phaser, { GameObjects } from 'phaser'
-import { Player } from '../GameOjbects/Player'
 import { FoodItem } from '../Models'
 import { DebugInfo } from '../GameOjbects/Debug'
 import { GamePad } from '../GameOjbects/Gamepad'
@@ -23,7 +22,7 @@ export default class MainScene extends Phaser.Scene {
 	player: PlayerV2 | null = null
 	foodGroup: Phaser.GameObjects.Group | null = null
 	foodObjects: Map<String, Food> = new Map()
-	players: Array<Player> = []
+	players: Array<PlayerV2> = []
 	debugView: DebugInfo | null = null
 	gamepad: GamePad | null = null
 	gameRoom!: Room<GameState>
@@ -47,15 +46,29 @@ export default class MainScene extends Phaser.Scene {
 		this.debugFPS = this.add.text(4, 4, '', { color: '#ff0000' })
 		this.debugFPS.setDepth(10)
 		this.debugFPS.setScrollFactor(0, 0)
-		this.gamepad = new GamePad(this)
-		this.matter.world.setBounds(0, 0, GameMeta.boundX, GameMeta.boundY)
-		this.cameras.main.setBounds(0, 0, GameMeta.boundX, GameMeta.boundY)
+
+		const rect = this.add.rectangle(
+			0,
+			0,
+			GameMeta.boundX,
+			GameMeta.boundY,
+			0xff290010
+		)
+		this.cameras.main.setBounds(
+			-50,
+			-50,
+			GameMeta.boundX + 100,
+			GameMeta.boundY + 100
+		)
+		rect.setOrigin(0, 0)
+		rect.setStrokeStyle(0, 0xff290010)
+
 		this.initRoom()
 		this.matter.world.disableGravity()
 		this.createHex()
 		this.scaleDiagonalHexagons(1)
 		this.debugView = new DebugInfo(this.scene)
-		this.setInputs()
+		// this.setInputs()
 	}
 
 	async initRoom() {

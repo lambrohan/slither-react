@@ -11,7 +11,6 @@ import { MousePosition } from '../Models/InputSchema'
 import { PlayerState } from '../Models/PlayerState'
 import { SnakeSectionState } from '../Models/SnakeSection'
 import MainScene from '../Scenes/MainScene'
-import { debounce } from 'lodash'
 
 export class PlayerV2 {
 	scene!: MainScene
@@ -29,6 +28,8 @@ export class PlayerV2 {
 	remoteRef!: Phaser.GameObjects.Rectangle
 	preferredDistance = 17 * this.scale
 	lastInputTimestamp = 0
+	lastMouseX = 0
+	lastMouseY = 0
 
 	constructor(
 		scene: MainScene,
@@ -50,6 +51,7 @@ export class PlayerV2 {
 			'snake/head.png',
 			{ isSensor: true }
 		)
+
 		this.remoteRef = this.scene.add.rectangle(0, 0, 10, 10)
 		this.remoteRef.setStrokeStyle(1, 0xff0000)
 		this.remoteRef.setDepth(2)
@@ -135,7 +137,7 @@ export class PlayerV2 {
 		this.remoteRef.setPosition(this.playerState.x, this.playerState.y)
 		this.remoteRef.setAngle(this.playerState.angle)
 		this.remoteRef.setOrigin(0.5, 0.5)
-		// this.debouncedInput()
+		this.debouncedInput()
 
 		this.localPlayerMovement()
 		this.interpolateRemotePlayers()
@@ -156,11 +158,6 @@ export class PlayerV2 {
 				this.headPath[index].x,
 				this.headPath[index].y
 			)
-
-			// this.state.sections[i].setTo(
-			//   Number(this.sections[i].position.x.toFixed(2)),
-			//   Number(this.sections[i].position.y.toFixed(2))
-			// );
 
 			//hide sections if they are at the same position
 			if (lastIndex && index == lastIndex) {
@@ -208,7 +205,7 @@ export class PlayerV2 {
 
 	localPlayerMovement() {
 		if (!this.isCurrentPlayer) return
-		this.head.setAngle(this.playerState.angle)
+
 		const vel = velocityFromAngle(
 			Number(this.head.angle.toFixed(2)),
 			CONSTANTS.SNAKE_SPEED
@@ -219,9 +216,17 @@ export class PlayerV2 {
 			Math.abs(this.head.x - this.playerState.x) > 10 ||
 			Math.abs(this.head.y - this.playerState.y) > 10
 		) {
+			console.log('correcting position')
 			this.head.setPosition(
-				Phaser.Math.Linear(this.head.x, this.playerState.x, 0.4),
-				Phaser.Math.Linear(this.head.y, this.playerState.y, 0.4)
+				Phaser.Math.Linear(this.head.x, this.playerState.x, 0.02),
+				Phaser.Math.Linear(this.head.y, this.playerState.y, 0.02)
+			)
+		}
+
+		if (Math.abs(this.head.angle - this.playerState.angle) > 1) {
+			console.log('correcting angle')
+			this.head.setAngle(
+				Phaser.Math.Linear(this.head.angle, this.playerState.angle, 0.02)
 			)
 		}
 
@@ -233,15 +238,19 @@ export class PlayerV2 {
 		this.head.setAngularVelocity(0)
 		var mousePosX = this.scene.input.activePointer.worldX
 		var mousePosY = this.scene.input.activePointer.worldY
+		if (this.lastMouseX === mousePosX && this.lastMouseY === mousePosY) {
+			return
+		}
+		this.lastMouseX = mousePosX
+		this.lastMouseY = mousePosY
 		let angle =
 			(Math.atan2(mousePosY - this.head.y, mousePosX - this.head.x) * 180) /
 			Math.PI
 		const diff = Math.abs(this.head.angle - angle)
-		console.log(diff)
 
-		if (diff > 1) {
+		if (Date.now() - this.lastInputTimestamp > 50) {
 			this.lastInputTimestamp = Date.now()
-			this.scene.gameRoom.send('input', Number(`${mousePosX}.${mousePosY}`))
+			this.scene.gameRoom.send('input', `${mousePosX}_${mousePosY}`)
 			this.head.setRotation(degToRad(angle))
 		}
 	}
@@ -249,11 +258,11 @@ export class PlayerV2 {
 	interpolateRemotePlayers() {
 		if (this.isCurrentPlayer) return
 		this.head.setAngle(
-			Phaser.Math.Linear(this.head.angle, this.playerState.angle, 0.2)
+			Phaser.Math.Linear(this.head.angle, this.playerState.angle, 0.02)
 		)
 		this.head.setPosition(
-			Phaser.Math.Linear(this.head.x, this.playerState.x, 0.2),
-			Phaser.Math.Linear(this.head.y, this.playerState.y, 0.2)
+			Phaser.Math.Linear(this.head.x, this.playerState.x, 0.02),
+			Phaser.Math.Linear(this.head.y, this.playerState.y, 0.02)
 		)
 	}
 

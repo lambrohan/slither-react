@@ -5,7 +5,7 @@ import { GameState } from './Models/GameState'
 export const GameConfig: Phaser.Types.Core.GameConfig = {
 	type: Phaser.AUTO,
 	parent: 'game-area',
-	backgroundColor: '#230B0B',
+	backgroundColor: '#2F2F2F',
 	width: window.innerWidth,
 	height: window.innerHeight,
 	scale: {
