@@ -2,12 +2,11 @@ import {
 	CONSTANTS,
 	degToRad,
 	distanceFormula,
+	getSkinAssetFromEnum,
 	Point,
-	velocityFromAngle,
+	SnakeSkinSprite,
 } from '../../Utils'
-import { FoodItem } from '../Models'
-import { GameState } from '../Models/GameState'
-import { MousePosition } from '../Models/InputSchema'
+import { GameMath } from '../../Utils/math'
 import { PlayerState } from '../Models/PlayerState'
 import { SnakeSectionState } from '../Models/SnakeSection'
 import MainScene from '../Scenes/MainScene'
@@ -17,19 +16,25 @@ export class PlayerV2 {
 	head!: Phaser.Physics.Matter.Sprite
 	playerState!: PlayerState
 	lastHeadPosition!: Point
-	scale = 1.4
+	scale = 1
 	headPath = new Array<Point>()
-	sections = new Array<Phaser.GameObjects.Sprite>()
-	sectionGroup!: Map<string, Phaser.GameObjects.Sprite>
+	sections = new Array<Phaser.Physics.Matter.Sprite>()
+	sectionGroup!: Phaser.GameObjects.Group
 	queuedSections = 0
 	isCurrentPlayer: boolean = false
 	localSnakeLength: number = 0
 	cursorKeys!: Phaser.Types.Input.Keyboard.CursorKeys
-	remoteRef!: Phaser.GameObjects.Rectangle
-	preferredDistance = 17 * this.scale
+	remoteRef!: Phaser.GameObjects.Arc
+	preferredDistance = CONSTANTS.PREF_DISTANCE * this.scale
 	lastInputTimestamp = 0
 	lastMouseX = 0
 	lastMouseY = 0
+	SPEED = 2.5
+	ROTATION_SPEED = 1 * Math.PI
+	TOLERANCE = 0.02 * this.ROTATION_SPEED
+	target = 0
+	skin!: SnakeSkinSprite
+	playerNameText!: Phaser.GameObjects.Text
 
 	constructor(
 		scene: MainScene,
@@ -39,42 +44,85 @@ export class PlayerV2 {
 		this.playerState = playerState
 		this.scene = scene
 		this.isCurrentPlayer = isCurrentPlayer
-		this.sectionGroup = new Map()
+		this.sectionGroup = this.scene.add.group()
+		this.skin = getSkinAssetFromEnum(this.playerState.skin)
 		this.init()
 	}
 
 	init() {
+		this.playerNameText = this.scene.add.text(
+			this.playerState.x,
+			this.playerState.y - 50,
+			`Player - ${this.playerState.sessionId}`,
+			{ fontSize: '12px' }
+		)
+		this.playerNameText.setDepth(12)
 		this.head = this.scene.matter.add.sprite(
 			this.playerState.x,
 			this.playerState.y,
-			'slither',
-			'snake/head.png',
-			{ isSensor: true }
+			'snake',
+			this.skin.head,
+			{ isSensor: true, friction: 0, frictionAir: 0, mass: 0 }
 		)
 
-		this.remoteRef = this.scene.add.rectangle(0, 0, 10, 10)
-		this.remoteRef.setStrokeStyle(1, 0xff0000)
-		this.remoteRef.setDepth(2)
+		// this.remoteRef = this.scene.add.circle(0, 0, this.head.width / 2)
+		// this.remoteRef.setOrigin(0.5, 0.5)
+		// this.remoteRef.setStrokeStyle(1, 0xff0000)
+		// this.remoteRef.setDepth(2)
 
 		this.head.setDepth(2)
 		this.head.setAngle(this.playerState.angle)
 		this.head.setScale(this.scale)
-		this.lastHeadPosition = new Phaser.Geom.Point(this.head.x, this.head.y)
+		this.lastHeadPosition = new Point(this.head.x, this.head.y, this.head.angle)
 
 		if (this.isCurrentPlayer) {
 			this.scene.cameras.main.startFollow(this.head)
 			this.cursorKeys = this.scene.input.keyboard.createCursorKeys()
+			this.scene.input.on('pointermove', (pointer: any) => {
+				this.target = Phaser.Math.Angle.BetweenPoints(this.head.body.position, {
+					x: pointer.worldX,
+					y: pointer.worldY,
+				})
+				this.scene.gameRoom.send('input', this.target)
+			})
+
+			if (!this.scene.game.device.os.desktop) {
+				this.scene.input.on('pointerdown', (pointer: any) => {
+					this.target = Phaser.Math.Angle.BetweenPoints(
+						this.head.body.position,
+						{ x: pointer.worldX, y: pointer.worldY }
+					)
+					this.scene.gameRoom.send('input', this.target)
+				})
+			}
 		}
 
 		this.initSections(this.playerState.snakeLength)
 
-		this.playerState.sections.onAdd = (section) => {
+		this.playerState.sections.onAdd = () => {
 			// this.addSection(section)
 			console.log('add section')
 			if (this.playerState.snakeLength > 2) {
-				this.addSectionsAfterLast(1)
+				this.incrementSize()
 			}
 		}
+	}
+
+	incrementSize() {
+		this.addSectionsAfterLast(1)
+		this.setScale(this.scale * 1.01)
+	}
+
+	setScale(scale: number) {
+		this.scale = scale
+		this.preferredDistance = CONSTANTS.PREF_DISTANCE * this.scale
+		if (this.remoteRef) {
+			this.remoteRef.setScale(this.scale)
+		}
+		this.head.setScale(this.scale)
+		this.sections.forEach((sec) => {
+			sec.setScale(this.scale)
+		})
 	}
 
 	initSections(num: number) {
@@ -83,23 +131,21 @@ export class PlayerV2 {
 			const y = this.head.x + i * this.preferredDistance
 			this.addSectionAtPosition(x, y)
 			//add a point to the head path so that the section stays there
-			this.headPath.push(new Point(this.head.x, this.head.y))
+			this.headPath.push(new Point(this.head.x, this.head.y, this.head.angle))
 		}
 	}
 
 	addSectionAtPosition(x: number, y: number) {
 		//initialize a new section
-		const sec = this.scene.matter.add.sprite(
-			x,
-			y,
-			'slither',
-			'snake/body.png',
-			{
-				isSensor: true,
-			}
-		)
+		const sec = this.scene.matter.add.sprite(x, y, 'snake', this.skin.body, {
+			isSensor: true,
+			mass: 0,
+			friction: 0,
+			frictionAir: 0,
+		})
 		sec.setDepth(1)
 		sec.setScale(this.scale)
+		this.sectionGroup.add(sec)
 		this.sections.push(sec)
 		this.localSnakeLength++
 
@@ -118,11 +164,9 @@ export class PlayerV2 {
 		const sec = this.scene.matter.add.sprite(
 			state.x,
 			state.y,
-			'slither',
-			'snake/body.png',
-			{
-				isSensor: true,
-			}
+			'snake',
+			this.skin.body,
+			{ isSensor: true }
 		)
 		sec.setDepth(1)
 		sec.setScale(this.scale)
@@ -133,18 +177,16 @@ export class PlayerV2 {
 	update() {
 		// for testing only
 		// console.log(this.head.angle, this.playerState.angle)
-
-		this.remoteRef.setPosition(this.playerState.x, this.playerState.y)
-		this.remoteRef.setAngle(this.playerState.angle)
-		this.remoteRef.setOrigin(0.5, 0.5)
-		this.debouncedInput()
+		if (!this.sections.length) return
+		this.refMovement()
 
 		this.localPlayerMovement()
 		this.interpolateRemotePlayers()
+		this.playerNameText.setPosition(this.head.x, this.head.y - 50)
 
 		if (!this.head || !this.headPath.length) return
 		let point = this.headPath.pop()!
-		point.setTo(this.head.x, this.head.y)
+		point.setTo(this.head.x, this.head.y, this.head.angle)
 		this.headPath.unshift(point)
 
 		//place each section of the snake on the path of the snake head,
@@ -158,6 +200,7 @@ export class PlayerV2 {
 				this.headPath[index].x,
 				this.headPath[index].y
 			)
+			this.sections[i].setAngle(this.headPath[index].angle)
 
 			//hide sections if they are at the same position
 			if (lastIndex && index == lastIndex) {
@@ -174,7 +217,7 @@ export class PlayerV2 {
 
 		if (index >= this.headPath.length - 1) {
 			let lastPos = this.headPath[this.headPath.length - 1]
-			this.headPath.push(new Point(lastPos.x, lastPos.y))
+			this.headPath.push(new Point(lastPos.x, lastPos.y, lastPos.angle))
 		} else {
 			this.headPath.pop()
 		}
@@ -185,8 +228,8 @@ export class PlayerV2 {
 		let i = 0
 		let found = false
 		while (
-			this.headPath[i].x != this.sections[1].x &&
-			this.headPath[i].y != this.sections[1].y
+			this.headPath[i].x != this.sections[1]?.x &&
+			this.headPath[i].y != this.sections[1]?.y
 		) {
 			if (
 				this.headPath[i].x == this.lastHeadPosition.x &&
@@ -198,92 +241,63 @@ export class PlayerV2 {
 			i++
 		}
 		if (!found) {
-			this.lastHeadPosition = new Point(this.head.x, this.head.y)
+			this.lastHeadPosition = new Point(
+				this.head.x,
+				this.head.y,
+				this.head.angle
+			)
 			this.onCycleComplete()
 		}
+	}
+
+	refMovement() {
+		if (!this.remoteRef) return
+		this.remoteRef.setPosition(this.playerState.x, this.playerState.y)
+		this.remoteRef.setAngle(this.playerState.angle)
 	}
 
 	localPlayerMovement() {
 		if (!this.isCurrentPlayer) return
 
-		const vel = velocityFromAngle(
-			Number(this.head.angle.toFixed(2)),
-			CONSTANTS.SNAKE_SPEED
+		const angle = Phaser.Math.Angle.RotateTo(
+			this.head.rotation,
+			this.target,
+			CONSTANTS.ROT_LERP
 		)
-		this.head.setPosition(this.head.x + vel.x, this.head.y + vel.y)
+
+		this.head.setRotation(angle)
+
+		const a =
+			Phaser.Physics.Arcade.ArcadePhysics.prototype.velocityFromRotation(
+				this.head.rotation,
+				this.SPEED
+			)
+		this.head.setVelocity(a.x, a.y)
 
 		if (
 			Math.abs(this.head.x - this.playerState.x) > 10 ||
 			Math.abs(this.head.y - this.playerState.y) > 10
 		) {
-			console.log('correcting position')
 			this.head.setPosition(
 				Phaser.Math.Linear(this.head.x, this.playerState.x, 0.02),
 				Phaser.Math.Linear(this.head.y, this.playerState.y, 0.02)
 			)
-		}
-
-		if (Math.abs(this.head.angle - this.playerState.angle) > 1) {
-			console.log('correcting angle')
-			this.head.setAngle(
-				Phaser.Math.Linear(this.head.angle, this.playerState.angle, 0.02)
-			)
-		}
-
-		// sync server position after a while
-	}
-
-	debouncedInput() {
-		if (!this.isCurrentPlayer) return
-		this.head.setAngularVelocity(0)
-		var mousePosX = this.scene.input.activePointer.worldX
-		var mousePosY = this.scene.input.activePointer.worldY
-		if (this.lastMouseX === mousePosX && this.lastMouseY === mousePosY) {
-			return
-		}
-		this.lastMouseX = mousePosX
-		this.lastMouseY = mousePosY
-		let angle =
-			(Math.atan2(mousePosY - this.head.y, mousePosX - this.head.x) * 180) /
-			Math.PI
-		const diff = Math.abs(this.head.angle - angle)
-
-		if (Date.now() - this.lastInputTimestamp > 50) {
-			this.lastInputTimestamp = Date.now()
-			this.scene.gameRoom.send('input', `${mousePosX}_${mousePosY}`)
-			this.head.setRotation(degToRad(angle))
 		}
 	}
 
 	interpolateRemotePlayers() {
 		if (this.isCurrentPlayer) return
 		this.head.setAngle(
-			Phaser.Math.Linear(this.head.angle, this.playerState.angle, 0.02)
-		)
-		this.head.setPosition(
-			Phaser.Math.Linear(this.head.x, this.playerState.x, 0.02),
-			Phaser.Math.Linear(this.head.y, this.playerState.y, 0.02)
-		)
-	}
-
-	updateRemote() {
-		// interpolate
-		this.head.setPosition(
-			Phaser.Math.Linear(this.head.x, this.playerState.x, 0.2),
-			Phaser.Math.Linear(this.head.y, this.playerState.y, 0.2)
-		)
-		this.head.setAngle(
-			Phaser.Math.Linear(this.head.angle, this.playerState.angle, 0.2)
-		)
-
-		for (let i = 0; i < this.playerState.sections.length; i++) {
-			const el = this.playerState.sections[i]
-			const section = this.sections[i]
-			section.setPosition(
-				Phaser.Math.Linear(section.x, el.x, 0.2),
-				Phaser.Math.Linear(section.y, el.y, 0.2)
+			Phaser.Math.Linear(
+				this.head.angle,
+				this.playerState.angle,
+				CONSTANTS.ROT_LERP
 			)
-		}
+		)
+		this.head.setPosition(
+			Phaser.Math.Linear(this.head.x, this.playerState.x, 0.5),
+			Phaser.Math.Linear(this.head.y, this.playerState.y, 0.5)
+		)
 	}
 
 	findNextPointIndex(currentIndex: number) {
@@ -330,11 +344,21 @@ export class PlayerV2 {
 	destroy() {
 		if (this.isCurrentPlayer) {
 			this.scene.cameras.main.stopFollow()
+			this.scene.input.removeAllListeners()
 		}
-		this.sections.forEach((sec) => {
-			sec.destroy(true)
+		this.sections.forEach((sec, i) => {
+			this.scene.tweens.add({
+				targets: sec,
+				alpha: 0,
+				duration: 300,
+				delay: (this.sections.length - i) * 10,
+				onComplete: () => {
+					sec.destroy(true)
+				},
+			})
 		})
-		this.head.destroy(true)
+		this.head?.destroy(true)
+		this.playerNameText?.destroy()
 
 		this.sections = []
 	}

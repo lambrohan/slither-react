@@ -1,11 +1,10 @@
 import MainScene from './Scenes/MainScene'
 
 import Phaser from 'phaser'
-import { GameState } from './Models/GameState'
 export const GameConfig: Phaser.Types.Core.GameConfig = {
 	type: Phaser.AUTO,
 	parent: 'game-area',
-	backgroundColor: '#2F2F2F',
+	backgroundColor: '#9B0000',
 	width: window.innerWidth,
 	height: window.innerHeight,
 	scale: {

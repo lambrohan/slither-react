@@ -40,6 +40,8 @@ export default class MainScene extends Phaser.Scene {
 		this.load.atlas('slither', '/spritesheet.png', '/slither.json')
 		this.load.json('shapes', '/slither_physics.json')
 		this.load.atlas('gamepad', '/gamepad.png', '/gamepad.json')
+		this.load.atlas('food', '/food.png', '/food.json')
+		this.load.atlas('snake', '/snake.png', '/snake.json')
 	}
 
 	create() {
@@ -54,17 +56,13 @@ export default class MainScene extends Phaser.Scene {
 			GameMeta.boundY,
 			0xff290010
 		)
-		this.cameras.main.setBounds(
-			-50,
-			-50,
-			GameMeta.boundX + 100,
-			GameMeta.boundY + 100
-		)
+
 		rect.setOrigin(0, 0)
 		rect.setStrokeStyle(0, 0xff290010)
 
 		this.initRoom()
-		this.matter.world.disableGravity()
+
+		// this.matter.world.disableGravity()
 		this.createHex()
 		this.scaleDiagonalHexagons(1)
 		this.debugView = new DebugInfo(this.scene)
@@ -72,7 +70,9 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	async initRoom() {
-		const client = new Colyseus.Client('ws://192.168.29.71:2567')
+		const client = new Colyseus.Client(
+			process.env.WS_ENDPOINT || 'ws://192.168.29.71:2567'
+		)
 		this.gameRoom = await client.joinOrCreate<GameState>('my_room')
 		this.gameRoom.state.foodItems.onAdd = (f) => this._onAddFood(f)
 		this.gameRoom.state.foodItems.onRemove = (f) => this._onRemoveFood(f)
@@ -149,7 +149,7 @@ export default class MainScene extends Phaser.Scene {
 			p.update()
 		})
 		if (this.player) {
-			this.debugView?.updateScore(this.player?.playerState.score)
+			this.debugView?.updateScore(this.player?.playerState.snakeLength || 0)
 		}
 	}
 
@@ -173,6 +173,7 @@ export default class MainScene extends Phaser.Scene {
 				const xOffset = j % 2 == 0 ? (this.hexWidth + this.border) / 2 : 0
 				const hex = this.add.sprite(x + xOffset, y, 'hex')
 				hex.setAlpha(0)
+				hex.setDepth(1)
 				if (this.hexArray[i]) {
 					this.hexArray[i][j] = hex
 				}

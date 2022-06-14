@@ -1,4 +1,5 @@
 import { Schema, type } from '@colyseus/schema'
+import { FoodAssetType } from '../../Utils'
 
 export interface FoodItemOptions {
 	x: number
@@ -18,17 +19,12 @@ export class FoodItem extends Schema {
 	y: number
 
 	@type('number')
-	size: number
+	type: FoodAssetType = 0
 
-	@type('boolean')
-	eaten: boolean = false
-
-	constructor({ id, x, y, size, eaten }: FoodItemOptions) {
+	constructor({ id, x, y }: FoodItemOptions) {
 		super()
 		this.id = id
 		this.x = x
 		this.y = y
-		this.size = size
-		this.eaten = eaten || false
 	}
 }

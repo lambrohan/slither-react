@@ -1,0 +1,104 @@
+{
+	"textures": [
+		{
+			"image": "food.png",
+			"format": "RGBA8888",
+			"size": {
+				"w": 50,
+				"h": 50
+			},
+			"scale": 1,
+			"frames": [
+				{
+					"filename": "food_blue.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 24,
+						"h": 24
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 24,
+						"h": 24
+					},
+					"frame": {
+						"x": 0,
+						"y": 0,
+						"w": 24,
+						"h": 24
+					}
+				},
+				{
+					"filename": "food_coin.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 26,
+						"h": 26
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 26,
+						"h": 26
+					},
+					"frame": {
+						"x": 24,
+						"y": 0,
+						"w": 26,
+						"h": 26
+					}
+				},
+				{
+					"filename": "food_orange.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 24,
+						"h": 24
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 24,
+						"h": 24
+					},
+					"frame": {
+						"x": 0,
+						"y": 26,
+						"w": 24,
+						"h": 24
+					}
+				},
+				{
+					"filename": "food_red.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 24,
+						"h": 24
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 24,
+						"h": 24
+					},
+					"frame": {
+						"x": 24,
+						"y": 26,
+						"w": 24,
+						"h": 24
+					}
+				}
+			]
+		}
+	],
+	"meta": {
+		"app": "https://www.codeandweb.com/texturepacker",
+		"version": "3.0",
+		"smartupdate": "$TexturePacker:SmartUpdate:6f4cc9977ff25d73f9b8c831eb941d26:8a33ce1adc1820c8b88397c0496b5c03:dc56c85744751b4d97b97a9b9d1306ba$"
+	}
+}

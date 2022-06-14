@@ -77,18 +77,63 @@ export function degToRad(angle: number): number {
 export const CONSTANTS = {
 	SNAKE_SPEED: 4,
 	FOOD_RADIUS_MULTIPLIER: 1,
+	LERP: 0.08,
+	ROT_LERP: 0.08,
+	PREF_DISTANCE: 8,
 }
 
 export class Point {
-	constructor(x: number, y: number) {
+	constructor(x: number, y: number, angle: number) {
 		this.x = x
 		this.y = y
+		this.angle = angle
 	}
 	x: number
 	y: number
+	angle: number
 
-	setTo(x: number, y: number) {
+	setTo(x: number, y: number, angle = 0) {
 		this.x = x
 		this.y = y
+		this.angle = angle
+	}
+}
+
+export enum FoodAssetType {
+	RED = 0,
+	ORANGE = 1,
+	BLUE = 2,
+	COIN = 4,
+}
+
+export enum SnakeSkin {
+	GREEN_WHITE_LINE = 0,
+	ELECTRIC_BLUE = 1,
+	PURPLE_WHITE_RING = 2,
+}
+
+export interface SnakeSkinSprite {
+	head: string
+	body: string
+}
+
+export function getSkinAssetFromEnum(skin: SnakeSkin): SnakeSkinSprite {
+	switch (skin) {
+		case SnakeSkin.ELECTRIC_BLUE:
+			return {
+				head: 'snake_head_eblue.png',
+				body: 'snake_body_eblue.png',
+			}
+		case SnakeSkin.GREEN_WHITE_LINE:
+			return {
+				head: 'snake_head_green.png',
+				body: 'snake_body_green.png',
+			}
+
+		case SnakeSkin.PURPLE_WHITE_RING:
+			return {
+				head: 'snake_head_purple.png',
+				body: 'snake_body_purple.png',
+			}
 	}
 }
