@@ -23,13 +23,13 @@ export default class MainScene extends Phaser.Scene {
 	foodGroup: Phaser.GameObjects.Group | null = null
 	foodObjects: Map<String, Food> = new Map()
 	players: Array<PlayerV2> = []
-	debugView: DebugInfo | null = null
 	gamepad: GamePad | null = null
 	gameRoom!: Room<GameState>
 	playerObjects: Map<String, PlayerV2> = new Map()
 	elapsedTime = 0
 	fixedTimeStep = 1000 / 60
 	debugFPS!: Phaser.GameObjects.Text
+	sortedPlayers: PlayerState[] = []
 
 	constructor() {
 		super('main')
@@ -54,7 +54,8 @@ export default class MainScene extends Phaser.Scene {
 			0,
 			GameMeta.boundX,
 			GameMeta.boundY,
-			0xff290010
+			0x25181b,
+			0.6
 		)
 
 		rect.setOrigin(0, 0)
@@ -65,8 +66,10 @@ export default class MainScene extends Phaser.Scene {
 		// this.matter.world.disableGravity()
 		this.createHex()
 		this.scaleDiagonalHexagons(1)
-		this.debugView = new DebugInfo(this.scene)
-		// this.setInputs()
+
+		setInterval(() => {
+			this.updateLeaderboard()
+		}, 1000)
 	}
 
 	async initRoom() {
@@ -80,9 +83,24 @@ export default class MainScene extends Phaser.Scene {
 		this.gameRoom.state.players.onRemove = (p) => this._onPlayerRemove(p)
 	}
 
-	_onPlayerAdd(playerState: PlayerState) {
-		console.log('player added', playerState)
+	updateLeaderboard() {
+		if (!this.gameRoom) return
+		if (!this.gameRoom.state) return
+		const sortedPlayers: PlayerState[] = []
+		let maxScore = 0
+		this.gameRoom.state.players.forEach((p) => {
+			if (p.snakeLength > maxScore) {
+				sortedPlayers.unshift(p)
+				maxScore = p.snakeLength
+			} else {
+				sortedPlayers.push(p)
+			}
+		})
+		;(window as any).updateLeaderboard(sortedPlayers)
+		this.sortedPlayers = sortedPlayers
+	}
 
+	_onPlayerAdd(playerState: PlayerState) {
 		if (!playerState?.sessionId) return
 
 		const player = new PlayerV2(
@@ -101,15 +119,18 @@ export default class MainScene extends Phaser.Scene {
 	_onPlayerRemove(playerState: PlayerState) {
 		if (!playerState.sessionId) return
 		if (this.player?.playerState.sessionId === playerState.sessionId) {
-			this.debugView?.scoreText?.setText(
-				`Game Over, Your Score is ${playerState.score}`
-			)
-
-			this.player = null
+			setTimeout(() => {
+				const rank = this.sortedPlayers.findIndex(
+					(p) => p.sessionId === this.player?.playerState.sessionId
+				)
+				;(window as any).onGameOver(
+					{ ...this.player?.playerState, endAt: Date.now() },
+					rank + 1
+				)
+				this.player = null
+			}, 500)
 		}
-		this.debugView?.scoreText?.setText(
-			`Game Over, Your Score is ${playerState.score}`
-		)
+
 		this.playerObjects.get(playerState.sessionId)?.destroy()
 
 		this.playerObjects.delete(playerState.sessionId)
@@ -128,7 +149,7 @@ export default class MainScene extends Phaser.Scene {
 	}
 	_onAddFood(foodItem: FoodItem) {
 		const f = new Food({
-			world: this,
+			scene: this,
 			foodState: foodItem,
 		})
 		this.foodObjects.set(foodItem.id, f)
@@ -139,17 +160,17 @@ export default class MainScene extends Phaser.Scene {
 
 		while (this.elapsedTime >= this.fixedTimeStep) {
 			this.elapsedTime -= this.fixedTimeStep
-			this.fixedTick()
+			this.fixedTick(delta)
 		}
 		this.debugFPS.text = `Frame rate: ${this.game.loop.actualFps}`
 	}
 
-	fixedTick() {
+	fixedTick(delta: number) {
 		this.playerObjects.forEach((p) => {
 			p.update()
 		})
 		if (this.player) {
-			this.debugView?.updateScore(this.player?.playerState.snakeLength || 0)
+			;(window as any).updateScore(this.player.playerState.snakeLength || 0)
 		}
 	}
 

@@ -1,16 +1,33 @@
 import Phaser from 'phaser'
 import { CONSTANTS, FoodAssetType, SPRITE_LABELS } from '../../Utils'
 import { FoodItem, FoodItemOptions } from '../Models'
+import MainScene from '../Scenes/MainScene'
 
 export interface FoodOptions {
-	world: Phaser.Scene
+	scene: MainScene
 	foodState: FoodItem
 }
 
-export class Food extends Phaser.GameObjects.Sprite {
+export class Food extends Phaser.Physics.Matter.Sprite {
 	foodState: FoodItem | null = null
-	constructor({ world, foodState }: FoodOptions) {
-		super(world, foodState.x, foodState.y, 'food', getFoodAsset(foodState.type))
+	constructor({ scene, foodState }: FoodOptions) {
+		super(
+			scene.matter.world,
+			foodState.x,
+			foodState.y,
+			'food',
+			getFoodAsset(foodState.type),
+			{
+				isSensor: true,
+				mass: 0,
+				collisionFilter: {
+					group: -1,
+					category: 2,
+
+					mask: 0,
+				},
+			}
+		)
 		this.foodState = foodState
 		this.init()
 	}
@@ -18,14 +35,9 @@ export class Food extends Phaser.GameObjects.Sprite {
 	private init() {
 		if (!this.foodState) return
 		this.setOrigin(0.5, 0.5)
-		this.setDepth(1)
+		this.setDepth(2)
 		this.scene.add.existing(this)
-		this.setScale(0)
-		this.scene.tweens.add({
-			targets: this,
-			scale: 1,
-			duration: 300,
-		})
+		this.setScale(this.foodState.scale)
 	}
 }
 
@@ -39,6 +51,8 @@ export function getFoodAsset(type: FoodAssetType) {
 			return 'food_red.png'
 		case FoodAssetType.ORANGE:
 			return 'food_orange.png'
+		case FoodAssetType.GREEN:
+			return 'food_green.png'
 		default:
 			return ''
 	}

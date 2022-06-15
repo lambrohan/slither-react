@@ -31,4 +31,19 @@ export class PlayerState extends Schema {
 
 	@type([SnakeSectionState])
 	sections: ArraySchema<SnakeSectionState> = new ArraySchema()
+
+	@type('boolean')
+	isSpeeding: boolean = false
+
+	@type('number')
+	startAt: number = 0
+
+	@type('number')
+	endAt: number = 0
+
+	@type('int8')
+	kills: number = 0
+
+	@type('number')
+	tokens: number = 0
 }

@@ -29,7 +29,7 @@ export class PlayerV2 {
 	lastInputTimestamp = 0
 	lastMouseX = 0
 	lastMouseY = 0
-	SPEED = 2.5
+	SPEED = CONSTANTS.DEF_SPEED
 	ROTATION_SPEED = 1 * Math.PI
 	TOLERANCE = 0.02 * this.ROTATION_SPEED
 	target = 0
@@ -62,13 +62,23 @@ export class PlayerV2 {
 			this.playerState.y,
 			'snake',
 			this.skin.head,
-			{ isSensor: true, friction: 0, frictionAir: 0, mass: 0 }
+			{
+				isSensor: true,
+				friction: 0,
+				frictionAir: 0,
+				mass: 0,
+				collisionFilter: {
+					group: -1,
+					category: 2,
+					mask: 0,
+				},
+			}
 		)
 
-		// this.remoteRef = this.scene.add.circle(0, 0, this.head.width / 2)
-		// this.remoteRef.setOrigin(0.5, 0.5)
-		// this.remoteRef.setStrokeStyle(1, 0xff0000)
-		// this.remoteRef.setDepth(2)
+		this.remoteRef = this.scene.add.circle(0, 0, this.head.width / 2)
+		this.remoteRef.setOrigin(0.5, 0.5)
+		this.remoteRef.setStrokeStyle(1, 0xff0000)
+		this.remoteRef.setDepth(2)
 
 		this.head.setDepth(2)
 		this.head.setAngle(this.playerState.angle)
@@ -85,14 +95,39 @@ export class PlayerV2 {
 				})
 				this.scene.gameRoom.send('input', this.target)
 			})
+			this.cursorKeys.space.onDown = () => {
+				this.scene.gameRoom.send('speed', true)
+			}
+
+			this.cursorKeys.space.onUp = () => {
+				this.scene.gameRoom.send('speed', false)
+			}
+
+			this.cursorKeys.up.onDown = () => {
+				this.scene.gameRoom.send('speed', true)
+			}
+
+			this.cursorKeys.up.onUp = () => {
+				this.scene.gameRoom.send('speed', false)
+			}
 
 			if (!this.scene.game.device.os.desktop) {
+				let lastTime = 0
 				this.scene.input.on('pointerdown', (pointer: any) => {
+					const delay = Date.now() - lastTime
+					lastTime = Date.now()
+					if (delay < 350) {
+						this.scene.gameRoom.send('speed', true)
+					}
 					this.target = Phaser.Math.Angle.BetweenPoints(
 						this.head.body.position,
 						{ x: pointer.worldX, y: pointer.worldY }
 					)
 					this.scene.gameRoom.send('input', this.target)
+				})
+
+				this.scene.input.on('pointerup', () => {
+					this.scene.gameRoom.send('speed', false)
 				})
 			}
 		}
@@ -106,11 +141,16 @@ export class PlayerV2 {
 				this.incrementSize()
 			}
 		}
+
+		this.playerState.sections.onRemove = () => {
+			this.sections.pop()?.destroy()
+			this.localSnakeLength--
+		}
 	}
 
 	incrementSize() {
+		this.setScale(this.scale * 1.005)
 		this.addSectionsAfterLast(1)
-		this.setScale(this.scale * 1.01)
 	}
 
 	setScale(scale: number) {
@@ -142,10 +182,15 @@ export class PlayerV2 {
 			mass: 0,
 			friction: 0,
 			frictionAir: 0,
+			collisionFilter: {
+				group: -1,
+				category: 2,
+				mask: 0,
+			},
 		})
 		sec.setDepth(1)
 		sec.setScale(this.scale)
-		this.sectionGroup.add(sec)
+		// this.sectionGroup.add(sec)
 		this.sections.push(sec)
 		this.localSnakeLength++
 
@@ -177,14 +222,12 @@ export class PlayerV2 {
 	update() {
 		// for testing only
 		// console.log(this.head.angle, this.playerState.angle)
-		if (!this.sections.length) return
 		this.refMovement()
 
 		this.localPlayerMovement()
 		this.interpolateRemotePlayers()
 		this.playerNameText.setPosition(this.head.x, this.head.y - 50)
 
-		if (!this.head || !this.headPath.length) return
 		let point = this.headPath.pop()!
 		point.setTo(this.head.x, this.head.y, this.head.angle)
 		this.headPath.unshift(point)
@@ -262,10 +305,15 @@ export class PlayerV2 {
 		const angle = Phaser.Math.Angle.RotateTo(
 			this.head.rotation,
 			this.target,
-			CONSTANTS.ROT_LERP
+			0.08
 		)
 
 		this.head.setRotation(angle)
+		this.SPEED = CONSTANTS.DEF_SPEED
+
+		if (this.playerState.isSpeeding) {
+			this.SPEED = CONSTANTS.BOOST_SPEED
+		}
 
 		const a =
 			Phaser.Physics.Arcade.ArcadePhysics.prototype.velocityFromRotation(
@@ -288,15 +336,11 @@ export class PlayerV2 {
 	interpolateRemotePlayers() {
 		if (this.isCurrentPlayer) return
 		this.head.setAngle(
-			Phaser.Math.Linear(
-				this.head.angle,
-				this.playerState.angle,
-				CONSTANTS.ROT_LERP
-			)
+			Phaser.Math.Linear(this.head.angle, this.playerState.angle, 0.08)
 		)
 		this.head.setPosition(
-			Phaser.Math.Linear(this.head.x, this.playerState.x, 0.5),
-			Phaser.Math.Linear(this.head.y, this.playerState.y, 0.5)
+			Phaser.Math.Linear(this.head.x, this.playerState.x, 0.08),
+			Phaser.Math.Linear(this.head.y, this.playerState.y, 0.08)
 		)
 	}
 

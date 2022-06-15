@@ -75,11 +75,12 @@ export function degToRad(angle: number): number {
 }
 
 export const CONSTANTS = {
-	SNAKE_SPEED: 4,
 	FOOD_RADIUS_MULTIPLIER: 1,
 	LERP: 0.08,
 	ROT_LERP: 0.08,
 	PREF_DISTANCE: 8,
+	DEF_SPEED: 2.5,
+	BOOST_SPEED: 5,
 }
 
 export class Point {
@@ -104,6 +105,7 @@ export enum FoodAssetType {
 	ORANGE = 1,
 	BLUE = 2,
 	COIN = 4,
+	GREEN = 3,
 }
 
 export enum SnakeSkin {
@@ -115,6 +117,13 @@ export enum SnakeSkin {
 export interface SnakeSkinSprite {
 	head: string
 	body: string
+}
+
+export function getInterpolatedVector(pos1: Point, pos2: Point) {
+	return {
+		x: Phaser.Math.Linear(pos1.x, pos2.x, 0.02),
+		y: Phaser.Math.Linear(pos1.y, pos2.y, 0.02),
+	}
 }
 
 export function getSkinAssetFromEnum(skin: SnakeSkin): SnakeSkinSprite {
@@ -136,4 +145,10 @@ export function getSkinAssetFromEnum(skin: SnakeSkin): SnakeSkinSprite {
 				body: 'snake_body_purple.png',
 			}
 	}
+}
+
+export function queryString(params: any): string {
+	return Object.keys(params)
+		.map((key) => key + '=' + params[key])
+		.join('&')
 }

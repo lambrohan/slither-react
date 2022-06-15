@@ -21,6 +21,9 @@ export class FoodItem extends Schema {
 	@type('number')
 	type: FoodAssetType = 0
 
+	@type('number')
+	scale = 1
+
 	constructor({ id, x, y }: FoodItemOptions) {
 		super()
 		this.id = id

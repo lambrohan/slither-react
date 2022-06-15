@@ -4,7 +4,7 @@ import Phaser from 'phaser'
 export const GameConfig: Phaser.Types.Core.GameConfig = {
 	type: Phaser.AUTO,
 	parent: 'game-area',
-	backgroundColor: '#9B0000',
+	backgroundColor: '#BA370C',
 	width: window.innerWidth,
 	height: window.innerHeight,
 	scale: {
