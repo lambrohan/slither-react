@@ -74,7 +74,7 @@ export default class MainScene extends Phaser.Scene {
 
 	async initRoom() {
 		const client = new Colyseus.Client(
-			process.env.WS_ENDPOINT || 'ws://192.168.29.71:2567'
+			process.env.WS_ENDPOINT || 'ws://13.127.90.178:2567'
 		)
 		this.gameRoom = await client.joinOrCreate<GameState>('my_room')
 		this.gameRoom.state.foodItems.onAdd = (f) => this._onAddFood(f)

@@ -29,6 +29,7 @@ export const GameOverPage: React.FC<GameOverPageProps> = ({}) => {
 			survivalTime: params.get('survivalTime') || '',
 			playerId: params.get('playerId') || '',
 			tokens: params.get('tokens') || '',
+			rank: '',
 		})
 	}, [])
 	return (
@@ -47,6 +48,7 @@ export const GameOverPage: React.FC<GameOverPageProps> = ({}) => {
 						tokens={playerStat.tokens}
 						survivalTime={playerStat.survivalTime}
 						playerId={playerStat.playerId}
+						rank={playerStat.rank}
 					/>
 				) : (
 					''
