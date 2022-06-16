@@ -59,7 +59,7 @@ export default class MainScene extends Phaser.Scene {
 		)
 
 		rect.setOrigin(0, 0)
-		rect.setStrokeStyle(50, 0xff0000)
+		rect.setStrokeStyle(50, 0x000000)
 
 		this.initRoom()
 
