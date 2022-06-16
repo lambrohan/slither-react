@@ -4,30 +4,30 @@
 			"image": "snake.png",
 			"format": "RGBA8888",
 			"size": {
-				"w": 121,
-				"h": 92
+				"w": 26,
+				"h": 178
 			},
 			"scale": 1,
 			"frames": [
 				{
-					"filename": "snake_head_green.png",
+					"filename": "snake_head_blue.png",
 					"rotated": false,
-					"trimmed": false,
+					"trimmed": true,
 					"sourceSize": {
-						"w": 40,
-						"h": 48
+						"w": 24,
+						"h": 38
 					},
 					"spriteSourceSize": {
 						"x": 0,
-						"y": 0,
-						"w": 40,
-						"h": 48
+						"y": 3,
+						"w": 24,
+						"h": 34
 					},
 					"frame": {
 						"x": 1,
 						"y": 1,
-						"w": 40,
-						"h": 48
+						"w": 24,
+						"h": 34
 					}
 				},
 				{
@@ -35,41 +35,62 @@
 					"rotated": false,
 					"trimmed": true,
 					"sourceSize": {
-						"w": 40,
-						"h": 48
+						"w": 25,
+						"h": 33
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 1,
+						"w": 24,
+						"h": 31
+					},
+					"frame": {
+						"x": 1,
+						"y": 37,
+						"w": 24,
+						"h": 31
+					}
+				},
+				{
+					"filename": "snake_head_green.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 24,
+						"h": 29
 					},
 					"spriteSourceSize": {
 						"x": 0,
 						"y": 0,
-						"w": 39,
-						"h": 48
+						"w": 24,
+						"h": 29
 					},
 					"frame": {
-						"x": 43,
-						"y": 1,
-						"w": 39,
-						"h": 48
+						"x": 1,
+						"y": 70,
+						"w": 24,
+						"h": 29
 					}
 				},
 				{
-					"filename": "snake_head_eblue.png",
+					"filename": "snake_body_blue.png",
 					"rotated": false,
-					"trimmed": true,
+					"trimmed": false,
 					"sourceSize": {
-						"w": 40,
-						"h": 48
+						"w": 24,
+						"h": 24
 					},
 					"spriteSourceSize": {
-						"x": 3,
+						"x": 0,
 						"y": 0,
-						"w": 36,
-						"h": 48
+						"w": 24,
+						"h": 24
 					},
 					"frame": {
-						"x": 84,
-						"y": 1,
-						"w": 36,
-						"h": 48
+						"x": 1,
+						"y": 101,
+						"w": 24,
+						"h": 24
 					}
 				},
 				{
@@ -77,20 +98,20 @@
 					"rotated": false,
 					"trimmed": false,
 					"sourceSize": {
-						"w": 40,
-						"h": 40
+						"w": 24,
+						"h": 24
 					},
 					"spriteSourceSize": {
 						"x": 0,
 						"y": 0,
-						"w": 40,
-						"h": 40
+						"w": 24,
+						"h": 24
 					},
 					"frame": {
 						"x": 1,
-						"y": 51,
-						"w": 40,
-						"h": 40
+						"y": 127,
+						"w": 24,
+						"h": 24
 					}
 				},
 				{
@@ -98,41 +119,20 @@
 					"rotated": false,
 					"trimmed": false,
 					"sourceSize": {
-						"w": 40,
-						"h": 40
+						"w": 24,
+						"h": 24
 					},
 					"spriteSourceSize": {
 						"x": 0,
 						"y": 0,
-						"w": 40,
-						"h": 40
+						"w": 24,
+						"h": 24
 					},
 					"frame": {
-						"x": 43,
-						"y": 51,
-						"w": 40,
-						"h": 40
-					}
-				},
-				{
-					"filename": "snake_body_eblue.png",
-					"rotated": false,
-					"trimmed": true,
-					"sourceSize": {
-						"w": 40,
-						"h": 40
-					},
-					"spriteSourceSize": {
-						"x": 3,
-						"y": 3,
-						"w": 34,
-						"h": 34
-					},
-					"frame": {
-						"x": 85,
-						"y": 51,
-						"w": 34,
-						"h": 34
+						"x": 1,
+						"y": 153,
+						"w": 24,
+						"h": 24
 					}
 				}
 			]
@@ -141,6 +141,6 @@
 	"meta": {
 		"app": "https://www.codeandweb.com/texturepacker",
 		"version": "3.0",
-		"smartupdate": "$TexturePacker:SmartUpdate:7227e2bc26d19371298114aaa1c2fde0:f9e92fc8174cb424d594f27b7f1b7e87:2a194967d71da88bdc69ff162da0bdf1$"
+		"smartupdate": "$TexturePacker:SmartUpdate:e111f16f4b2ae87d4f1a244fbdd2dbbc:3ca59ea63dcd1d0ff7dce4322f9b8dd8:2a194967d71da88bdc69ff162da0bdf1$"
 	}
 }

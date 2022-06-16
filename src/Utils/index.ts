@@ -130,8 +130,8 @@ export function getSkinAssetFromEnum(skin: SnakeSkin): SnakeSkinSprite {
 	switch (skin) {
 		case SnakeSkin.ELECTRIC_BLUE:
 			return {
-				head: 'snake_head_eblue.png',
-				body: 'snake_body_eblue.png',
+				head: 'snake_head_blue.png',
+				body: 'snake_body_blue.png',
 			}
 		case SnakeSkin.GREEN_WHITE_LINE:
 			return {
