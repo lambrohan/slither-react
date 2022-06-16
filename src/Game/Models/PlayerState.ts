@@ -46,4 +46,7 @@ export class PlayerState extends Schema {
 
 	@type('number')
 	tokens: number = 0
+
+	@type('string')
+	nickname: string = ''
 }

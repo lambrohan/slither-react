@@ -152,3 +152,15 @@ export function queryString(params: any): string {
 		.map((key) => key + '=' + params[key])
 		.join('&')
 }
+
+export const pageVariants = {
+	initial: {
+		opacity: 0,
+	},
+	animate: {
+		opacity: 1,
+	},
+	out: {
+		opacity: 0,
+	},
+}

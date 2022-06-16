@@ -19,6 +19,7 @@ export interface GameOverProps {
 	playerId: string
 	rank: string
 	win: boolean
+	nickname: string
 }
 
 export const GameOver: React.FC<GameOverProps> = ({
@@ -29,6 +30,7 @@ export const GameOver: React.FC<GameOverProps> = ({
 	playerId,
 	rank,
 	win,
+	nickname,
 }) => {
 	const navigate = useNavigate()
 	return (
@@ -70,7 +72,7 @@ export const GameOver: React.FC<GameOverProps> = ({
 							</div>
 						)}
 
-						<h2 id="NameTxt">{playerId}</h2>
+						<h2 id="NameTxt">{nickname || playerId}</h2>
 						<img
 							className="w-3/4 mx-auto mb-2"
 							src={LoaderGameOver}
@@ -100,16 +102,32 @@ export const GameOver: React.FC<GameOverProps> = ({
 				<br />
 				{/* Buttons */}
 				<div className="Buttons ">
-					<button className="TransferTokenBtn">Transfer Tokens</button>
+					<button
+						className="TransferTokenBtn"
+						onClick={() => {
+							navigate('/dashboard')
+						}}
+					>
+						Dashboard
+					</button>
 					<button
 						className="PlayAgainBtn"
 						onClick={() => {
-							navigate('/game')
+							navigate(
+								`/game?nickname=${localStorage.getItem('nickname') || ''}`
+							)
 						}}
 					>
 						Play again
 					</button>
-					<button className="ExitBtn">Exit</button>
+					<button
+						className="ExitBtn"
+						onClick={() => {
+							navigate('/')
+						}}
+					>
+						Exit
+					</button>
 				</div>
 			</div>
 		</>

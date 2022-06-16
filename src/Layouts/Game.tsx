@@ -5,7 +5,7 @@ import { Score } from '../Game/GameOjbects/Score'
 import { RoomHeader } from '../Game/GameOjbects/RoomHeader'
 import { Leaderboard } from '../Game/GameOjbects/Leaderboard'
 import { PlayerState } from '../Game/Models/PlayerState'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { queryString } from '../Utils'
 import dayjs from 'dayjs'
@@ -26,18 +26,21 @@ const pageVariants = {
 }
 export const GameLayout: React.FC<GameProps> = ({}) => {
 	const navigate = useNavigate()
+	const { 0: params } = useSearchParams()
 	const handleGame = async () => {
+		localStorage.setItem('nickname', params.get('nickname') || '')
 		const canvasExists = document.querySelectorAll('#gamearea canvas')
 		canvasExists.forEach((el) => {
 			el.remove()
 		})
 
-		const game = new Phaser.Game(GameConfig)
+		new Phaser.Game(GameConfig)
 	}
 
 	;(window as any).onGameOver = (player: PlayerState, rank: number = 0) => {
 		navigate(
 			`/gameover?${queryString({
+				nickname: player.nickname,
 				survivalTime: dayjs
 					.duration(player.endAt - player.startAt, 'ms')
 					.format('mm:ss'),
@@ -46,7 +49,9 @@ export const GameLayout: React.FC<GameProps> = ({}) => {
 				rank,
 				snakeLength: player.snakeLength,
 				playerId: player.sessionId,
-				win: dayjs(player.endAt).diff(dayjs(player.startAt), 'minutes') >= 10,
+				win:
+					dayjs(player.endAt).diff(dayjs(player.startAt), 'minutes') >= 10 &&
+					player.kills >= 3,
 			})}`
 		)
 	}
@@ -66,7 +71,6 @@ export const GameLayout: React.FC<GameProps> = ({}) => {
 				id="game-area"
 				className="w-full max-h-screen overflow-hidden duration-300 linear"
 			>
-				{' '}
 				<RoomHeader />
 				<Score />
 				<Leaderboard />

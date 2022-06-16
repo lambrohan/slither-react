@@ -55,7 +55,7 @@ export class PlayerV2 {
 		this.playerNameText = this.scene.add.text(
 			this.playerState.x,
 			this.playerState.y - 50,
-			`Player - ${this.playerState.sessionId}`,
+			this.playerState.nickname || this.playerState.sessionId,
 			{ fontSize: '12px' }
 		)
 		this.playerNameText.setDepth(12)

@@ -42,7 +42,6 @@ export default class MainScene extends Phaser.Scene {
 		this.load.atlas('gamepad', '/gamepad.png', '/gamepad.json')
 		this.load.atlas('food', '/food.png', '/food.json')
 		this.load.atlas('snake', '/snake.png', '/snake.json')
-		this.load.audio('bg', '/Koi-Pond.mp3')
 	}
 
 	create() {
@@ -60,7 +59,7 @@ export default class MainScene extends Phaser.Scene {
 		)
 
 		rect.setOrigin(0, 0)
-		rect.setStrokeStyle(0, 0xff290010)
+		rect.setStrokeStyle(50, 0xff0000)
 
 		this.initRoom()
 
@@ -77,7 +76,9 @@ export default class MainScene extends Phaser.Scene {
 		const client = new Colyseus.Client(
 			process.env.WS_ENDPOINT || 'ws://192.168.29.71:2567'
 		)
-		this.gameRoom = await client.joinOrCreate<GameState>('my_room')
+		this.gameRoom = await client.joinOrCreate<GameState>('my_room', {
+			nickname: localStorage.getItem('nickname'),
+		})
 		this.gameRoom.state.foodItems.onAdd = (f) => this._onAddFood(f)
 		this.gameRoom.state.foodItems.onRemove = (f) => this._onRemoveFood(f)
 		this.gameRoom.state.players.onAdd = (p) => this._onPlayerAdd(p)
@@ -182,7 +183,7 @@ export default class MainScene extends Phaser.Scene {
 	createHex() {
 		this.hexConeHeight = (Math.tan(Math.PI / 6) * this.hexWidth) / 2
 		this.hexGroup = this.add.group()
-		this.gridSizeX = Math.floor(GameMeta.boundX / this.hexWidth)
+		this.gridSizeX = Math.ceil(GameMeta.boundX / (this.hexWidth - this.border))
 		this.gridSizeY = Math.ceil(
 			GameMeta.boundY / (this.hexHeight - this.hexConeHeight)
 		)

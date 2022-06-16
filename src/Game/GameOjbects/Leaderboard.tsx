@@ -21,7 +21,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({}) => {
 								<span className="px-2">{i + 1}</span>
 							</td>
 							<td>
-								<span className="px-2">{p.sessionId}</span>
+								<span className="px-2">{p.nickname || p.sessionId}</span>
 							</td>
 							<td>
 								<span className="px-2 text-right">{p.snakeLength}</span>

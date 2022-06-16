@@ -11,7 +11,9 @@ import { GameOver } from '../Components/ModalContent/GameOver'
 import { PrivacyPolicy } from '../Components/ModalContent/PrivacyPolicy'
 import { Dashboard } from '../Components/ModalContent/Dashboard'
 import { Select } from '../Components/Select/Select'
-
+import { PlayNow } from '../Components/PlayNow'
+import { motion } from 'framer-motion'
+import { pageVariants } from '../Utils'
 
 interface HomeProps {}
 
@@ -34,14 +36,17 @@ export const Home: React.FC<HomeProps> = ({}) => {
 		}
 	}, [TempOptions])
 	return (
-		<main id="home-page" className="relative flex flex-col items-center py-16">
+		<motion.main
+			id="home-page"
+			className="relative flex flex-col items-center py-16"
+			initial="initial"
+			animate="animate"
+			exit="exit"
+			variants={pageVariants}
+		>
 			<img src="/slither.webp" className="md:w-[30rem] w-2/3" alt="" />
 			{account ? (
-				<Link to={'/game'}>
-					<Button className="md:mt-6 mt-8">
-						<span className="text-xl px-[3.375rem]">Play Now</span>
-					</Button>
-				</Link>
+				<PlayNow />
 			) : (
 				<Button className="md:mt-6 mt-8" onClick={openModal} type="transparent">
 					<span className="px-[3.375rem] text-lg">Connect Now</span>
@@ -88,6 +93,6 @@ export const Home: React.FC<HomeProps> = ({}) => {
 					selection={TempOptions}
 				/>
 			</div> */}
-		</main>
+		</motion.main>
 	)
 }

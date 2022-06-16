@@ -47,6 +47,7 @@ export const GameOverPage: React.FC<GameOverPageProps> = ({}) => {
 						playerId={playerStat.playerId}
 						rank={playerStat.rank}
 						win={playerStat.win}
+						nickname={playerStat.nickname}
 					/>
 				) : (
 					''
