@@ -1,5 +1,6 @@
 import React from 'react'
 import BabyDoge from '../../assets/images/babyAlt.webp'
+import SadBabyDoge from '../../assets/images/sad_babydoge.svg'
 // import BabyDogeOver from '../../assets/images/babyGameOver.svg'
 import Coin from '../../assets/images/coin.webp'
 import Firework1 from '../../assets/images/firework-1.svg'
@@ -17,6 +18,7 @@ export interface GameOverProps {
 	tokens: string
 	playerId: string
 	rank: string
+	win: boolean
 }
 
 export const GameOver: React.FC<GameOverProps> = ({
@@ -26,6 +28,7 @@ export const GameOver: React.FC<GameOverProps> = ({
 	tokens,
 	playerId,
 	rank,
+	win,
 }) => {
 	const navigate = useNavigate()
 	return (
@@ -37,7 +40,9 @@ export const GameOver: React.FC<GameOverProps> = ({
 							<h1 className="WhiteHeadContent">OVERVIEW</h1>
 						</div>
 						<br />
-						<h2 className="CongratsTxt">Congratulations!</h2>
+						<h2 className="CongratsTxt">
+							{win ? 'Congratulations!' : 'Better luck next time.'}
+						</h2>
 						<br />
 						<div className="Coin">
 							<img src={Coin} alt="" className="coin" />
@@ -45,19 +50,26 @@ export const GameOver: React.FC<GameOverProps> = ({
 								{snakeLength}
 							</h1>
 						</div>
-						<div className="flex justify-center items-center h-[148px] relative">
-							<img src={BabyDoge} alt="" className="absolute" />
-							<img
-								src={Firework1}
-								alt=""
-								className="absolute z-[-1] left-[32px]"
-							/>
-							<img
-								src={Firework2}
-								alt=""
-								className="absolute h-[57px] right-[62px] top-[-15px]"
-							/>
-						</div>
+						{win ? (
+							<div className="flex justify-center items-center h-[148px] relative">
+								<img src={BabyDoge} alt="" className="absolute" />
+								<img
+									src={Firework1}
+									alt=""
+									className="absolute z-[-1] left-[32px]"
+								/>
+								<img
+									src={Firework2}
+									alt=""
+									className="absolute h-[57px] right-[62px] top-[-15px]"
+								/>
+							</div>
+						) : (
+							<div className="flex justify-center items-center h-[148px] relative">
+								<img src={SadBabyDoge} alt="" className="absolute" />
+							</div>
+						)}
+
 						<h2 id="NameTxt">{playerId}</h2>
 						<img
 							className="w-3/4 mx-auto mb-2"

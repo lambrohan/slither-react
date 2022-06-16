@@ -2,6 +2,7 @@ import {
 	CONSTANTS,
 	degToRad,
 	distanceFormula,
+	GameMeta,
 	getSkinAssetFromEnum,
 	Point,
 	SnakeSkinSprite,
@@ -35,6 +36,7 @@ export class PlayerV2 {
 	target = 0
 	skin!: SnakeSkinSprite
 	playerNameText!: Phaser.GameObjects.Text
+	playerLight!: Phaser.GameObjects.PointLight
 
 	constructor(
 		scene: MainScene,
@@ -57,6 +59,7 @@ export class PlayerV2 {
 			{ fontSize: '12px' }
 		)
 		this.playerNameText.setDepth(12)
+
 		this.head = this.scene.matter.add.sprite(
 			this.playerState.x,
 			this.playerState.y,
@@ -75,10 +78,7 @@ export class PlayerV2 {
 			}
 		)
 
-		this.remoteRef = this.scene.add.circle(0, 0, this.head.width / 2)
-		this.remoteRef.setOrigin(0.5, 0.5)
-		this.remoteRef.setStrokeStyle(1, 0xff0000)
-		this.remoteRef.setDepth(2)
+		this.setRemoteRef()
 
 		this.head.setDepth(2)
 		this.head.setAngle(this.playerState.angle)
@@ -87,6 +87,21 @@ export class PlayerV2 {
 
 		if (this.isCurrentPlayer) {
 			this.scene.cameras.main.startFollow(this.head)
+			this.playerLight = this.scene.add.pointlight(
+				this.head.x,
+				this.head.y,
+				0xfffff,
+				200,
+				0.4
+			)
+			this.playerLight.setDepth(-1)
+
+			this.scene.cameras.main.setBounds(
+				-8,
+				-20,
+				GameMeta.boundX + 20,
+				GameMeta.boundY + 40
+			)
 			this.cursorKeys = this.scene.input.keyboard.createCursorKeys()
 			this.scene.input.on('pointermove', (pointer: any) => {
 				this.target = Phaser.Math.Angle.BetweenPoints(this.head.body.position, {
@@ -146,6 +161,14 @@ export class PlayerV2 {
 			this.sections.pop()?.destroy()
 			this.localSnakeLength--
 		}
+	}
+
+	setRemoteRef() {
+		if (process.env.NODE_ENV == 'production') return
+		this.remoteRef = this.scene.add.circle(0, 0, this.head.width / 2)
+		this.remoteRef.setOrigin(0.5, 0.5)
+		this.remoteRef.setStrokeStyle(1, 0xff0000)
+		this.remoteRef.setDepth(2)
 	}
 
 	incrementSize() {
@@ -331,6 +354,7 @@ export class PlayerV2 {
 				Phaser.Math.Linear(this.head.y, this.playerState.y, 0.02)
 			)
 		}
+		this.playerLight.setPosition(this.head.x, this.head.y)
 	}
 
 	interpolateRemotePlayers() {

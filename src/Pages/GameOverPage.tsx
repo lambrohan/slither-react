@@ -2,8 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { GameOver, GameOverProps } from '../Components/ModalContent/GameOver'
 import SlitherImage from '../assets/images/SlitherImage.svg'
 import { motion } from 'framer-motion'
-import { useParams } from 'react-router-dom'
-import { useQuery } from '../Hooks/useQuery'
+import { useSearchParams } from 'react-router-dom'
 
 interface GameOverPageProps {}
 
@@ -20,18 +19,16 @@ const pageVariants = {
 }
 
 export const GameOverPage: React.FC<GameOverPageProps> = ({}) => {
-	const params = useQuery()
+	const { 0: params } = useSearchParams()
 	const [playerStat, setPlayerStat] = useState<GameOverProps | null>(null)
 	useEffect(() => {
-		setPlayerStat({
-			snakeLength: params.get('snakeLength') || '',
-			kills: params.get('kills') || '',
-			survivalTime: params.get('survivalTime') || '',
-			playerId: params.get('playerId') || '',
-			tokens: params.get('tokens') || '',
-			rank: '',
+		const p: any = {}
+		params.forEach((v, key) => {
+			p[key] = v
 		})
-	}, [])
+		p.win = params.get('win') === 'true'
+		setPlayerStat(p)
+	}, [params])
 	return (
 		<motion.div
 			initial="initial"
@@ -49,6 +46,7 @@ export const GameOverPage: React.FC<GameOverPageProps> = ({}) => {
 						survivalTime={playerStat.survivalTime}
 						playerId={playerStat.playerId}
 						rank={playerStat.rank}
+						win={playerStat.win}
 					/>
 				) : (
 					''

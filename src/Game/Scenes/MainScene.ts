@@ -12,7 +12,7 @@ import { PlayerV2 } from '../GameOjbects/PlayerV2'
 
 export default class MainScene extends Phaser.Scene {
 	hexWidth = 70
-	border = 4
+	border = 2
 	hexHeight = 80
 	hexArray: Phaser.GameObjects.Sprite[][] = []
 	hexGroup: Phaser.GameObjects.Group | undefined = undefined
@@ -42,6 +42,7 @@ export default class MainScene extends Phaser.Scene {
 		this.load.atlas('gamepad', '/gamepad.png', '/gamepad.json')
 		this.load.atlas('food', '/food.png', '/food.json')
 		this.load.atlas('snake', '/snake.png', '/snake.json')
+		this.load.audio('bg', '/Koi-Pond.mp3')
 	}
 
 	create() {
@@ -54,7 +55,7 @@ export default class MainScene extends Phaser.Scene {
 			0,
 			GameMeta.boundX,
 			GameMeta.boundY,
-			0x25181b,
+			0x000000,
 			0.6
 		)
 
@@ -63,7 +64,7 @@ export default class MainScene extends Phaser.Scene {
 
 		this.initRoom()
 
-		// this.matter.world.disableGravity()
+		this.matter.world.disableGravity()
 		this.createHex()
 		this.scaleDiagonalHexagons(1)
 
@@ -74,7 +75,7 @@ export default class MainScene extends Phaser.Scene {
 
 	async initRoom() {
 		const client = new Colyseus.Client(
-			process.env.WS_ENDPOINT || 'ws://13.127.90.178:2567'
+			process.env.WS_ENDPOINT || 'ws://192.168.29.71:2567'
 		)
 		this.gameRoom = await client.joinOrCreate<GameState>('my_room')
 		this.gameRoom.state.foodItems.onAdd = (f) => this._onAddFood(f)
@@ -208,13 +209,12 @@ export default class MainScene extends Phaser.Scene {
 	scaleDiagonalHexagons(scale: number) {
 		var m = this.hexArray.length
 		var n = this.hexArray[1].length
-		var delay = 100
+		var delay = 1
 		for (var slice = 1; slice < m + n - 1; ++slice) {
 			var z1 = slice < n ? 1 : slice - n + 1
 			var z2 = slice < m ? 1 : slice - m + 1
 			for (var j = slice - z2; j >= z1; --j) {
 				var hexagon = this.hexArray[j][slice - j]
-				delay += Phaser.Math.Between(2, 4)
 				this.add.tween({
 					targets: hexagon,
 					alpha: Phaser.Math.Between(70, 89) / 100,

@@ -43,9 +43,10 @@ export const GameLayout: React.FC<GameProps> = ({}) => {
 					.format('mm:ss'),
 				kills: player.kills,
 				tokens: player.tokens,
-				rank: rank,
+				rank,
 				snakeLength: player.snakeLength,
 				playerId: player.sessionId,
+				win: dayjs(player.endAt).diff(dayjs(player.startAt), 'minutes') >= 10,
 			})}`
 		)
 	}
