@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { GameConfig } from '../Game/index'
 import { useEffectOnce } from '../Hooks/useEffectOnce'
 import { Score } from '../Game/GameOjbects/Score'
@@ -28,13 +28,19 @@ export const GameLayout: React.FC<GameProps> = ({}) => {
 	const navigate = useNavigate()
 	const { 0: params } = useSearchParams()
 	const handleGame = async () => {
+		console.log('called')
 		localStorage.setItem('nickname', params.get('nickname') || '')
 		const canvasExists = document.querySelectorAll('#gamearea canvas')
 		canvasExists.forEach((el) => {
 			el.remove()
 		})
 
-		new Phaser.Game(GameConfig)
+		const game = new Phaser.Game(GameConfig)
+
+		return () => {
+			console.log('destroyed')
+			game.destroy(true)
+		}
 	}
 
 	;(window as any).onGameOver = (player: PlayerState, rank: number = 0) => {

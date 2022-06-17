@@ -38,8 +38,6 @@ export default class MainScene extends Phaser.Scene {
 	preload() {
 		this.load.image('hex', '/hex.svg')
 		this.load.atlas('slither', '/spritesheet.png', '/slither.json')
-		this.load.json('shapes', '/slither_physics.json')
-		this.load.atlas('gamepad', '/gamepad.png', '/gamepad.json')
 		this.load.atlas('food', '/food.png', '/food.json')
 		this.load.atlas('snake', '/snake.png', '/snake.json')
 	}
@@ -61,13 +59,11 @@ export default class MainScene extends Phaser.Scene {
 		rect.setOrigin(0, 0)
 		rect.setStrokeStyle(50, 0x000000)
 
-		this.initRoom()
-
 		this.matter.world.disableGravity()
 		this.createHex()
-		this.scaleDiagonalHexagons(1)
-
-		setInterval(() => {
+		// this.scaleDiagonalHexagons(1)
+		this.initRoom()
+		;(window as any).leaderboardInterval = setInterval(() => {
 			this.updateLeaderboard()
 		}, 1000)
 	}
@@ -122,6 +118,7 @@ export default class MainScene extends Phaser.Scene {
 		if (!playerState.sessionId) return
 		if (this.player?.playerState.sessionId === playerState.sessionId) {
 			setTimeout(() => {
+				clearInterval((window as any).leaderboardInterval)
 				const rank = this.sortedPlayers.findIndex(
 					(p) => p.sessionId === this.player?.playerState.sessionId
 				)
@@ -130,6 +127,7 @@ export default class MainScene extends Phaser.Scene {
 					rank + 1
 				)
 				this.player = null
+				this.game?.destroy(true)
 			}, 500)
 		}
 
@@ -159,10 +157,11 @@ export default class MainScene extends Phaser.Scene {
 
 	update(time: number, delta: number): void {
 		this.elapsedTime += delta
+		this.fixedTick(delta)
 
 		while (this.elapsedTime >= this.fixedTimeStep) {
 			this.elapsedTime -= this.fixedTimeStep
-			this.fixedTick(delta)
+			// this.fixedTick(delta)
 		}
 		this.debugFPS.text = `Frame rate: ${this.game.loop.actualFps}`
 	}
@@ -195,7 +194,7 @@ export default class MainScene extends Phaser.Scene {
 				const y = j * (this.hexHeight - this.hexConeHeight + this.border)
 				const xOffset = j % 2 == 0 ? (this.hexWidth + this.border) / 2 : 0
 				const hex = this.add.sprite(x + xOffset, y, 'hex')
-				hex.setAlpha(0)
+				hex.setAlpha(0.9)
 				hex.setDepth(1)
 				if (this.hexArray[i]) {
 					this.hexArray[i][j] = hex

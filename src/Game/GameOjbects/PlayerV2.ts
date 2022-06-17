@@ -27,12 +27,7 @@ export class PlayerV2 {
 	cursorKeys!: Phaser.Types.Input.Keyboard.CursorKeys
 	remoteRef!: Phaser.GameObjects.Arc
 	preferredDistance = CONSTANTS.PREF_DISTANCE * this.scale
-	lastInputTimestamp = 0
-	lastMouseX = 0
-	lastMouseY = 0
 	SPEED = CONSTANTS.DEF_SPEED
-	ROTATION_SPEED = 1 * Math.PI
-	TOLERANCE = 0.02 * this.ROTATION_SPEED
 	target = 0
 	skin!: SnakeSkinSprite
 	playerNameText!: Phaser.GameObjects.Text
@@ -350,8 +345,8 @@ export class PlayerV2 {
 			Math.abs(this.head.y - this.playerState.y) > 10
 		) {
 			this.head.setPosition(
-				Phaser.Math.Linear(this.head.x, this.playerState.x, 0.02),
-				Phaser.Math.Linear(this.head.y, this.playerState.y, 0.02)
+				Phaser.Math.Linear(this.head.x, this.playerState.x, 0.1),
+				Phaser.Math.Linear(this.head.y, this.playerState.y, 0.1)
 			)
 		}
 		this.playerLight.setPosition(this.head.x, this.head.y)
@@ -427,7 +422,6 @@ export class PlayerV2 {
 		})
 		this.head?.destroy(true)
 		this.playerNameText?.destroy()
-
 		this.sections = []
 	}
 }
