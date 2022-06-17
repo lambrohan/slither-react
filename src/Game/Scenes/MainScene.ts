@@ -48,7 +48,7 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	create() {
-		this.debugFPS = this.add.text(4, 4, '', { color: '#ff0000' })
+		this.debugFPS = this.add.text(4, 10, '', { color: '#ff0000' })
 		this.debugFPS.setDepth(10)
 		this.debugFPS.setScrollFactor(0, 0)
 

@@ -4,7 +4,7 @@ interface RoomHeaderProps {}
 
 export const RoomHeader: React.FC<RoomHeaderProps> = ({}) => {
 	return (
-		<div className="w-full absolute top-0 left-0">
+		<div className="w-full absolute top-0 left-0 hidden">
 			<div className="relative w-full flex flex-col items-center">
 				<div className="w-full h-2 bg-primary"></div>
 				<div
