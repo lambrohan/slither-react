@@ -1,11 +1,13 @@
-import { GameMeta } from '../../Utils'
+import { GameMeta, Point } from '../../Utils'
 import MainScene from '../Scenes/MainScene'
 
 export class SnakeV3 {
 	head: Phaser.Physics.Matter.Sprite
 	sections: Array<Phaser.Physics.Matter.Sprite>
 	scene: MainScene
+	snakePath: Array<Point> = []
 	target = 0
+	numSnakeSections = 10
 
 	constructor(scene: MainScene) {
 		this.scene = scene
@@ -14,7 +16,7 @@ export class SnakeV3 {
 			500,
 			500,
 			'snake',
-			'snake_head_purple.png',
+			'snake_head_eblue.png',
 			{ isSensor: true, mass: 0, friction: 0 }
 		)
 		this.head.setDepth(3)
@@ -31,9 +33,10 @@ export class SnakeV3 {
 
 	initSections() {
 		this.sections = []
-		for (let i = 1; i < 3; i++) {
+		this.snakePath = []
+		for (let i = 0; i < this.numSnakeSections; i++) {
 			const sec = this.scene.matter.add.sprite(
-				this.head.x - i * this.head.width,
+				this.head.x - i * 25,
 				this.head.x,
 				'snake_body',
 				undefined,
@@ -45,6 +48,7 @@ export class SnakeV3 {
 			sec.setScale(2)
 			sec.setDepth(2)
 			this.sections.push(sec)
+			this.snakePath.push(new Point(sec.x, sec.y, this.head.angle))
 		}
 	}
 
@@ -65,10 +69,8 @@ export class SnakeV3 {
 			this.head.x = 0
 		}
 
-		const point = this.sections.pop()!
-		point?.setPosition(this.head.x, this.head.y)
-		this.sections.unshift(point)
+		const part = this.snakePath.pop()!
+		part?.setTo(this.head.x, this.head.y, this.head.angle)
+		this.snakePath.unshift(part)
 	}
-
-	move() {}
 }
