@@ -8,7 +8,7 @@ export const GameConfig: Phaser.Types.Core.GameConfig = {
 	width: window.innerWidth,
 	height: window.innerHeight,
 	scale: {
-		mode: Phaser.Scale.ScaleModes.FIT,
+		mode: Phaser.Scale.ScaleModes.RESIZE,
 	},
 	physics: {
 		default: 'matter',
