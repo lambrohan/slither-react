@@ -9,6 +9,7 @@ import { Room } from 'colyseus.js'
 import * as Colyseus from 'colyseus.js'
 import { PlayerState } from '../Models/PlayerState'
 import { PlayerV2 } from '../GameOjbects/PlayerV2'
+import { SnakeV3 } from '../GameOjbects/PlayerV3'
 
 export default class MainScene extends Phaser.Scene {
 	hexWidth = 70
@@ -30,6 +31,7 @@ export default class MainScene extends Phaser.Scene {
 	fixedTimeStep = 1000 / 60
 	debugFPS!: Phaser.GameObjects.Text
 	sortedPlayers: PlayerState[] = []
+	v3!: SnakeV3
 
 	constructor() {
 		super('main')
@@ -42,6 +44,7 @@ export default class MainScene extends Phaser.Scene {
 		this.load.atlas('gamepad', '/gamepad.png', '/gamepad.json')
 		this.load.atlas('food', '/food.png', '/food.json')
 		this.load.atlas('snake', '/snake.png', '/snake.json')
+		this.load.image('snake_body', '/snake_body.png')
 	}
 
 	create() {
@@ -61,7 +64,9 @@ export default class MainScene extends Phaser.Scene {
 		rect.setOrigin(0, 0)
 		rect.setStrokeStyle(50, 0x000000)
 
-		this.initRoom()
+		// this.initRoom()
+
+		this.v3 = new SnakeV3(this)
 
 		this.matter.world.disableGravity()
 		this.createHex()
@@ -159,10 +164,11 @@ export default class MainScene extends Phaser.Scene {
 
 	update(time: number, delta: number): void {
 		this.elapsedTime += delta
+		this.v3.update()
 
 		while (this.elapsedTime >= this.fixedTimeStep) {
 			this.elapsedTime -= this.fixedTimeStep
-			this.fixedTick(delta)
+			// this.fixedTick(delta)
 		}
 		this.debugFPS.text = `Frame rate: ${this.game.loop.actualFps}`
 	}
