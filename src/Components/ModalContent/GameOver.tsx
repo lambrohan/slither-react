@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import BabyDoge from '../../assets/images/babyAlt.webp'
 import SadBabyDoge from '../../assets/images/sad_babydoge.svg'
 // import BabyDogeOver from '../../assets/images/babyGameOver.svg'
@@ -10,6 +10,7 @@ import './ModalContent.scss'
 import LoaderGameOver from '../../assets/images/loaderGameOver.svg'
 
 import { useNavigate } from 'react-router-dom'
+import dayjs from 'dayjs'
 
 export interface GameOverProps {
 	snakeLength: string
@@ -33,11 +34,17 @@ export const GameOver: React.FC<GameOverProps> = ({
 	nickname,
 }) => {
 	const navigate = useNavigate()
+	const [progress, setProgress] = useState('0px')
+	useEffect(() => {
+		const [m, s] = survivalTime.split(':')
+		const percent = (Number(m) * 60 + Number(s)) / 6
+		setProgress(`${percent > 100 ? 100 : percent}%`)
+	}, [survivalTime])
 	return (
 		<>
 			<div className="BigBox2 blur-background  flex items-center justify-center flex-col">
 				<div className="PFBothBox  grid grid-cols-1 lg:grid-cols-2 gap-2">
-					<div className="LeftBox">
+					<div className="LeftBox ">
 						<div className="WhiteHead">
 							<h1 className="WhiteHeadContent">OVERVIEW</h1>
 						</div>
@@ -46,12 +53,7 @@ export const GameOver: React.FC<GameOverProps> = ({
 							{win ? 'Congratulations!' : 'Better luck next time.'}
 						</h2>
 						<br />
-						<div className="Coin">
-							<img src={Coin} alt="" className="coin" />
-							<h1 className="noofcoins Txt567 font-bold text-3xl text-white">
-								{snakeLength}
-							</h1>
-						</div>
+						<div className="Coin"></div>
 						{win ? (
 							<div className="flex justify-center items-center h-[148px] relative">
 								<img src={BabyDoge} alt="" className="absolute" />
@@ -73,11 +75,26 @@ export const GameOver: React.FC<GameOverProps> = ({
 						)}
 
 						<h2 id="NameTxt">{nickname || playerId}</h2>
-						<img
-							className="w-3/4 mx-auto mb-2"
-							src={LoaderGameOver}
-							alt="LoaderGameOver"
-						/>
+						<div className="min-w-[324px]"></div>
+						<div className=" px-4 mt-2 flex items-center">
+							<div className="bg-primary w-14 h-14 rounded-full flex flex-col items-center p-2">
+								<span className="text-white text-xs">Rank</span>
+								<h4 className="text-yellowAccent font-semibold">{rank}</h4>
+							</div>
+							<div
+								className="range grow border border-white h-4 rounded-full flex items-center overflow-hidden px-0.5"
+								id="progressbar"
+							>
+								<div
+									className="bg-yellowAccent h-2  w-12 rounded-full"
+									style={{
+										minWidth: progress,
+										transition: '2s ease all',
+										maxWidth: progress,
+									}}
+								></div>
+							</div>
+						</div>
 					</div>
 					<div className="RightBox">
 						<div className="WhiteHead">

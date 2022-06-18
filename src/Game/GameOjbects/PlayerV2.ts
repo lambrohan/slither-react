@@ -46,6 +46,7 @@ export class PlayerV2 {
 	}
 
 	init() {
+		this.scale = this.playerState.scale
 		this.playerNameText = this.scene.add.text(
 			this.playerState.x,
 			this.playerState.y - 50,
@@ -172,12 +173,10 @@ export class PlayerV2 {
 	}
 
 	incrementSize() {
-		this.setScale(this.scale * 1.005)
 		this.addSectionsAfterLast(1)
 	}
 
-	setScale(scale: number) {
-		this.scale = scale
+	setScale() {
 		this.preferredDistance = CONSTANTS.PREF_DISTANCE * this.scale
 		if (this.remoteRef) {
 			this.remoteRef.setScale(this.scale)
@@ -243,6 +242,8 @@ export class PlayerV2 {
 	}
 
 	update() {
+		this.scale = this.playerState.scale
+		this.preferredDistance = CONSTANTS.PREF_DISTANCE * this.scale
 		// for testing only
 		// console.log(this.head.angle, this.playerState.angle)
 		this.refMovement()
@@ -350,8 +351,8 @@ export class PlayerV2 {
 			Math.abs(this.head.y - this.playerState.y) > 10
 		) {
 			this.head.setPosition(
-				Phaser.Math.Linear(this.head.x, this.playerState.x, 0.1),
-				Phaser.Math.Linear(this.head.y, this.playerState.y, 0.1)
+				Phaser.Math.Linear(this.head.x, this.playerState.x, 0.08),
+				Phaser.Math.Linear(this.head.y, this.playerState.y, 0.08)
 			)
 		}
 		this.playerLight.setPosition(this.head.x, this.head.y)

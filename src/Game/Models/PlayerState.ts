@@ -49,4 +49,7 @@ export class PlayerState extends Schema {
 
 	@type('string')
 	nickname: string = ''
+
+	@type('number')
+	scale = 1
 }

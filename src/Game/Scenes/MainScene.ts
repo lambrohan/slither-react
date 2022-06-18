@@ -1,7 +1,6 @@
 import { GameMeta, generateFood, getCenter, SPRITE_LABELS } from '../../Utils'
 import Phaser, { GameObjects } from 'phaser'
 import { FoodItem } from '../Models'
-import { DebugInfo } from '../GameOjbects/Debug'
 import { GamePad } from '../GameOjbects/Gamepad'
 import { GameState } from '../Models/GameState'
 import { Food } from '../GameOjbects/Food'
@@ -89,9 +88,9 @@ export default class MainScene extends Phaser.Scene {
 		const sortedPlayers: PlayerState[] = []
 		let maxScore = 0
 		this.gameRoom.state.players.forEach((p) => {
-			if (p.snakeLength > maxScore) {
+			if (p.tokens > maxScore) {
 				sortedPlayers.unshift(p)
-				maxScore = p.snakeLength
+				maxScore = p.tokens
 			} else {
 				sortedPlayers.push(p)
 			}
@@ -149,8 +148,6 @@ export default class MainScene extends Phaser.Scene {
 				foodObj?.destroy()
 			},
 		})
-
-		this.foodGroup.remove(foodObj)
 	}
 	_onAddFood(foodItem: FoodItem) {
 		const f = new Food({
@@ -158,7 +155,6 @@ export default class MainScene extends Phaser.Scene {
 			foodState: foodItem,
 		})
 		this.foodObjects.set(foodItem.id, f)
-		this.foodGroup.add(f)
 	}
 
 	update(time: number, delta: number): void {
@@ -176,7 +172,7 @@ export default class MainScene extends Phaser.Scene {
 			p.update()
 		})
 		if (this.player) {
-			;(window as any).updateScore(this.player.playerState.snakeLength || 0)
+			;(window as any).updateScore(this.player.playerState.tokens || 0)
 		}
 	}
 
