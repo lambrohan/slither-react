@@ -79,8 +79,8 @@ export const CONSTANTS = {
 	LERP: 0.08,
 	ROT_LERP: 0.08,
 	PREF_DISTANCE: 8,
-	DEF_SPEED: 2.5,
-	BOOST_SPEED: 5,
+	DEF_SPEED: 3.5,
+	BOOST_SPEED: 6,
 }
 
 export class Point {

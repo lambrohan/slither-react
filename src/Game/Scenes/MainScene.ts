@@ -9,6 +9,7 @@ import { Room } from 'colyseus.js'
 import * as Colyseus from 'colyseus.js'
 import { PlayerState } from '../Models/PlayerState'
 import { PlayerV2 } from '../GameOjbects/PlayerV2'
+import _ from 'lodash'
 
 export default class MainScene extends Phaser.Scene {
 	hexWidth = 70
@@ -20,7 +21,7 @@ export default class MainScene extends Phaser.Scene {
 	gridSizeY: number = 0
 	hexConeHeight: number = 0
 	player: PlayerV2 | null = null
-	foodGroup: Phaser.GameObjects.Group | null = null
+	foodGroup!: Phaser.GameObjects.Group
 	foodObjects: Map<String, Food> = new Map()
 	players: Array<PlayerV2> = []
 	gamepad: GamePad | null = null
@@ -43,6 +44,7 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	create() {
+		this.foodGroup = this.add.group()
 		this.debugFPS = this.add.text(4, 4, '', { color: '#ff0000' })
 		this.debugFPS.setDepth(10)
 		this.debugFPS.setScrollFactor(0, 0)
@@ -53,7 +55,7 @@ export default class MainScene extends Phaser.Scene {
 			GameMeta.boundX,
 			GameMeta.boundY,
 			0x000000,
-			0.6
+			0
 		)
 
 		rect.setOrigin(0, 0)
@@ -137,7 +139,8 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	_onRemoveFood(foodItem: FoodItem) {
-		const foodObj = this.foodObjects.get(foodItem.id)
+		const foodObj = this.foodObjects.get(foodItem.id)!
+		this.foodObjects.delete(foodItem.id)
 		this.tweens.add({
 			targets: foodObj,
 			scale: 0,
@@ -146,6 +149,8 @@ export default class MainScene extends Phaser.Scene {
 				foodObj?.destroy()
 			},
 		})
+
+		this.foodGroup.remove(foodObj)
 	}
 	_onAddFood(foodItem: FoodItem) {
 		const f = new Food({
@@ -153,15 +158,15 @@ export default class MainScene extends Phaser.Scene {
 			foodState: foodItem,
 		})
 		this.foodObjects.set(foodItem.id, f)
+		this.foodGroup.add(f)
 	}
 
 	update(time: number, delta: number): void {
 		this.elapsedTime += delta
-		this.fixedTick(delta)
 
 		while (this.elapsedTime >= this.fixedTimeStep) {
 			this.elapsedTime -= this.fixedTimeStep
-			// this.fixedTick(delta)
+			this.fixedTick(delta)
 		}
 		this.debugFPS.text = `Frame rate: ${this.game.loop.actualFps}`
 	}
@@ -194,7 +199,7 @@ export default class MainScene extends Phaser.Scene {
 				const y = j * (this.hexHeight - this.hexConeHeight + this.border)
 				const xOffset = j % 2 == 0 ? (this.hexWidth + this.border) / 2 : 0
 				const hex = this.add.sprite(x + xOffset, y, 'hex')
-				hex.setAlpha(0.9)
+				hex.setAlpha(_.random(0.6, 1.0))
 				hex.setDepth(1)
 				if (this.hexArray[i]) {
 					this.hexArray[i][j] = hex

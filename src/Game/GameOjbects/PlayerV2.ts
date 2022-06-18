@@ -7,7 +7,6 @@ import {
 	Point,
 	SnakeSkinSprite,
 } from '../../Utils'
-import { GameMath } from '../../Utils/math'
 import { PlayerState } from '../Models/PlayerState'
 import { SnakeSectionState } from '../Models/SnakeSection'
 import MainScene from '../Scenes/MainScene'
@@ -86,8 +85,8 @@ export class PlayerV2 {
 				this.head.x,
 				this.head.y,
 				0xfffff,
-				200,
-				0.4
+				150,
+				0.1
 			)
 			this.playerLight.setDepth(-1)
 
@@ -135,11 +134,17 @@ export class PlayerV2 {
 					)
 					this.scene.gameRoom.send('input', this.target)
 				})
-
-				this.scene.input.on('pointerup', () => {
-					this.scene.gameRoom.send('speed', false)
+			} else {
+				this.scene.input.on('pointerdown', () => {
+					if (this.scene.input.activePointer.isDown) {
+						this.scene.gameRoom.send('speed', true)
+					}
 				})
 			}
+
+			this.scene.input.on('pointerup', () => {
+				this.scene.gameRoom.send('speed', false)
+			})
 		}
 
 		this.initSections(this.playerState.snakeLength)
