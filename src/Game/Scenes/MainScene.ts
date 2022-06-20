@@ -124,6 +124,7 @@ export default class MainScene extends Phaser.Scene {
 	_onPlayerRemove(playerState: PlayerState) {
 		if (!playerState.sessionId) return
 		if (this.player?.playerState.sessionId === playerState.sessionId) {
+			this.gameRoom.leave()
 			setTimeout(() => {
 				clearInterval((window as any).leaderboardInterval)
 				;(window as any).onGameOver(

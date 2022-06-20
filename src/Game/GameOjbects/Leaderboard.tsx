@@ -24,7 +24,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({}) => {
 								<span className="px-2">{p.nickname || p.sessionId}</span>
 							</td>
 							<td>
-								<span className="px-2 text-right">{p.tokens}</span>
+								<span className="px-2 text-right">{p.tokens} Mil.</span>
 							</td>
 						</tr>
 					))}
