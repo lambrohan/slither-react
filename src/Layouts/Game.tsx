@@ -25,25 +25,28 @@ const pageVariants = {
 	},
 }
 export const GameLayout: React.FC<GameProps> = ({}) => {
+	let game: Phaser.Game
 	const navigate = useNavigate()
 	const { 0: params } = useSearchParams()
 	const handleGame = async () => {
 		console.log('called')
+		document.getElementById('WEB3_CONNECT_MODAL_ID')?.remove()
 		localStorage.setItem('nickname', params.get('nickname') || '')
 		const canvasExists = document.querySelectorAll('#gamearea canvas')
 		canvasExists.forEach((el) => {
 			el.remove()
 		})
 
-		const game = new Phaser.Game(GameConfig)
+		game = new Phaser.Game(GameConfig)
 
 		return () => {
 			console.log('destroyed')
-			game.destroy(true)
+			game?.destroy(true, false)
 		}
 	}
 
 	;(window as any).onGameOver = (player: PlayerState, rank: number = 0) => {
+		game?.destroy(true, false)
 		navigate(
 			`/gameover?${queryString({
 				nickname: player.nickname,

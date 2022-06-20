@@ -16,7 +16,7 @@ export class PlayerV2 {
 	head!: Phaser.Physics.Matter.Sprite
 	playerState!: PlayerState
 	lastHeadPosition!: Point
-	scale = 1
+	scale = 1.42
 	headPath = new Array<Point>()
 	sections = new Array<Phaser.Physics.Matter.Sprite>()
 	sectionGroup!: Phaser.GameObjects.Group

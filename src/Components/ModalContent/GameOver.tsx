@@ -113,7 +113,7 @@ export const GameOver: React.FC<GameOverProps> = ({
 						<br />
 						<p className="whiteColor">Tokens Eaten</p>
 
-						<h2 className="StatsTime">{tokens}</h2>
+						<h2 className="StatsTime">{tokens} Mil.</h2>
 					</div>
 				</div>
 				<br />
