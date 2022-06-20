@@ -130,7 +130,6 @@ export default class MainScene extends Phaser.Scene {
 					{ ...this.player?.playerState, endAt: Date.now() },
 					this.playerRank
 				)
-				this.player = null
 				this.game?.destroy(true)
 			}, 500)
 		}
