@@ -30,6 +30,7 @@ export default class MainScene extends Phaser.Scene {
 	fixedTimeStep = 1000 / 60
 	debugFPS!: Phaser.GameObjects.Text
 	sortedPlayers: PlayerState[] = []
+	playerRank = 0
 
 	constructor() {
 		super('main')
@@ -95,8 +96,12 @@ export default class MainScene extends Phaser.Scene {
 				sortedPlayers.push(p)
 			}
 		})
-		;(window as any).updateLeaderboard(sortedPlayers)
 		this.sortedPlayers = sortedPlayers
+		this.playerRank =
+			this.sortedPlayers.findIndex(
+				(p) => p.sessionId == this.player?.playerState.sessionId
+			) + 1
+		;(window as any).updateLeaderboard(sortedPlayers)
 	}
 
 	_onPlayerAdd(playerState: PlayerState) {
@@ -120,12 +125,9 @@ export default class MainScene extends Phaser.Scene {
 		if (this.player?.playerState.sessionId === playerState.sessionId) {
 			setTimeout(() => {
 				clearInterval((window as any).leaderboardInterval)
-				const rank = this.sortedPlayers.findIndex(
-					(p) => p.sessionId === this.player?.playerState.sessionId
-				)
 				;(window as any).onGameOver(
 					{ ...this.player?.playerState, endAt: Date.now() },
-					rank + 1
+					this.playerRank
 				)
 				this.player = null
 				this.game?.destroy(true)
