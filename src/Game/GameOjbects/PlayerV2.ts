@@ -75,7 +75,7 @@ export class PlayerV2 {
 
 		this.setRemoteRef()
 
-		this.head.setDepth(2)
+		this.head.setDepth(1001)
 		this.head.setAngle(this.playerState.angle)
 		this.head.setScale(this.scale)
 		this.lastHeadPosition = new Point(this.head.x, this.head.y, this.head.angle)
@@ -210,7 +210,7 @@ export class PlayerV2 {
 				mask: 0,
 			},
 		})
-		sec.setDepth(1)
+		sec.setDepth(1000 - this.sections.length)
 		sec.setScale(this.scale)
 		// this.sectionGroup.add(sec)
 		this.sections.push(sec)
@@ -227,22 +227,9 @@ export class PlayerV2 {
 		}
 	}
 
-	addSection(state: SnakeSectionState) {
-		const sec = this.scene.matter.add.sprite(
-			state.x,
-			state.y,
-			'snake',
-			this.skin.body,
-			{ isSensor: true }
-		)
-		sec.setDepth(1)
-		sec.setScale(this.scale)
-		this.sections.push(sec)
-		console.log('added')
-	}
-
 	update() {
 		this.scale = this.playerState.scale
+		this.head.setScale(this.playerState.scale)
 		this.preferredDistance = CONSTANTS.PREF_DISTANCE * this.scale
 		// for testing only
 		// console.log(this.head.angle, this.playerState.angle)
@@ -263,10 +250,9 @@ export class PlayerV2 {
 
 		//TODO- check local len and server len
 		for (let i = 0; i < this.localSnakeLength; i++) {
-			this.sections[i].setPosition(
-				this.headPath[index].x,
-				this.headPath[index].y
-			)
+			this.sections[i]
+				.setPosition(this.headPath[index].x, this.headPath[index].y)
+				.setScale(this.playerState.scale)
 			this.sections[i].setAngle(this.headPath[index].angle)
 
 			//hide sections if they are at the same position
