@@ -1,6 +1,7 @@
 import MainScene from './Scenes/MainScene'
 
 import Phaser from 'phaser'
+import InitScene from './Scenes/InitScene'
 export const GameConfig: Phaser.Types.Core.GameConfig = {
 	type: Phaser.AUTO,
 	parent: 'game-area',
@@ -20,5 +21,5 @@ export const GameConfig: Phaser.Types.Core.GameConfig = {
 		},
 	},
 
-	scene: [MainScene],
+	scene: [InitScene, MainScene],
 }

@@ -1,5 +1,5 @@
 import { ArraySchema, Schema, type } from '@colyseus/schema'
-import { SnakeSkin } from '../../Utils'
+import { skins, SnakeSkin } from '../../Utils'
 import { FoodItem } from './FoodItem'
 import { SnakeSectionState } from './SnakeSection'
 
@@ -27,7 +27,7 @@ export class PlayerState extends Schema {
 	snakeLength: number = 0
 
 	@type('int8')
-	skin: SnakeSkin = SnakeSkin.GREEN_WHITE_LINE
+	skin: number = 0
 
 	@type([SnakeSectionState])
 	sections: ArraySchema<SnakeSectionState> = new ArraySchema()

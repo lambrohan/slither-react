@@ -5,6 +5,7 @@ import {
 	GameMeta,
 	getSkinAssetFromEnum,
 	Point,
+	skins,
 	SnakeSkinSprite,
 } from '../../Utils'
 import { PlayerState } from '../Models/PlayerState'
@@ -16,7 +17,7 @@ export class PlayerV2 {
 	head!: Phaser.Physics.Matter.Sprite
 	playerState!: PlayerState
 	lastHeadPosition!: Point
-	scale = 1
+	scale = 0.3
 	headPath = new Array<Point>()
 	sections = new Array<Phaser.Physics.Matter.Sprite>()
 	sectionGroup!: Phaser.GameObjects.Group
@@ -28,9 +29,8 @@ export class PlayerV2 {
 	preferredDistance = CONSTANTS.PREF_DISTANCE * this.scale
 	SPEED = CONSTANTS.DEF_SPEED
 	target = 0
-	skin!: SnakeSkinSprite
+	skin!: string
 	playerNameText!: Phaser.GameObjects.Text
-	playerLight!: Phaser.GameObjects.PointLight
 
 	constructor(
 		scene: MainScene,
@@ -41,7 +41,7 @@ export class PlayerV2 {
 		this.scene = scene
 		this.isCurrentPlayer = isCurrentPlayer
 		this.sectionGroup = this.scene.add.group()
-		this.skin = getSkinAssetFromEnum(this.playerState.skin)
+		this.skin = skins[this.playerState.skin]
 		this.init()
 	}
 
@@ -58,8 +58,8 @@ export class PlayerV2 {
 		this.head = this.scene.matter.add.sprite(
 			this.playerState.x,
 			this.playerState.y,
-			'snake',
-			this.skin.head,
+			'eyes',
+			undefined,
 			{
 				isSensor: true,
 				friction: 0,
@@ -75,21 +75,13 @@ export class PlayerV2 {
 
 		this.setRemoteRef()
 
-		this.head.setDepth(2)
+		this.head.setDepth(3000)
 		this.head.setAngle(this.playerState.angle)
 		this.head.setScale(this.scale)
 		this.lastHeadPosition = new Point(this.head.x, this.head.y, this.head.angle)
 
 		if (this.isCurrentPlayer) {
 			this.scene.cameras.main.startFollow(this.head)
-			this.playerLight = this.scene.add.pointlight(
-				this.head.x,
-				this.head.y,
-				0xfffff,
-				150,
-				0.1
-			)
-			this.playerLight.setDepth(-1)
 
 			this.scene.cameras.main.setBounds(
 				-8,
@@ -97,55 +89,6 @@ export class PlayerV2 {
 				GameMeta.boundX + 20,
 				GameMeta.boundY + 40
 			)
-			this.cursorKeys = this.scene.input.keyboard.createCursorKeys()
-			this.scene.input.on('pointermove', (pointer: any) => {
-				this.target = Phaser.Math.Angle.BetweenPoints(this.head.body.position, {
-					x: pointer.worldX,
-					y: pointer.worldY,
-				})
-				this.scene.gameRoom.send('input', this.target)
-			})
-			this.cursorKeys.space.onDown = () => {
-				this.scene.gameRoom.send('speed', true)
-			}
-
-			this.cursorKeys.space.onUp = () => {
-				this.scene.gameRoom.send('speed', false)
-			}
-
-			this.cursorKeys.up.onDown = () => {
-				this.scene.gameRoom.send('speed', true)
-			}
-
-			this.cursorKeys.up.onUp = () => {
-				this.scene.gameRoom.send('speed', false)
-			}
-
-			if (!this.scene.game.device.os.desktop) {
-				let lastTime = 0
-				this.scene.input.on('pointerdown', (pointer: any) => {
-					const delay = Date.now() - lastTime
-					lastTime = Date.now()
-					if (delay < 350) {
-						this.scene.gameRoom.send('speed', true)
-					}
-					this.target = Phaser.Math.Angle.BetweenPoints(
-						this.head.body.position,
-						{ x: pointer.worldX, y: pointer.worldY }
-					)
-					this.scene.gameRoom.send('input', this.target)
-				})
-			} else {
-				this.scene.input.on('pointerdown', () => {
-					if (this.scene.input.activePointer.isDown) {
-						this.scene.gameRoom.send('speed', true)
-					}
-				})
-			}
-
-			this.scene.input.on('pointerup', () => {
-				this.scene.gameRoom.send('speed', false)
-			})
 		}
 
 		this.initSections(this.playerState.snakeLength)
@@ -162,6 +105,61 @@ export class PlayerV2 {
 			this.sections.pop()?.destroy()
 			this.localSnakeLength--
 		}
+
+		this.createInputs()
+	}
+
+	createInputs() {
+		if (!this.isCurrentPlayer) return
+		this.cursorKeys = this.scene.input.keyboard.createCursorKeys()
+		this.scene.input.on('pointermove', (pointer: any) => {
+			this.target = Phaser.Math.Angle.BetweenPoints(this.head.body.position, {
+				x: pointer.worldX,
+				y: pointer.worldY,
+			})
+			this.scene.gameRoom.send('input', this.target)
+		})
+		this.cursorKeys.space.onDown = () => {
+			this.scene.gameRoom.send('speed', true)
+		}
+
+		this.cursorKeys.space.onUp = () => {
+			this.scene.gameRoom.send('speed', false)
+		}
+
+		this.cursorKeys.up.onDown = () => {
+			this.scene.gameRoom.send('speed', true)
+		}
+
+		this.cursorKeys.up.onUp = () => {
+			this.scene.gameRoom.send('speed', false)
+		}
+
+		if (!this.scene.game.device.os.desktop) {
+			let lastTime = 0
+			this.scene.input.on('pointerdown', (pointer: any) => {
+				const delay = Date.now() - lastTime
+				lastTime = Date.now()
+				if (delay < 350) {
+					this.scene.gameRoom.send('speed', true)
+				}
+				this.target = Phaser.Math.Angle.BetweenPoints(this.head.body.position, {
+					x: pointer.worldX,
+					y: pointer.worldY,
+				})
+				this.scene.gameRoom.send('input', this.target)
+			})
+		} else {
+			this.scene.input.on('pointerdown', () => {
+				if (this.scene.input.activePointer.isDown) {
+					this.scene.gameRoom.send('speed', true)
+				}
+			})
+		}
+
+		this.scene.input.on('pointerup', () => {
+			this.scene.gameRoom.send('speed', false)
+		})
 	}
 
 	setRemoteRef() {
@@ -176,17 +174,6 @@ export class PlayerV2 {
 		this.addSectionsAfterLast(1)
 	}
 
-	setScale() {
-		this.preferredDistance = CONSTANTS.PREF_DISTANCE * this.scale
-		if (this.remoteRef) {
-			this.remoteRef.setScale(this.scale)
-		}
-		this.head.setScale(this.scale)
-		this.sections.forEach((sec) => {
-			sec.setScale(this.scale)
-		})
-	}
-
 	initSections(num: number) {
 		for (let i = 1; i <= num; i++) {
 			const x = this.head.x
@@ -199,7 +186,7 @@ export class PlayerV2 {
 
 	addSectionAtPosition(x: number, y: number) {
 		//initialize a new section
-		const sec = this.scene.matter.add.sprite(x, y, 'snake', this.skin.body, {
+		const sec = this.scene.matter.add.sprite(x, y, 'snake_body', this.skin, {
 			isSensor: true,
 			mass: 0,
 			friction: 0,
@@ -210,7 +197,7 @@ export class PlayerV2 {
 				mask: 0,
 			},
 		})
-		sec.setDepth(1)
+		sec.setDepth(1000 - this.sections.length)
 		sec.setScale(this.scale)
 		// this.sectionGroup.add(sec)
 		this.sections.push(sec)
@@ -232,10 +219,10 @@ export class PlayerV2 {
 			state.x,
 			state.y,
 			'snake',
-			this.skin.body,
+			this.skin,
 			{ isSensor: true }
 		)
-		sec.setDepth(1)
+		sec.setDepth(2)
 		sec.setScale(this.scale)
 		this.sections.push(sec)
 		console.log('added')
@@ -244,8 +231,9 @@ export class PlayerV2 {
 	update() {
 		this.scale = this.playerState.scale
 		this.preferredDistance = CONSTANTS.PREF_DISTANCE * this.scale
+		this.head.setScale(this.scale)
+
 		// for testing only
-		// console.log(this.head.angle, this.playerState.angle)
 		this.refMovement()
 
 		this.localPlayerMovement()
@@ -263,11 +251,10 @@ export class PlayerV2 {
 
 		//TODO- check local len and server len
 		for (let i = 0; i < this.localSnakeLength; i++) {
-			this.sections[i].setPosition(
-				this.headPath[index].x,
-				this.headPath[index].y
-			)
-			this.sections[i].setAngle(this.headPath[index].angle)
+			this.sections[i]
+				.setPosition(this.headPath[index].x, this.headPath[index].y)
+				.setScale(this.scale)
+				.setAngle(this.headPath[index].angle)
 
 			//hide sections if they are at the same position
 			if (lastIndex && index == lastIndex) {
@@ -347,15 +334,14 @@ export class PlayerV2 {
 		this.head.setVelocity(a.x, a.y)
 
 		if (
-			Math.abs(this.head.x - this.playerState.x) > 10 ||
-			Math.abs(this.head.y - this.playerState.y) > 10
+			Math.abs(this.head.x - this.playerState.x) > 5 ||
+			Math.abs(this.head.y - this.playerState.y) > 5
 		) {
 			this.head.setPosition(
-				Phaser.Math.Linear(this.head.x, this.playerState.x, 0.08),
-				Phaser.Math.Linear(this.head.y, this.playerState.y, 0.08)
+				Phaser.Math.Linear(this.head.x, this.playerState.x, 0.01),
+				Phaser.Math.Linear(this.head.y, this.playerState.y, 0.01)
 			)
 		}
-		this.playerLight.setPosition(this.head.x, this.head.y)
 	}
 
 	interpolateRemotePlayers() {
@@ -428,6 +414,5 @@ export class PlayerV2 {
 		})
 		this.head?.destroy(true)
 		this.playerNameText?.destroy()
-		this.sections = []
 	}
 }

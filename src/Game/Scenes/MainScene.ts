@@ -1,4 +1,11 @@
-import { GameMeta, generateFood, getCenter, SPRITE_LABELS } from '../../Utils'
+import {
+	CONSTANTS,
+	GameMeta,
+	generateFood,
+	getCenter,
+	skins,
+	SPRITE_LABELS,
+} from '../../Utils'
 import Phaser, { GameObjects } from 'phaser'
 import { FoodItem } from '../Models'
 import { GamePad } from '../GameOjbects/Gamepad'
@@ -11,6 +18,8 @@ import { PlayerV2 } from '../GameOjbects/PlayerV2'
 import _ from 'lodash'
 
 export default class MainScene extends Phaser.Scene {
+	tileW = 584
+	tileH = 527
 	hexWidth = 70
 	border = 2
 	hexHeight = 80
@@ -30,19 +39,20 @@ export default class MainScene extends Phaser.Scene {
 	fixedTimeStep = 1000 / 60
 	debugFPS!: Phaser.GameObjects.Text
 	sortedPlayers: PlayerState[] = []
+	light!: Phaser.GameObjects.PointLight
+	userSkin: string = ''
+	playerRank = 0
 
 	constructor() {
 		super('main')
 	}
 
 	preload() {
-		this.load.image('hex', '/hex.svg')
-		this.load.atlas('slither', '/spritesheet.png', '/slither.json')
-		this.load.atlas('food', '/food.png', '/food.json')
-		this.load.atlas('snake', '/snake.png', '/snake.json')
+		this.load.image('bg', '/bg.png')
 	}
 
-	create() {
+	create(data: any) {
+		this.userSkin = data.skin || skins[0]
 		this.foodGroup = this.add.group()
 		this.debugFPS = this.add.text(4, 4, '', { color: '#ff0000' })
 		this.debugFPS.setDepth(10)
@@ -58,11 +68,11 @@ export default class MainScene extends Phaser.Scene {
 		)
 
 		rect.setOrigin(0, 0)
-		rect.setStrokeStyle(50, 0x000000)
+		rect.setStrokeStyle(CONSTANTS.WALL_WIDTH, 0x000000)
+
+		this.createTiles()
 
 		this.matter.world.disableGravity()
-		this.createHex()
-		// this.scaleDiagonalHexagons(1)
 		this.initRoom()
 		;(window as any).leaderboardInterval = setInterval(() => {
 			this.updateLeaderboard()
@@ -75,6 +85,7 @@ export default class MainScene extends Phaser.Scene {
 		)
 		this.gameRoom = await client.joinOrCreate<GameState>('my_room', {
 			nickname: localStorage.getItem('nickname'),
+			skin: this.userSkin,
 		})
 		this.gameRoom.state.foodItems.onAdd = (f) => this._onAddFood(f)
 		this.gameRoom.state.foodItems.onRemove = (f) => this._onRemoveFood(f)
@@ -82,11 +93,41 @@ export default class MainScene extends Phaser.Scene {
 		this.gameRoom.state.players.onRemove = (p) => this._onPlayerRemove(p)
 	}
 
+	createTiles() {
+		this.light = this.add
+			.pointlight(
+				this.sys.game.canvas.width / 2,
+				this.sys.game.canvas.height / 2,
+				0xaa0000,
+				1000,
+				0.15
+			)
+			.setDepth(-1)
+
+		this.light.setScrollFactor(0, 0)
+
+		const gridSizeX = Math.ceil(GameMeta.boundX / this.tileW) + 2
+		const gridSizeY = Math.ceil(GameMeta.boundY / this.tileH)
+		for (let i = 0; i <= gridSizeX; i++) {
+			for (let j = 0; j <= gridSizeY; j++) {
+				const c = this.add
+					.tileSprite(
+						this.tileW * i,
+						this.tileH * j,
+						this.tileW,
+						this.tileH,
+						'bg'
+					)
+					.setDepth(1)
+			}
+		}
+	}
+
 	updateLeaderboard() {
 		if (!this.gameRoom) return
 		if (!this.gameRoom.state) return
 		const sortedPlayers: PlayerState[] = []
-		let maxScore = 0
+		let maxScore = -1
 		this.gameRoom.state.players.forEach((p) => {
 			if (p.tokens > maxScore) {
 				sortedPlayers.unshift(p)
@@ -95,8 +136,8 @@ export default class MainScene extends Phaser.Scene {
 				sortedPlayers.push(p)
 			}
 		})
-		;(window as any).updateLeaderboard(sortedPlayers)
 		this.sortedPlayers = sortedPlayers
+		;(window as any).updateLeaderboard(sortedPlayers)
 	}
 
 	_onPlayerAdd(playerState: PlayerState) {

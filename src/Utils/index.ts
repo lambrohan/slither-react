@@ -78,9 +78,10 @@ export const CONSTANTS = {
 	FOOD_RADIUS_MULTIPLIER: 1,
 	LERP: 0.08,
 	ROT_LERP: 0.08,
-	PREF_DISTANCE: 8,
+	PREF_DISTANCE: 30,
 	DEF_SPEED: 3.5,
 	BOOST_SPEED: 6,
+	WALL_WIDTH: 50,
 }
 
 export class Point {
@@ -109,13 +110,11 @@ export enum FoodAssetType {
 }
 
 export enum SnakeSkin {
-	GREEN_WHITE_LINE = 0,
-	ELECTRIC_BLUE = 1,
-	PURPLE_WHITE_RING = 2,
+	PURPLE = 0,
+	BLUE = 1,
 }
 
 export interface SnakeSkinSprite {
-	head: string
 	body: string
 }
 
@@ -128,21 +127,13 @@ export function getInterpolatedVector(pos1: Point, pos2: Point) {
 
 export function getSkinAssetFromEnum(skin: SnakeSkin): SnakeSkinSprite {
 	switch (skin) {
-		case SnakeSkin.ELECTRIC_BLUE:
+		case SnakeSkin.BLUE:
 			return {
-				head: 'snake_head_blue.png',
-				body: 'snake_body_blue.png',
+				body: 'blue.png',
 			}
-		case SnakeSkin.GREEN_WHITE_LINE:
+		case SnakeSkin.PURPLE:
 			return {
-				head: 'snake_head_green.png',
-				body: 'snake_body_green.png',
-			}
-
-		case SnakeSkin.PURPLE_WHITE_RING:
-			return {
-				head: 'snake_head_purple.png',
-				body: 'snake_body_purple.png',
+				body: 'purple.png',
 			}
 	}
 }
@@ -164,3 +155,5 @@ export const pageVariants = {
 		opacity: 0,
 	},
 }
+
+export const skins = ['blue.png', 'purple.png']

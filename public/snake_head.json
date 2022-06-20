@@ -1,0 +1,62 @@
+{
+	"textures": [
+		{
+			"image": "snake_head.png",
+			"format": "RGBA8888",
+			"size": {
+				"w": 204,
+				"h": 102
+			},
+			"scale": 1,
+			"frames": [
+				{
+					"filename": "blue.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 100,
+						"h": 100
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 100,
+						"h": 100
+					},
+					"frame": {
+						"x": 1,
+						"y": 1,
+						"w": 100,
+						"h": 100
+					}
+				},
+				{
+					"filename": "purple.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 100,
+						"h": 100
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 100,
+						"h": 100
+					},
+					"frame": {
+						"x": 103,
+						"y": 1,
+						"w": 100,
+						"h": 100
+					}
+				}
+			]
+		}
+	],
+	"meta": {
+		"app": "https://www.codeandweb.com/texturepacker",
+		"version": "3.0",
+		"smartupdate": "$TexturePacker:SmartUpdate:c8dbd630e56e6ea817208b3ddcfe61df:cbfd3d6ddecc1055748bd46be7389bcd:1f15d85d4ad043b8c93016f9799a7101$"
+	}
+}

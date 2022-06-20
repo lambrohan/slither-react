@@ -10,6 +10,7 @@ import { motion } from 'framer-motion'
 import { queryString } from '../Utils'
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
+import { Button } from '../Components/Button/Button'
 dayjs.extend(duration)
 
 interface GameProps {}
