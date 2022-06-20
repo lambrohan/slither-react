@@ -97,10 +97,11 @@ export default class MainScene extends Phaser.Scene {
 			}
 		})
 		this.sortedPlayers = sortedPlayers
-		this.playerRank =
-			this.sortedPlayers.findIndex(
-				(p) => p.sessionId == this.player?.playerState.sessionId
-			) + 1
+		const r = this.sortedPlayers.findIndex(
+			(p) => p.sessionId == this.player?.playerState.sessionId
+		)
+
+		r !== -1 ? (this.playerRank = r + 1) : ''
 		;(window as any).updateLeaderboard(sortedPlayers)
 	}
 

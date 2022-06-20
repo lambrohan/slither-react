@@ -36,7 +36,7 @@ export const GameOver: React.FC<GameOverProps> = ({
 	const navigate = useNavigate()
 	const [progress, setProgress] = useState('0px')
 	useEffect(() => {
-		const [m, s] = survivalTime.split(':')
+		const [m, s] = survivalTime ? survivalTime.split(':') : '00:00'.split(';')
 		const percent = (Number(m) * 60 + Number(s)) / 6
 		setProgress(`${percent > 100 ? 100 : percent}%`)
 	}, [survivalTime])
