@@ -52,4 +52,7 @@ export class PlayerState extends Schema {
 
 	@type('number')
 	scale = 1
+
+	@type('boolean')
+	cooldown = false
 }

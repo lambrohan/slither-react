@@ -8,7 +8,6 @@ import {
 	SnakeSkinSprite,
 } from '../../Utils'
 import { PlayerState } from '../Models/PlayerState'
-import { SnakeSectionState } from '../Models/SnakeSection'
 import MainScene from '../Scenes/MainScene'
 
 export class PlayerV2 {
@@ -16,7 +15,7 @@ export class PlayerV2 {
 	head!: Phaser.Physics.Matter.Sprite
 	playerState!: PlayerState
 	lastHeadPosition!: Point
-	scale = 1.42
+	scale = 1.2
 	headPath = new Array<Point>()
 	sections = new Array<Phaser.Physics.Matter.Sprite>()
 	sectionGroup!: Phaser.GameObjects.Group
@@ -230,6 +229,7 @@ export class PlayerV2 {
 	update() {
 		this.scale = this.playerState.scale
 		this.head.setScale(this.playerState.scale)
+		this.head.setAlpha(this.playerState.cooldown ? 0.4 : 1)
 		this.preferredDistance = CONSTANTS.PREF_DISTANCE * this.scale
 		// for testing only
 		// console.log(this.head.angle, this.playerState.angle)
@@ -259,7 +259,7 @@ export class PlayerV2 {
 			if (lastIndex && index == lastIndex) {
 				this.sections[i].alpha = 0
 			} else {
-				this.sections[i].alpha = 1
+				this.sections[i].alpha = this.playerState.cooldown ? 0.4 : 1
 			}
 
 			lastIndex = index
