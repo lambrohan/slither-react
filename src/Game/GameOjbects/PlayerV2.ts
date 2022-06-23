@@ -14,7 +14,6 @@ export class PlayerV2 {
 	scene!: MainScene
 	head!: Phaser.Physics.Matter.Sprite
 	playerState!: PlayerState
-	snakePath = new Array<Point>()
 	sections = new Array<Phaser.Physics.Matter.Sprite>()
 	sectionGroup!: Phaser.GameObjects.Group
 	isCurrentPlayer: boolean = false
@@ -25,7 +24,6 @@ export class PlayerV2 {
 	skin!: SnakeSkinSprite
 	playerNameText!: Phaser.GameObjects.Text
 	playerLight!: Phaser.GameObjects.PointLight
-	snakeSpacer = 1
 	scale = 1
 
 	constructor(
@@ -54,7 +52,7 @@ export class PlayerV2 {
 			this.playerState.x,
 			this.playerState.y,
 			'snake',
-			this.skin.head,
+			'snake_head_blue.png',
 			{
 				isSensor: true,
 				friction: 0,
@@ -172,7 +170,7 @@ export class PlayerV2 {
 				this.head.x,
 				this.head.y,
 				'snake',
-				this.skin.body,
+				'snake_body_blue.png',
 				{
 					isSensor: true,
 					mass: 0,
