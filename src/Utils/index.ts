@@ -81,6 +81,7 @@ export const CONSTANTS = {
 	PREF_DISTANCE: 8,
 	DEF_SPEED: 3.5,
 	BOOST_SPEED: 6,
+	MIN_SNAKE_LENGTH: 30,
 }
 
 export class Point {

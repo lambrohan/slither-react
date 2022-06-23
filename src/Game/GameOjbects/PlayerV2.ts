@@ -14,22 +14,18 @@ export class PlayerV2 {
 	scene!: MainScene
 	head!: Phaser.Physics.Matter.Sprite
 	playerState!: PlayerState
-	lastHeadPosition!: Point
-	scale = 1.2
-	headPath = new Array<Point>()
+	snakePath = new Array<Point>()
 	sections = new Array<Phaser.Physics.Matter.Sprite>()
 	sectionGroup!: Phaser.GameObjects.Group
-	queuedSections = 0
 	isCurrentPlayer: boolean = false
-	localSnakeLength: number = 0
 	cursorKeys!: Phaser.Types.Input.Keyboard.CursorKeys
 	remoteRef!: Phaser.GameObjects.Arc
-	preferredDistance = CONSTANTS.PREF_DISTANCE * this.scale
 	SPEED = CONSTANTS.DEF_SPEED
 	target = 0
 	skin!: SnakeSkinSprite
 	playerNameText!: Phaser.GameObjects.Text
 	playerLight!: Phaser.GameObjects.PointLight
+	snakeSpacer = 1
 
 	constructor(
 		scene: MainScene,
@@ -45,14 +41,13 @@ export class PlayerV2 {
 	}
 
 	init() {
-		this.scale = this.playerState.scale
 		this.playerNameText = this.scene.add.text(
 			this.playerState.x,
 			this.playerState.y - 50,
 			this.playerState.nickname || this.playerState.sessionId,
 			{ fontSize: '12px' }
 		)
-		this.playerNameText.setDepth(12)
+		this.playerNameText.setDepth(1001)
 
 		this.head = this.scene.matter.add.sprite(
 			this.playerState.x,
@@ -71,13 +66,10 @@ export class PlayerV2 {
 				},
 			}
 		)
+		this.head.setAngle(this.playerState.angle)
+		this.head.setDepth(1000)
 
 		this.setRemoteRef()
-
-		this.head.setDepth(1001)
-		this.head.setAngle(this.playerState.angle)
-		this.head.setScale(this.scale)
-		this.lastHeadPosition = new Point(this.head.x, this.head.y, this.head.angle)
 
 		if (this.isCurrentPlayer) {
 			this.scene.cameras.main.startFollow(this.head)
@@ -150,16 +142,18 @@ export class PlayerV2 {
 		this.initSections(this.playerState.snakeLength)
 
 		this.playerState.sections.onAdd = () => {
-			// this.addSection(section)
 			console.log('add section')
-			if (this.playerState.snakeLength > 2) {
-				this.incrementSize()
+			if (this.playerState.snakeLength > CONSTANTS.MIN_SNAKE_LENGTH) {
+				this.addSection()
 			}
 		}
 
 		this.playerState.sections.onRemove = () => {
 			this.sections.pop()?.destroy()
-			this.localSnakeLength--
+			this.snakePath = this.snakePath.slice(
+				0,
+				this.snakePath.length - this.snakeSpacer
+			)
 		}
 	}
 
@@ -171,66 +165,73 @@ export class PlayerV2 {
 		this.remoteRef.setDepth(2)
 	}
 
-	incrementSize() {
-		this.addSectionsAfterLast(1)
-	}
-
-	setScale() {
-		this.preferredDistance = CONSTANTS.PREF_DISTANCE * this.scale
-		if (this.remoteRef) {
-			this.remoteRef.setScale(this.scale)
-		}
-		this.head.setScale(this.scale)
-		this.sections.forEach((sec) => {
-			sec.setScale(this.scale)
-		})
-	}
-
 	initSections(num: number) {
-		for (let i = 1; i <= num; i++) {
-			const x = this.head.x
-			const y = this.head.x + i * this.preferredDistance
-			this.addSectionAtPosition(x, y)
-			//add a point to the head path so that the section stays there
-			this.headPath.push(new Point(this.head.x, this.head.y, this.head.angle))
+		for (let i = 1; i <= num - 1; i++) {
+			const sec = this.scene.matter.add.sprite(
+				this.head.x,
+				this.head.y,
+				'snake',
+				this.skin.body,
+				{
+					isSensor: true,
+					mass: 0,
+					friction: 0,
+					frictionAir: 0,
+					collisionFilter: {
+						group: -1,
+						category: 2,
+						mask: 0,
+					},
+				}
+			)
+
+			this.sections[i] = sec
+		}
+
+		for (let i = 0; i <= num * this.snakeSpacer; i++) {
+			this.snakePath[i] = new Point(this.head.x, this.head.y, this.head.angle)
 		}
 	}
 
-	addSectionAtPosition(x: number, y: number) {
-		//initialize a new section
-		const sec = this.scene.matter.add.sprite(x, y, 'snake', this.skin.body, {
-			isSensor: true,
-			mass: 0,
-			friction: 0,
-			frictionAir: 0,
-			collisionFilter: {
-				group: -1,
-				category: 2,
-				mask: 0,
-			},
-		})
-		sec.setDepth(1000 - this.sections.length)
-		sec.setScale(this.scale)
-		// this.sectionGroup.add(sec)
+	addSection() {
+		const last = this.sections[this.sections.length - 1]
+		const sec = this.scene.matter.add.sprite(
+			last.x,
+			last.y,
+			'snake',
+			this.skin.body,
+			{
+				isSensor: true,
+				mass: 0,
+				friction: 0,
+				frictionAir: 0,
+				collisionFilter: {
+					group: -1,
+					category: 2,
+					mask: 0,
+				},
+			}
+		)
+		sec.setDepth(2)
 		this.sections.push(sec)
-		this.localSnakeLength++
 
-		return sec
-	}
-
-	onCycleComplete() {
-		if (this.queuedSections > 0) {
-			let lastSec = this.sections[this.sections.length - 1]
-			this.addSectionAtPosition(lastSec.x, lastSec.y)
-			this.queuedSections--
+		for (
+			let i = this.snakePath.length;
+			i <= this.playerState.snakeLength * this.snakeSpacer;
+			i++
+		) {
+			this.snakePath[i] = new Point(
+				this.snakePath[i - 1].x,
+				this.snakePath[i - 1].y,
+				this.snakePath[i - 1].angle
+			)
 		}
 	}
 
 	update() {
-		this.scale = this.playerState.scale
-		this.head.setScale(this.playerState.scale)
-		this.head.setAlpha(this.playerState.cooldown ? 0.4 : 1)
-		this.preferredDistance = CONSTANTS.PREF_DISTANCE * this.scale
+		this.head
+			.setAlpha(this.playerState.cooldown ? 0.4 : 1)
+			.setScale(this.playerState.scale)
 		// for testing only
 		// console.log(this.head.angle, this.playerState.angle)
 		this.refMovement()
@@ -239,72 +240,26 @@ export class PlayerV2 {
 		this.interpolateRemotePlayers()
 		this.playerNameText.setPosition(this.head.x, this.head.y - 50)
 
-		let point = this.headPath.pop()!
-		point.setTo(this.head.x, this.head.y, this.head.angle)
-		this.headPath.unshift(point)
+		let part = this.snakePath.pop()!
+		part.setTo(this.head.x, this.head.y, this.head.angle)
+		this.snakePath.unshift(part)
 
-		//place each section of the snake on the path of the snake head,
-		//a certain distance from the section before it
-		let index = 0
-		let lastIndex = null
-
-		//TODO- check local len and server len
-		for (let i = 0; i < this.localSnakeLength; i++) {
+		for (let i = 1; i <= this.playerState.snakeLength - 1; i++) {
 			this.sections[i]
-				.setPosition(this.headPath[index].x, this.headPath[index].y)
+				.setPosition(
+					this.snakePath[i * this.snakeSpacer].x,
+					this.snakePath[i * this.snakeSpacer].y
+				)
+				.setAngle(this.snakePath[i * this.snakeSpacer].angle)
+				.setDepth(this.playerState.snakeLength + 2 - i)
+				.setAlpha(this.playerState.cooldown ? 0.4 : 1)
 				.setScale(this.playerState.scale)
-			this.sections[i].setAngle(this.headPath[index].angle)
-
-			//hide sections if they are at the same position
-			if (lastIndex && index == lastIndex) {
-				this.sections[i].alpha = 0
-			} else {
-				this.sections[i].alpha = this.playerState.cooldown ? 0.4 : 1
-			}
-
-			lastIndex = index
-			//this finds the index in the head path array that the next point
-			//should be at
-			index = this.findNextPointIndex(index)
-		}
-
-		if (index >= this.headPath.length - 1) {
-			let lastPos = this.headPath[this.headPath.length - 1]
-			this.headPath.push(new Point(lastPos.x, lastPos.y, lastPos.angle))
-		} else {
-			this.headPath.pop()
-		}
-
-		//this calls onCycleComplete every time a cycle is completed
-		//a cycle is the time it takes the second section of a snake to reach
-		//where the head of the snake was at the end of the last cycle
-		let i = 0
-		let found = false
-		while (
-			this.headPath[i].x != this.sections[1]?.x &&
-			this.headPath[i].y != this.sections[1]?.y
-		) {
-			if (
-				this.headPath[i].x == this.lastHeadPosition.x &&
-				this.headPath[i].y == this.lastHeadPosition.y
-			) {
-				found = true
-				break
-			}
-			i++
-		}
-		if (!found) {
-			this.lastHeadPosition = new Point(
-				this.head.x,
-				this.head.y,
-				this.head.angle
-			)
-			this.onCycleComplete()
 		}
 	}
 
 	refMovement() {
 		if (!this.remoteRef) return
+		this.remoteRef.setScale(this.playerState.scale)
 		this.remoteRef.setPosition(this.playerState.x, this.playerState.y)
 		this.remoteRef.setAngle(this.playerState.angle)
 	}
@@ -350,50 +305,9 @@ export class PlayerV2 {
 			Phaser.Math.Linear(this.head.angle, this.playerState.angle, 0.08)
 		)
 		this.head.setPosition(
-			Phaser.Math.Linear(this.head.x, this.playerState.x, 0.08),
-			Phaser.Math.Linear(this.head.y, this.playerState.y, 0.08)
+			Phaser.Math.Linear(this.head.x, this.playerState.x, 0.2),
+			Phaser.Math.Linear(this.head.y, this.playerState.y, 0.2)
 		)
-	}
-
-	findNextPointIndex(currentIndex: number) {
-		//we are trying to find a point at approximately this distance away
-		//from the point before it, where the distance is the total length of
-		//all the lines connecting the two points
-		let prefDist = this.preferredDistance
-		let len = 0
-		let dif = len - prefDist
-		let i = currentIndex
-		let prevDif = null
-		//this loop sums the distances between points on the path of the head
-		//starting from the given index of the function and continues until
-		//this sum nears the preferred distance between two snake sections
-		while (i + 1 < this.headPath.length && (dif === null || dif < 0)) {
-			//get distance between next two points
-			let dist = distanceFormula(
-				this.headPath[i].x,
-				this.headPath[i].y,
-				this.headPath[i + 1].x,
-				this.headPath[i + 1].y
-			)
-			len += dist
-			prevDif = dif
-			//we are trying to get the difference between the current sum and
-			//the preferred distance close to zero
-			dif = len - prefDist
-			i++
-		}
-
-		//choose the index that makes the difference closer to zero
-		//once the loop is complete
-		if (prevDif === null || Math.abs(prevDif) > Math.abs(dif)) {
-			return i
-		} else {
-			return i - 1
-		}
-	}
-
-	addSectionsAfterLast(amount: number) {
-		this.queuedSections += amount
 	}
 
 	destroy() {
