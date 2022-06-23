@@ -198,7 +198,7 @@ export class PlayerV2 {
 			last.x,
 			last.y,
 			'snake',
-			this.skin.body,
+			'snake_body_blue.png',
 			{
 				isSensor: true,
 				mass: 0,
