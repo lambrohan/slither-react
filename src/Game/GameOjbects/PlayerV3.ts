@@ -2,57 +2,84 @@ import { GameMeta, Point } from '../../Utils'
 import MainScene from '../Scenes/MainScene'
 
 export class SnakeV3 {
-	head: Phaser.Physics.Matter.Sprite
-	sections: Array<Phaser.Physics.Matter.Sprite>
+	head!: Phaser.GameObjects.Sprite
+	sections: Array<Phaser.GameObjects.Sprite>
 	scene: MainScene
 	snakePath: Array<Point> = []
 	target = 0
-	numSnakeSections = 10
-
-	constructor(scene: MainScene) {
+	numSnakeSections = 50
+	snakeSpacer = 5
+	current = false
+	constructor(scene: MainScene, current = false) {
 		this.scene = scene
 		this.sections = []
-		this.head = this.scene.matter.add.sprite(
-			500,
-			500,
-			'snake',
-			'snake_head_eblue.png',
-			{ isSensor: true, mass: 0, friction: 0 }
-		)
-		this.head.setDepth(3)
-		this.scene.cameras.main.startFollow(this.head)
-		this.scene.input.on('pointermove', (pointer: any) => {
-			this.target = Phaser.Math.Angle.BetweenPoints(this.head.body.position, {
-				x: pointer.worldX,
-				y: pointer.worldY,
-			})
-		})
-
+		this.current = current
 		this.initSections()
+
+		// setInterval(() => {
+		// 	this.grow()
+		// }, 500)
 	}
 
 	initSections() {
 		this.sections = []
 		this.snakePath = []
-		for (let i = 0; i < this.numSnakeSections; i++) {
-			const sec = this.scene.matter.add.sprite(
-				this.head.x - i * 25,
+		this.head = this.scene.add.sprite(
+			Math.random() * 100,
+			Math.random() * 1000,
+			'snake',
+			'snake_head_blue.png'
+		)
+		this.head.setDepth(this.numSnakeSections + 3)
+		this.head.setScale(2)
+
+		for (let i = 1; i <= this.numSnakeSections - 1; i++) {
+			const sec = this.scene.add.sprite(
 				this.head.x,
-				'snake_body',
-				undefined,
-				{
-					isSensor: true,
-					mass: 0,
-				}
+				this.head.y,
+				'snake',
+				'snake_body_blue.png'
 			)
-			sec.setScale(2)
-			sec.setDepth(2)
-			this.sections.push(sec)
-			this.snakePath.push(new Point(sec.x, sec.y, this.head.angle))
+			sec.setDepth(this.numSnakeSections + 2 - i).setScale(1.8)
+			this.sections[i] = sec
+		}
+
+		for (let i = 0; i <= this.numSnakeSections * this.snakeSpacer; i++) {
+			this.snakePath[i] = new Point(this.head.x, this.head.y, this.head.angle)
+		}
+
+		if (this.current) {
+			this.scene.input.on('pointermove', (pointer: any) => {
+				this.target = Phaser.Math.Angle.BetweenPoints(
+					{ x: this.head.x, y: this.head.y },
+					{
+						x: pointer.worldX,
+						y: pointer.worldY,
+					}
+				)
+			})
+			this.scene.cameras.main.startFollow(this.head)
+		} else {
+			setInterval(() => {
+				this.target = Math.random()
+			}, 1000)
 		}
 	}
 
+	grow() {
+		const last = this.sections[this.sections.length - 1]
+		const sec = this.scene.add.sprite(
+			last.x,
+			last.y,
+			'snake',
+			'snake_body_blue.png'
+		)
+		this.sections[this.numSnakeSections] = sec
+		this.numSnakeSections++
+	}
+
 	update() {
+		console.log(this.numSnakeSections, this.sections.length)
 		const angle = Phaser.Math.Angle.RotateTo(
 			this.head.rotation,
 			this.target,
@@ -62,15 +89,21 @@ export class SnakeV3 {
 		const a =
 			Phaser.Physics.Arcade.ArcadePhysics.prototype.velocityFromRotation(
 				this.head.rotation,
-				2.5
+				3.2
 			)
-		this.head.setVelocity(a.x, a.y)
-		if (this.head.x >= GameMeta.boundX) {
-			this.head.x = 0
-		}
+		this.head.setPosition(this.head.x + a.x, this.head.y + a.y)
 
-		const part = this.snakePath.pop()!
-		part?.setTo(this.head.x, this.head.y, this.head.angle)
+		let part = this.snakePath.pop()!
+		part.setTo(this.head.x, this.head.y)
 		this.snakePath.unshift(part)
+
+		for (let i = 1; i <= this.numSnakeSections - 1; i++) {
+			this.sections[i]
+				.setPosition(
+					this.snakePath[i * this.snakeSpacer].x,
+					this.snakePath[i * this.snakeSpacer].y
+				)
+				.setAngle(this.snakePath[i * this.snakeSpacer].angle)
+		}
 	}
 }

@@ -26,7 +26,7 @@ export default class MainScene extends Phaser.Scene {
 	players: Array<PlayerV2> = []
 	gamepad: GamePad | null = null
 	gameRoom!: Room<GameState>
-	playerObjects: Map<String, PlayerV2> = new Map()
+	playerObjects: Map<String, any> = new Map()
 	elapsedTime = 0
 	fixedTimeStep = 1000 / 60
 	debugFPS!: Phaser.GameObjects.Text
@@ -66,7 +66,10 @@ export default class MainScene extends Phaser.Scene {
 
 		// this.initRoom()
 
-		this.v3 = new SnakeV3(this)
+		for (let i = 0; i < 1; i++) {
+			const p = new SnakeV3(this, i === 0)
+			this.playerObjects.set(`id=${i}`, p)
+		}
 
 		this.matter.world.disableGravity()
 		this.createHex()
@@ -164,11 +167,10 @@ export default class MainScene extends Phaser.Scene {
 
 	update(time: number, delta: number): void {
 		this.elapsedTime += delta
-		this.v3.update()
 
 		while (this.elapsedTime >= this.fixedTimeStep) {
 			this.elapsedTime -= this.fixedTimeStep
-			// this.fixedTick(delta)
+			this.fixedTick(delta)
 		}
 		this.debugFPS.text = `Frame rate: ${this.game.loop.actualFps}`
 	}
@@ -177,9 +179,9 @@ export default class MainScene extends Phaser.Scene {
 		this.playerObjects.forEach((p) => {
 			p.update()
 		})
-		if (this.player) {
-			;(window as any).updateScore(this.player.playerState.snakeLength || 0)
-		}
+		// if (this.player) {
+		// 	;(window as any).updateScore(this.player.playerState.snakeLength || 0)
+		// }
 	}
 
 	_processhandler(head: any, food: any) {
