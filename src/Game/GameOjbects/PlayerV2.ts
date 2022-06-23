@@ -26,6 +26,7 @@ export class PlayerV2 {
 	playerNameText!: Phaser.GameObjects.Text
 	playerLight!: Phaser.GameObjects.PointLight
 	snakeSpacer = 1
+	scale = 1
 
 	constructor(
 		scene: MainScene,
@@ -149,11 +150,11 @@ export class PlayerV2 {
 		}
 
 		this.playerState.sections.onRemove = () => {
-			this.sections.pop()?.destroy()
-			this.snakePath = this.snakePath.slice(
-				0,
-				this.snakePath.length - this.snakeSpacer
-			)
+			const sec = this.sections.pop()
+			if (sec) {
+				this.sectionGroup.remove(sec)
+				sec.destroy()
+			}
 		}
 	}
 
@@ -185,11 +186,11 @@ export class PlayerV2 {
 				}
 			)
 
-			this.sections[i] = sec
-		}
+			this.sectionGroup.add(sec)
 
-		for (let i = 0; i <= num * this.snakeSpacer; i++) {
-			this.snakePath[i] = new Point(this.head.x, this.head.y, this.head.angle)
+			sec.setDepth(2)
+
+			this.sections.push(sec)
 		}
 	}
 
@@ -214,24 +215,28 @@ export class PlayerV2 {
 		)
 		sec.setDepth(2)
 		this.sections.push(sec)
+		this.sectionGroup.add(sec)
 
-		for (
-			let i = this.snakePath.length;
-			i <= this.playerState.snakeLength * this.snakeSpacer;
-			i++
-		) {
-			this.snakePath[i] = new Point(
-				this.snakePath[i - 1].x,
-				this.snakePath[i - 1].y,
-				this.snakePath[i - 1].angle
-			)
-		}
+		// for (
+		// 	let i = this.snakePath.length;
+		// 	i <= this.playerState.snakeLength * this.snakeSpacer;
+		// 	i++
+		// ) {
+		// 	this.snakePath[i] = new Point(
+		// 		this.snakePath[i - 1].x,
+		// 		this.snakePath[i - 1].y,
+		// 		this.snakePath[i - 1].angle
+		// 	)
+		// }
 	}
 
 	update() {
 		this.head
 			.setAlpha(this.playerState.cooldown ? 0.4 : 1)
 			.setScale(this.playerState.scale)
+
+		this.scale = this.playerState.scale
+
 		// for testing only
 		// console.log(this.head.angle, this.playerState.angle)
 		this.refMovement()
@@ -240,21 +245,12 @@ export class PlayerV2 {
 		this.interpolateRemotePlayers()
 		this.playerNameText.setPosition(this.head.x, this.head.y - 50)
 
-		let part = this.snakePath.pop()!
-		part.setTo(this.head.x, this.head.y, this.head.angle)
-		this.snakePath.unshift(part)
-
-		for (let i = 1; i <= this.playerState.snakeLength - 1; i++) {
-			this.sections[i]
-				.setPosition(
-					this.snakePath[i * this.snakeSpacer].x,
-					this.snakePath[i * this.snakeSpacer].y
-				)
-				.setAngle(this.snakePath[i * this.snakeSpacer].angle)
-				.setDepth(this.playerState.snakeLength + 2 - i)
-				.setAlpha(this.playerState.cooldown ? 0.4 : 1)
-				.setScale(this.playerState.scale)
-		}
+		let part = this.sections.pop()!
+		part
+			.setPosition(this.head.x, this.head.y)
+			.setAngle(this.head.angle)
+			.setScale(this.scale)
+		this.sections.unshift(part)
 	}
 
 	refMovement() {
