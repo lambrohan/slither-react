@@ -11,6 +11,8 @@ import { PlayerV2 } from '../GameOjbects/PlayerV2'
 import _ from 'lodash'
 
 export default class MainScene extends Phaser.Scene {
+	tileW = 584
+	tileH = 527
 	hexWidth = 70
 	border = 2
 	hexHeight = 80
@@ -38,6 +40,7 @@ export default class MainScene extends Phaser.Scene {
 
 	preload() {
 		this.load.image('hex', '/hex.svg')
+		this.load.image('bg', '/bg.png')
 		this.load.atlas('slither', '/spritesheet.png', '/slither.json')
 		this.load.atlas('food', '/food.png', '/food.json')
 		this.load.atlas('snake', '/snake.png', '/snake.json')
@@ -62,7 +65,8 @@ export default class MainScene extends Phaser.Scene {
 		rect.setStrokeStyle(50, 0x000000)
 
 		this.matter.world.disableGravity()
-		this.createHex()
+		this.createBg()
+		// this.createHex()
 		// this.scaleDiagonalHexagons(1)
 		this.initRoom()
 		;(window as any).leaderboardInterval = setInterval(() => {
@@ -242,5 +246,17 @@ export default class MainScene extends Phaser.Scene {
 				Number(`${parseInt(x + '')}.${parseInt(y + '')}`)
 			)
 		})
+	}
+
+	createBg() {
+		const gridSizeX = Math.ceil(GameMeta.boundX / this.tileW) + 2
+		const gridSizeY = Math.ceil(GameMeta.boundY / this.tileH)
+		for (let i = 0; i <= gridSizeX; i++) {
+			for (let j = 0; j <= gridSizeY; j++) {
+				const c = this.add
+					.image(this.tileW * i, this.tileH * j, 'bg')
+					.setDepth(1)
+			}
+		}
 	}
 }

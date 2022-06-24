@@ -14,7 +14,7 @@ export class PlayerV2 {
 	scene!: MainScene
 	head!: Phaser.Physics.Matter.Sprite
 	playerState!: PlayerState
-	sections = new Array<Phaser.Physics.Matter.Sprite>()
+	sections = new Array<Phaser.GameObjects.Arc>()
 	sectionGroup!: Phaser.GameObjects.Group
 	isCurrentPlayer: boolean = false
 	cursorKeys!: Phaser.Types.Input.Keyboard.CursorKeys
@@ -75,7 +75,7 @@ export class PlayerV2 {
 			this.playerLight = this.scene.add.pointlight(
 				this.head.x,
 				this.head.y,
-				0xfffff,
+				0xaa0000,
 				150,
 				0.1
 			)
@@ -166,26 +166,14 @@ export class PlayerV2 {
 
 	initSections(num: number) {
 		for (let i = 1; i <= num - 1; i++) {
-			const sec = this.scene.matter.add.sprite(
+			const sec = this.scene.add.circle(
 				this.head.x,
 				this.head.y,
-				'snake',
-				'snake_body_blue.png',
-				{
-					isSensor: true,
-					mass: 0,
-					friction: 0,
-					frictionAir: 0,
-					collisionFilter: {
-						group: -1,
-						category: 2,
-						mask: 0,
-					},
-				}
+				CONSTANTS.SNAKE_HEAD_RAD,
+				0x0000ff
 			)
 
 			this.sectionGroup.add(sec)
-
 			sec.setDepth(2)
 
 			this.sections.push(sec)
@@ -194,38 +182,15 @@ export class PlayerV2 {
 
 	addSection() {
 		const last = this.sections[this.sections.length - 1]
-		const sec = this.scene.matter.add.sprite(
+		const sec = this.scene.add.circle(
 			last.x,
 			last.y,
-			'snake',
-			'snake_body_blue.png',
-			{
-				isSensor: true,
-				mass: 0,
-				friction: 0,
-				frictionAir: 0,
-				collisionFilter: {
-					group: -1,
-					category: 2,
-					mask: 0,
-				},
-			}
+			CONSTANTS.SNAKE_HEAD_RAD,
+			0x0000ff
 		)
 		sec.setDepth(2)
 		this.sections.push(sec)
 		this.sectionGroup.add(sec)
-
-		// for (
-		// 	let i = this.snakePath.length;
-		// 	i <= this.playerState.snakeLength * this.snakeSpacer;
-		// 	i++
-		// ) {
-		// 	this.snakePath[i] = new Point(
-		// 		this.snakePath[i - 1].x,
-		// 		this.snakePath[i - 1].y,
-		// 		this.snakePath[i - 1].angle
-		// 	)
-		// }
 	}
 
 	update() {
