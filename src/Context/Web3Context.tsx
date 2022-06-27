@@ -1,9 +1,11 @@
 import { createContext, useContext, useState } from 'react'
 import Web3 from 'web3'
+import * as Web3Token from 'web3-token'
 import WalletConnectProvider from '@walletconnect/web3-provider'
 import Web3Modal from 'web3modal'
 import CoinbaseWalletSDK from '@coinbase/wallet-sdk'
 import ABI from '../abi/babydoge.json'
+import { StorageService } from '../Services'
 const providerOptions = {
 	/* See Provider Options Section */
 	walletconnect: {
@@ -48,6 +50,7 @@ export const Web3Context = createContext<Web3ContextType | null>(null)
 export const Web3Provider: React.FC<any> = (props) => {
 	const [account, setAccount] = useState<string | null>(null)
 	const [balance, setBalance] = useState<string | number | undefined>(undefined)
+	const [token, setToken] = useState<string | null>(null)
 
 	const openModal = async () => {
 		const provider = await web3Modal.connect()
@@ -79,6 +82,12 @@ export const Web3Provider: React.FC<any> = (props) => {
 
 		const web3 = new Web3(provider)
 		const [account] = await web3.eth.getAccounts()
+		const token = await Web3Token.sign(
+			(msg) => web3.eth.personal.sign(msg, account, ''),
+			'1h'
+		)
+		setToken(token)
+		StorageService.setToken(token)
 		const balance = await getBalance(provider)
 		setBalance(balance)
 		setAccount(account)
