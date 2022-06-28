@@ -67,9 +67,7 @@ export class PlayerV2 {
 		)
 		this.head.setAngle(this.playerState.angle)
 		this.head.setDepth(1000)
-
 		this.setRemoteRef()
-
 		if (this.isCurrentPlayer) {
 			this.scene.cameras.main.startFollow(this.head)
 			this.playerLight = this.scene.add.pointlight(
@@ -271,16 +269,18 @@ export class PlayerV2 {
 
 	destroy() {
 		if (this.isCurrentPlayer) {
-			this.scene.cameras.main.stopFollow()
-			this.scene.input.removeAllListeners()
+			this.scene.cameras.main.stopFollow();
+			this.scene.input.removeAllListeners();
 		}
 		this.sections.forEach((sec, i) => {
-			this.scene.tweens.add({
+			let tweenExamp= this.scene.tweens.add({
 				targets: sec,
 				alpha: 0,
 				duration: 300,
 				delay: (this.sections.length - i) * 10,
 				onComplete: () => {
+					tweenExamp.stop();
+					tweenExamp.remove();
 					sec.destroy(true)
 				},
 			})

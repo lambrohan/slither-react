@@ -46,7 +46,7 @@ export default class MainScene extends Phaser.Scene {
 		this.load.atlas('snake', '/snake.png', '/snake.json')
 	}
 
-	create() {
+	async create() {
 		this.foodGroup = this.add.group()
 		this.debugFPS = this.add.text(4, 4, '', { color: '#ff0000' })
 		this.debugFPS.setDepth(10)
@@ -65,29 +65,29 @@ export default class MainScene extends Phaser.Scene {
 		rect.setStrokeStyle(50, 0x000000)
 
 		this.matter.world.disableGravity()
-		this.createBg()
+		await this.createBg()
 		// this.createHex()
 		// this.scaleDiagonalHexagons(1)
 		this.initRoom()
-		;(window as any).leaderboardInterval = setInterval(() => {
-			this.updateLeaderboard()
+		;(window as any).leaderboardInterval = setInterval(async () => {
+			await this.updateLeaderboard()
 		}, 1000)
 	}
 
 	async initRoom() {
 		const client = new Colyseus.Client(
-			process.env.WS_ENDPOINT || 'ws://192.168.29.71:2567'
+			process.env.WS_ENDPOINT || 'ws://localhost:2567'
 		)
 		this.gameRoom = await client.joinOrCreate<GameState>('my_room', {
 			nickname: localStorage.getItem('nickname'),
 		})
-		this.gameRoom.state.foodItems.onAdd = (f) => this._onAddFood(f)
-		this.gameRoom.state.foodItems.onRemove = (f) => this._onRemoveFood(f)
-		this.gameRoom.state.players.onAdd = (p) => this._onPlayerAdd(p)
-		this.gameRoom.state.players.onRemove = (p) => this._onPlayerRemove(p)
+		this.gameRoom.state.foodItems.onAdd = async (f) => await this._onAddFood(f)
+		this.gameRoom.state.foodItems.onRemove = async (f) => await this._onRemoveFood(f)
+		this.gameRoom.state.players.onAdd = async (p) => await this._onPlayerAdd(p)
+		this.gameRoom.state.players.onRemove = async (p) => await this._onPlayerRemove(p)
 	}
 
-	updateLeaderboard() {
+	async updateLeaderboard() {
 		if (!this.gameRoom) return
 		if (!this.gameRoom.state) return
 		const sortedPlayers: PlayerState[] = []
@@ -109,7 +109,7 @@ export default class MainScene extends Phaser.Scene {
 		;(window as any).updateLeaderboard(sortedPlayers)
 	}
 
-	_onPlayerAdd(playerState: PlayerState) {
+	async _onPlayerAdd(playerState: PlayerState) {
 		if (!playerState?.sessionId) return
 
 		const player = new PlayerV2(
@@ -125,7 +125,7 @@ export default class MainScene extends Phaser.Scene {
 		this.playerObjects.set(playerState.sessionId, player)
 	}
 
-	_onPlayerRemove(playerState: PlayerState) {
+	async _onPlayerRemove(playerState: PlayerState) {
 		if (!playerState.sessionId) return
 		if (this.player?.playerState.sessionId === playerState.sessionId) {
 			this.gameRoom.leave()
@@ -144,19 +144,21 @@ export default class MainScene extends Phaser.Scene {
 		this.playerObjects.delete(playerState.sessionId)
 	}
 
-	_onRemoveFood(foodItem: FoodItem) {
+	async _onRemoveFood(foodItem: FoodItem) {
 		const foodObj = this.foodObjects.get(foodItem.id)!
 		this.foodObjects.delete(foodItem.id)
-		this.tweens.add({
+		var tween :Phaser.Tweens.Tween =  this.tweens.add({
 			targets: foodObj,
 			scale: 0,
 			duration: 100,
 			onComplete: () => {
-				foodObj?.destroy()
+				foodObj?.destroy();
+				tween.stop();
+				tween.remove();
 			},
 		})
 	}
-	_onAddFood(foodItem: FoodItem) {
+	async _onAddFood(foodItem: FoodItem) {
 		const f = new Food({
 			scene: this,
 			foodState: foodItem,
@@ -248,7 +250,7 @@ export default class MainScene extends Phaser.Scene {
 		})
 	}
 
-	createBg() {
+	async createBg() {
 		const gridSizeX = Math.ceil(GameMeta.boundX / this.tileW) + 2
 		const gridSizeY = Math.ceil(GameMeta.boundY / this.tileH)
 		for (let i = 0; i <= gridSizeX; i++) {
