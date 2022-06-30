@@ -13,19 +13,12 @@ import _ from 'lodash'
 export default class MainScene extends Phaser.Scene {
 	tileW = 584
 	tileH = 527
-	hexWidth = 70
-	border = 2
-	hexHeight = 80
-	hexArray: Phaser.GameObjects.Sprite[][] = []
-	hexGroup: Phaser.GameObjects.Group | undefined = undefined
 	gridSizeX: number = 0
 	gridSizeY: number = 0
-	hexConeHeight: number = 0
 	player: PlayerV2 | null = null
 	foodGroup!: Phaser.GameObjects.Group
 	foodObjects: Map<String, Food> = new Map()
 	players: Array<PlayerV2> = []
-	gamepad: GamePad | null = null
 	gameRoom!: Room<GameState>
 	playerObjects: Map<String, PlayerV2> = new Map()
 	elapsedTime = 0
@@ -39,9 +32,7 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	preload() {
-		this.load.image('hex', '/hex.svg')
 		this.load.image('bg', '/bg.png')
-		this.load.atlas('slither', '/spritesheet.png', '/slither.json')
 		this.load.atlas('food', '/food.png', '/food.json')
 		this.load.atlas('snake', '/snake.png', '/snake.json')
 	}
@@ -66,8 +57,6 @@ export default class MainScene extends Phaser.Scene {
 
 		this.matter.world.disableGravity()
 		this.createBg()
-		// this.createHex()
-		// this.scaleDiagonalHexagons(1)
 		this.initRoom()
 		;(window as any).leaderboardInterval = setInterval(() => {
 			this.updateLeaderboard()
@@ -81,7 +70,7 @@ export default class MainScene extends Phaser.Scene {
 		this.gameRoom = await client.joinOrCreate<GameState>('my_room', {
 			nickname: localStorage.getItem('nickname'),
 		})
-		this.gameRoom.state.foodItems.onAdd = (f) => this._onAddFood(f)
+		this.gameRoom.state.foodItems.onAdd = async (f) => await this._onAddFood(f)
 		this.gameRoom.state.foodItems.onRemove = (f) => this._onRemoveFood(f)
 		this.gameRoom.state.players.onAdd = (p) => this._onPlayerAdd(p)
 		this.gameRoom.state.players.onRemove = (p) => this._onPlayerRemove(p)
@@ -156,12 +145,13 @@ export default class MainScene extends Phaser.Scene {
 			},
 		})
 	}
-	_onAddFood(foodItem: FoodItem) {
+	async _onAddFood(foodItem: FoodItem) {
 		const f = new Food({
 			scene: this,
 			foodState: foodItem,
 		})
 		this.foodObjects.set(foodItem.id, f)
+		return 0
 	}
 
 	update(time: number, delta: number): void {
@@ -185,56 +175,6 @@ export default class MainScene extends Phaser.Scene {
 
 	_processhandler(head: any, food: any) {
 		return true
-	}
-
-	createHex() {
-		this.hexConeHeight = (Math.tan(Math.PI / 6) * this.hexWidth) / 2
-		this.hexGroup = this.add.group()
-		this.gridSizeX = Math.ceil(GameMeta.boundX / (this.hexWidth - this.border))
-		this.gridSizeY = Math.ceil(
-			GameMeta.boundY / (this.hexHeight - this.hexConeHeight)
-		)
-
-		for (let i = 1; i < this.gridSizeX; i++) {
-			this.hexArray[i] = []
-			for (let j = 1; j < this.gridSizeY; j++) {
-				const x = i * (this.hexWidth + this.border)
-				const y = j * (this.hexHeight - this.hexConeHeight + this.border)
-				const xOffset = j % 2 == 0 ? (this.hexWidth + this.border) / 2 : 0
-				const hex = this.add.sprite(x + xOffset, y, 'hex')
-				hex.setAlpha(_.random(0.6, 1.0))
-				hex.setDepth(1)
-				if (this.hexArray[i]) {
-					this.hexArray[i][j] = hex
-				}
-				this.hexGroup.add(hex)
-			}
-		}
-
-		this.hexGroup.setOrigin(1.5, 1)
-	}
-
-	scaleDiagonalHexagons(scale: number) {
-		var m = this.hexArray.length
-		var n = this.hexArray[1].length
-		var delay = 1
-		for (var slice = 1; slice < m + n - 1; ++slice) {
-			var z1 = slice < n ? 1 : slice - n + 1
-			var z2 = slice < m ? 1 : slice - m + 1
-			for (var j = slice - z2; j >= z1; --j) {
-				var hexagon = this.hexArray[j][slice - j]
-				this.add.tween({
-					targets: hexagon,
-					alpha: Phaser.Math.Between(70, 89) / 100,
-					angle: 0,
-					scaleX: scale,
-					scaleY: scale,
-					duration: 400,
-					ease: 'Linear',
-					delay,
-				})
-			}
-		}
 	}
 
 	setInputs() {
