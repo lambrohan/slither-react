@@ -169,7 +169,10 @@ export default class MainScene extends Phaser.Scene {
 			p.update()
 		})
 		if (this.player) {
-			;(window as any).updateScore(this.player.playerState.tokens || 0)
+			;(window as any).updateScore(
+				this.player.playerState.tokens || 0,
+				this.player.playerState.kills || 0
+			)
 		}
 	}
 

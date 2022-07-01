@@ -12,9 +12,11 @@ export const Score: React.FC<ScoreProps> = ({}) => {
 	const [scale, setScale] = useState(1)
 	const [startedAt] = useState(Date.now())
 	const [timerText, setTimerText] = useState('00:00')
+	const [kills, setKills] = useState(0)
 
-	;(window as any).updateScore = (val: number) => {
+	;(window as any).updateScore = (val: number, kills: number) => {
 		setScore(val)
+		setKills(kills)
 	}
 
 	useEffect(() => {
@@ -44,6 +46,9 @@ export const Score: React.FC<ScoreProps> = ({}) => {
 				<h4 style={{ transform: `scale(${scale})` }}>{score} Mil.</h4>
 			</div>
 			<h4>{timerText}</h4>
+			<p>
+				Killed - <strong>{kills}</strong>
+			</p>
 		</div>
 	)
 }
