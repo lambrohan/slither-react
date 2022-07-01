@@ -3,13 +3,13 @@ import { GameConfig } from '../Game/index'
 import { useEffectOnce } from '../Hooks/useEffectOnce'
 import { Score } from '../Game/GameOjbects/Score'
 import { RoomHeader } from '../Game/GameOjbects/RoomHeader'
-import { Leaderboard } from '../Game/GameOjbects/Leaderboard'
 import { PlayerState } from '../Game/Models/PlayerState'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { queryString } from '../Utils'
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
+import { Leaderboard } from '../Game/GameOjbects/Leaderboard/Leaderboard'
 dayjs.extend(duration)
 
 interface GameProps {}

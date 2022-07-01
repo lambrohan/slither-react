@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
-import { PlayerState } from '../Models/PlayerState'
+import { PlayerState } from '../../Models/PlayerState'
 interface LeaderboardProps {}
+import './leaderboard.scss'
 
 export const Leaderboard: React.FC<LeaderboardProps> = ({}) => {
 	const [players, setPlayers] = useState([])
@@ -10,7 +11,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({}) => {
 	return (
 		<div
 			id="leaderboard"
-			className="text-base font-semibold absolute right-12 top-10 text-white opacity-80"
+			className="text-base font-semibold absolute right-12 top-10 text-white opacity-80 leaderboard p-2 rounded-lg"
 		>
 			<h4 className="text-center">Leaderboard</h4>
 			<table className="mt-2">
