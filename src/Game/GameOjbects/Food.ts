@@ -9,6 +9,7 @@ export interface FoodOptions {
 }
 
 export class Food extends Phaser.Physics.Matter.Sprite {
+	mainScene!: MainScene
 	foodState: FoodItem | null = null
 	constructor({ scene, foodState }: FoodOptions) {
 		super(
@@ -29,6 +30,8 @@ export class Food extends Phaser.Physics.Matter.Sprite {
 			}
 		)
 		this.foodState = foodState
+		this.mainScene = scene
+
 		this.init()
 	}
 
@@ -38,6 +41,7 @@ export class Food extends Phaser.Physics.Matter.Sprite {
 		this.setDepth(2)
 		this.scene.add.existing(this)
 		this.setScale(this.foodState.scale)
+		this.mainScene.miniMap.ignore(this)
 	}
 }
 

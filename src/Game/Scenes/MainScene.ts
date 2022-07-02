@@ -26,6 +26,8 @@ export default class MainScene extends Phaser.Scene {
 	debugFPS!: Phaser.GameObjects.Text
 	sortedPlayers: PlayerState[] = []
 	playerRank = 0
+	container!: Phaser.GameObjects.Container
+	miniMap!: Phaser.Cameras.Scene2D.Camera
 
 	constructor() {
 		super('main')
@@ -38,7 +40,20 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	create() {
+		this.miniMap = this.cameras
+			.add(
+				this.sys.canvas.width - GameMeta.boundX / 12,
+				this.sys.canvas.height - GameMeta.boundY / 12,
+				GameMeta.boundX / 12,
+				GameMeta.boundY / 12
+			)
+			.setZoom(0.08)
+			.setName('mini')
+		this.miniMap
+			.setBounds(0, 0, GameMeta.boundX, GameMeta.boundY)
+			.setBackgroundColor(0x80000000)
 		this.foodGroup = this.add.group()
+
 		this.debugFPS = this.add.text(4, 4, '', { color: '#ff0000' })
 		this.debugFPS.setDepth(10)
 		this.debugFPS.setScrollFactor(0, 0)
@@ -136,12 +151,13 @@ export default class MainScene extends Phaser.Scene {
 	_onRemoveFood(foodItem: FoodItem) {
 		const foodObj = this.foodObjects.get(foodItem.id)!
 		this.foodObjects.delete(foodItem.id)
-		this.tweens.add({
+		const t = this.tweens.add({
 			targets: foodObj,
 			scale: 0,
 			duration: 100,
 			onComplete: () => {
 				foodObj?.destroy()
+				t.remove()
 			},
 		})
 	}
@@ -150,6 +166,7 @@ export default class MainScene extends Phaser.Scene {
 			scene: this,
 			foodState: foodItem,
 		})
+		this.foodGroup.add(f)
 		this.foodObjects.set(foodItem.id, f)
 		return 0
 	}
@@ -192,6 +209,7 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	createBg() {
+		const group = this.add.group()
 		const gridSizeX = Math.ceil(GameMeta.boundX / this.tileW) + 2
 		const gridSizeY = Math.ceil(GameMeta.boundY / this.tileH)
 		for (let i = 0; i <= gridSizeX; i++) {
@@ -199,7 +217,9 @@ export default class MainScene extends Phaser.Scene {
 				const c = this.add
 					.image(this.tileW * i, this.tileH * j, 'bg')
 					.setDepth(1)
+				group.add(c)
 			}
 		}
+		this.miniMap.ignore(group)
 	}
 }
