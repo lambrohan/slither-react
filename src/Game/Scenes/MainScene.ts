@@ -130,6 +130,7 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	_onPlayerRemove(playerState: PlayerState) {
+		console.log('player remove')
 		if (!playerState.sessionId) return
 		if (this.player?.playerState.sessionId === playerState.sessionId) {
 			this.gameRoom.leave()
@@ -188,7 +189,8 @@ export default class MainScene extends Phaser.Scene {
 		if (this.player) {
 			;(window as any).updateScore(
 				this.player.playerState.tokens || 0,
-				this.player.playerState.kills || 0
+				this.player.playerState.kills || 0,
+				this.gameRoom.state.players.size
 			)
 		}
 	}

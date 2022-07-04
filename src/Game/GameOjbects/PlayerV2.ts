@@ -272,6 +272,9 @@ export class PlayerV2 {
 				Phaser.Math.Linear(this.head.y, this.playerState.y, 0.08)
 			)
 		}
+		if (Math.abs(this.head.angle - this.playerState.angle) > 1) {
+			this.head.setAngle(this.playerState.angle)
+		}
 		this.playerLight.setPosition(this.head.x, this.head.y)
 	}
 

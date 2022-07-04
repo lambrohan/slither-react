@@ -13,10 +13,16 @@ export const Score: React.FC<ScoreProps> = ({}) => {
 	const [startedAt] = useState(Date.now())
 	const [timerText, setTimerText] = useState('00:00')
 	const [kills, setKills] = useState(0)
+	const [total, setTotal] = useState(0)
 
-	;(window as any).updateScore = (val: number, kills: number) => {
+	;(window as any).updateScore = (
+		val: number,
+		kills: number,
+		total: number
+	) => {
 		setScore(val)
 		setKills(kills)
+		setTotal(total)
 	}
 
 	useEffect(() => {
@@ -49,6 +55,7 @@ export const Score: React.FC<ScoreProps> = ({}) => {
 			<p>
 				Killed - <strong>{kills}</strong>
 			</p>
+			<p>Total Players - {total}</p>
 		</div>
 	)
 }
