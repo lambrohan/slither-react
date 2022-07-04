@@ -28,12 +28,11 @@ export const Dashboard: React.FC<DashboardProps> = ({}) => {
 								$ 133,42
 							</p>
 							<div>
-								<button className="text-white text-xs font-medium uppercase py-2.5 px-5 rounded-full bg-[#46125D]">
-									+ Add Funds
-								</button>
-								<button className="border--white  text-white text-xs font-medium uppercase py-2 px-5 rounded-full">
-									Remove Funds
-								</button>
+								<a href="https://pancakeswap.finance/swap">
+									<button className="text-white text-xs font-medium uppercase py-2.5 px-5 rounded-full bg-[#46125D]">
+										+ Add Funds
+									</button>
+								</a>
 							</div>
 						</div>
 					</div>

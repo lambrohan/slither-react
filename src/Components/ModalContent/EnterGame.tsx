@@ -10,24 +10,25 @@ import useWeb3Ctx from '../../Context/Web3Context'
 interface EnterGameProps {}
 
 export const EnterGame: React.FC<EnterGameProps> = ({}) => {
-	const { web3Instance, depositContract, account, contract } = useWeb3Ctx()
+	const {
+		web3Instance,
+		depositContract,
+		account,
+		babyDogeContract,
+		usdtContract,
+	} = useWeb3Ctx()
 
 	const initDeposit = async () => {
 		const amt = 100
 		const nonce = 2
-		await contract.methods
+		await babyDogeContract.methods
 			.approve('0xB116c568d1c056046aD7095C941Ed6491A79cD7A', amt)
 			.send({
 				from: account,
 			})
 
 		const response = await depositContract.methods
-			.depositTokens(
-				account,
-				amt,
-				nonce,
-				'0xd86d89f77e3f89e3e79800b323872532deea3783ec65b75012d26e5b34fea7d24466c89650d4640511629b9f3e4f34d7ccd356f284a3205ca295a676fbaec8d01b'
-			)
+			.depositTokensTest('0x0000000000000000000000000000000000000000', 0)
 			.send({
 				from: account,
 				value: 100,
@@ -104,9 +105,9 @@ export const EnterGame: React.FC<EnterGameProps> = ({}) => {
 								xmlns="http://www.w3.org/2000/svg"
 							>
 								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									stroke-width="2"
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth="2"
 									d="M19 9l-7 7-7-7"
 								></path>
 							</svg>
