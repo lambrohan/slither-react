@@ -4,8 +4,8 @@ import * as Web3Token from 'web3-token'
 import WalletConnectProvider from '@walletconnect/web3-provider'
 import Web3Modal from 'web3modal'
 import CoinbaseWalletSDK from '@coinbase/wallet-sdk'
-import ABI from '../abi/babydoge.json'
-import { StorageService } from '../Services'
+import babyDogeABI from '../abi/babydoge.json'
+import despositABI from '../abi/deposit.json'
 const providerOptions = {
 	/* See Provider Options Section */
 	walletconnect: {
@@ -44,13 +44,20 @@ export type Web3ContextType = {
 	openModal: () => void
 	account: string | null
 	balance: string | number | undefined
+	web3Instance: Web3
+	babyDogeContract: any
+	usdtContract: any
+	depositContract: any
 }
 export const Web3Context = createContext<Web3ContextType | null>(null)
 
 export const Web3Provider: React.FC<any> = (props) => {
 	const [account, setAccount] = useState<string | null>(null)
 	const [balance, setBalance] = useState<string | number | undefined>(undefined)
-	const [token, setToken] = useState<string | null>(null)
+	const [web3Instance, setWeb3Instance] = useState<any>(null)
+	const [babyDogeContract, setBabyDogeContract] = useState<any>(null)
+	const [usdtContract, setUsdtContract] = useState<any>(null)
+	const [depositContract, setDepositContract] = useState<any>(null)
 
 	const openModal = async () => {
 		const provider = await web3Modal.connect()
@@ -58,7 +65,7 @@ export const Web3Provider: React.FC<any> = (props) => {
 		try {
 			await window.ethereum.request({
 				method: 'wallet_switchEthereumChain',
-				params: [{ chainId: '0x38' }], // chainId must be in hexadecimal numbers
+				params: [{ chainId: '0x61' }], // chainId must be in hexadecimal numbers
 			})
 		} catch (err: any) {
 			if (err.code === 4902)
@@ -66,14 +73,14 @@ export const Web3Provider: React.FC<any> = (props) => {
 					method: 'wallet_addEthereumChain',
 					params: [
 						{
-							chainId: '0x38',
+							chainId: '0x61',
 							chainName: 'BSC mainnet',
 							nativeCurrency: {
 								name: 'Binance Coin',
 								symbol: 'BNB',
 								decimals: 18,
 							},
-							rpcUrls: ['https://bsc-dataseed.binance.org/'],
+							rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545/'],
 							blockExplorerUrls: ['https://bscscan.com/'],
 						},
 					],
@@ -81,21 +88,43 @@ export const Web3Provider: React.FC<any> = (props) => {
 		}
 
 		const web3 = new Web3(provider)
+		setWeb3Instance(web3)
 		const [account] = await web3.eth.getAccounts()
-		const token = await Web3Token.sign(
-			(msg) => web3.eth.personal.sign(msg, account, ''),
-			'1h'
+		const babyDogeContract = new web3.eth.Contract(
+			babyDogeABI as any,
+			'0x24043F6738bD40772179fb334f5289261CC7e829'
 		)
-		setToken(token)
-		StorageService.setToken(token)
-		const balance = await getBalance(provider)
+
+		const usdtContract = new web3.eth.Contract(
+			babyDogeABI as any,
+			'0x288274bE90365785d40a035337bA68945A5499D9'
+		)
+		const depositContract = new web3.eth.Contract(
+			despositABI as any,
+			'0xaECce2E8D0d98B8D3D229b5875AdBF122d1DA80A'
+		)
+
+		setUsdtContract(usdtContract)
+		setDepositContract(depositContract)
+		setBabyDogeContract(babyDogeContract)
+		const balance = await getBalance(provider, babyDogeContract)
 		setBalance(balance)
 		setAccount(account)
 		console.log('Account Address', account)
 	}
 
 	return (
-		<Web3Context.Provider value={{ account, openModal, balance }}>
+		<Web3Context.Provider
+			value={{
+				account,
+				openModal,
+				balance,
+				web3Instance,
+				babyDogeContract,
+				depositContract,
+				usdtContract,
+			}}
+		>
 			{props.children}
 		</Web3Context.Provider>
 	)
@@ -105,15 +134,12 @@ export default function useWeb3Ctx(): Web3ContextType {
 	return useContext(Web3Context) as Web3ContextType
 }
 
-export const getBalance = (provider: any): Promise<string> => {
+export const getBalance = (provider: any, contract: any): Promise<string> => {
 	return new Promise(async (resolve, reject) => {
 		try {
 			const web3 = new Web3(provider)
 			const [account] = await web3.eth.getAccounts()
-			const contract = new web3.eth.Contract(
-				ABI as any,
-				'0xc748673057861a797275CD8A068AbB95A902e8de'
-			)
+
 			const balance = (await contract.methods
 				.balanceOf(account)
 				.call()) as string

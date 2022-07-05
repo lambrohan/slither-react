@@ -14,8 +14,7 @@ export class PlayerV2 {
 	scene!: MainScene
 	head!: Phaser.Physics.Matter.Sprite
 	playerState!: PlayerState
-	snakePath = new Array<Point>()
-	sections = new Array<Phaser.Physics.Matter.Sprite>()
+	sections = new Array<Phaser.GameObjects.Sprite>()
 	sectionGroup!: Phaser.GameObjects.Group
 	isCurrentPlayer: boolean = false
 	cursorKeys!: Phaser.Types.Input.Keyboard.CursorKeys
@@ -25,7 +24,9 @@ export class PlayerV2 {
 	skin!: SnakeSkinSprite
 	playerNameText!: Phaser.GameObjects.Text
 	playerLight!: Phaser.GameObjects.PointLight
-	snakeSpacer = 1
+	scale = 1
+	snakeSpacer = 3
+	snakePath!: Array<Point>
 
 	constructor(
 		scene: MainScene,
@@ -35,7 +36,6 @@ export class PlayerV2 {
 		this.playerState = playerState
 		this.scene = scene
 		this.isCurrentPlayer = isCurrentPlayer
-		this.sectionGroup = this.scene.add.group()
 		this.skin = getSkinAssetFromEnum(this.playerState.skin)
 		this.init()
 	}
@@ -53,7 +53,7 @@ export class PlayerV2 {
 			this.playerState.x,
 			this.playerState.y,
 			'snake',
-			this.skin.head,
+			'snake_head_blue.png',
 			{
 				isSensor: true,
 				friction: 0,
@@ -76,7 +76,7 @@ export class PlayerV2 {
 			this.playerLight = this.scene.add.pointlight(
 				this.head.x,
 				this.head.y,
-				0xfffff,
+				0xaa0000,
 				150,
 				0.1
 			)
@@ -149,11 +149,11 @@ export class PlayerV2 {
 		}
 
 		this.playerState.sections.onRemove = () => {
-			this.sections.pop()?.destroy()
-			this.snakePath = this.snakePath.slice(
-				0,
-				this.snakePath.length - this.snakeSpacer
-			)
+			const sec = this.sections.pop()
+			if (sec) {
+				this.sectionGroup.remove(sec)
+				sec.destroy()
+			}
 		}
 	}
 
@@ -166,25 +166,15 @@ export class PlayerV2 {
 	}
 
 	initSections(num: number) {
+		this.sections = []
+		this.snakePath = []
+		this.sectionGroup = this.scene.add.group([], {
+			defaultKey: 'snake',
+			defaultFrame: 'snake_body_blue.png',
+		})
 		for (let i = 1; i <= num - 1; i++) {
-			const sec = this.scene.matter.add.sprite(
-				this.head.x,
-				this.head.y,
-				'snake',
-				this.skin.body,
-				{
-					isSensor: true,
-					mass: 0,
-					friction: 0,
-					frictionAir: 0,
-					collisionFilter: {
-						group: -1,
-						category: 2,
-						mask: 0,
-					},
-				}
-			)
-
+			const sec = this.sectionGroup.create(this.head.x, this.head.y)
+			sec.setDepth(2)
 			this.sections[i] = sec
 		}
 
@@ -195,26 +185,9 @@ export class PlayerV2 {
 
 	addSection() {
 		const last = this.sections[this.sections.length - 1]
-		const sec = this.scene.matter.add.sprite(
-			last.x,
-			last.y,
-			'snake',
-			this.skin.body,
-			{
-				isSensor: true,
-				mass: 0,
-				friction: 0,
-				frictionAir: 0,
-				collisionFilter: {
-					group: -1,
-					category: 2,
-					mask: 0,
-				},
-			}
-		)
-		sec.setDepth(2)
+		const sec = this.sectionGroup.create(last.x, last.y)
+		sec.setDepth(2).setAngle(last.angle)
 		this.sections.push(sec)
-
 		for (
 			let i = this.snakePath.length;
 			i <= this.playerState.snakeLength * this.snakeSpacer;
@@ -232,6 +205,9 @@ export class PlayerV2 {
 		this.head
 			.setAlpha(this.playerState.cooldown ? 0.4 : 1)
 			.setScale(this.playerState.scale)
+
+		this.scale = this.playerState.scale
+
 		// for testing only
 		// console.log(this.head.angle, this.playerState.angle)
 		this.refMovement()
@@ -296,6 +272,9 @@ export class PlayerV2 {
 				Phaser.Math.Linear(this.head.y, this.playerState.y, 0.08)
 			)
 		}
+		if (Math.abs(this.head.angle - this.playerState.angle) > 1) {
+			this.head.setAngle(this.playerState.angle)
+		}
 		this.playerLight.setPosition(this.head.x, this.head.y)
 	}
 
@@ -315,17 +294,7 @@ export class PlayerV2 {
 			this.scene.cameras.main.stopFollow()
 			this.scene.input.removeAllListeners()
 		}
-		this.sections.forEach((sec, i) => {
-			this.scene.tweens.add({
-				targets: sec,
-				alpha: 0,
-				duration: 300,
-				delay: (this.sections.length - i) * 10,
-				onComplete: () => {
-					sec.destroy(true)
-				},
-			})
-		})
+		this.sectionGroup.destroy(true, true)
 		this.head?.destroy(true)
 		this.playerNameText?.destroy()
 		this.sections = []

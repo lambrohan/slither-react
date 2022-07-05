@@ -11,19 +11,14 @@ import { PlayerV2 } from '../GameOjbects/PlayerV2'
 import _ from 'lodash'
 
 export default class MainScene extends Phaser.Scene {
-	hexWidth = 70
-	border = 2
-	hexHeight = 80
-	hexArray: Phaser.GameObjects.Sprite[][] = []
-	hexGroup: Phaser.GameObjects.Group | undefined = undefined
+	tileW = 584
+	tileH = 527
 	gridSizeX: number = 0
 	gridSizeY: number = 0
-	hexConeHeight: number = 0
 	player: PlayerV2 | null = null
 	foodGroup!: Phaser.GameObjects.Group
 	foodObjects: Map<String, Food> = new Map()
 	players: Array<PlayerV2> = []
-	gamepad: GamePad | null = null
 	gameRoom!: Room<GameState>
 	playerObjects: Map<String, PlayerV2> = new Map()
 	elapsedTime = 0
@@ -31,20 +26,34 @@ export default class MainScene extends Phaser.Scene {
 	debugFPS!: Phaser.GameObjects.Text
 	sortedPlayers: PlayerState[] = []
 	playerRank = 0
+	container!: Phaser.GameObjects.Container
+	miniMap!: Phaser.Cameras.Scene2D.Camera
 
 	constructor() {
 		super('main')
 	}
 
 	preload() {
-		this.load.image('hex', '/hex.svg')
-		this.load.atlas('slither', '/spritesheet.png', '/slither.json')
+		this.load.image('bg', '/bg.png')
 		this.load.atlas('food', '/food.png', '/food.json')
 		this.load.atlas('snake', '/snake.png', '/snake.json')
 	}
 
 	create() {
+		this.miniMap = this.cameras
+			.add(
+				this.sys.canvas.width - GameMeta.boundX / 12,
+				this.sys.canvas.height - GameMeta.boundY / 12,
+				GameMeta.boundX / 12,
+				GameMeta.boundY / 12
+			)
+			.setZoom(0.08)
+			.setName('mini')
+		this.miniMap
+			.setBounds(0, 0, GameMeta.boundX, GameMeta.boundY)
+			.setBackgroundColor(0x80000000)
 		this.foodGroup = this.add.group()
+
 		this.debugFPS = this.add.text(4, 4, '', { color: '#ff0000' })
 		this.debugFPS.setDepth(10)
 		this.debugFPS.setScrollFactor(0, 0)
@@ -62,8 +71,7 @@ export default class MainScene extends Phaser.Scene {
 		rect.setStrokeStyle(50, 0x000000)
 
 		this.matter.world.disableGravity()
-		this.createHex()
-		// this.scaleDiagonalHexagons(1)
+		this.createBg()
 		this.initRoom()
 		;(window as any).leaderboardInterval = setInterval(() => {
 			this.updateLeaderboard()
@@ -77,7 +85,7 @@ export default class MainScene extends Phaser.Scene {
 		this.gameRoom = await client.joinOrCreate<GameState>('my_room', {
 			nickname: localStorage.getItem('nickname'),
 		})
-		this.gameRoom.state.foodItems.onAdd = (f) => this._onAddFood(f)
+		this.gameRoom.state.foodItems.onAdd = async (f) => await this._onAddFood(f)
 		this.gameRoom.state.foodItems.onRemove = (f) => this._onRemoveFood(f)
 		this.gameRoom.state.players.onAdd = (p) => this._onPlayerAdd(p)
 		this.gameRoom.state.players.onRemove = (p) => this._onPlayerRemove(p)
@@ -122,6 +130,7 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	_onPlayerRemove(playerState: PlayerState) {
+		console.log('player remove')
 		if (!playerState.sessionId) return
 		if (this.player?.playerState.sessionId === playerState.sessionId) {
 			this.gameRoom.leave()
@@ -143,21 +152,24 @@ export default class MainScene extends Phaser.Scene {
 	_onRemoveFood(foodItem: FoodItem) {
 		const foodObj = this.foodObjects.get(foodItem.id)!
 		this.foodObjects.delete(foodItem.id)
-		this.tweens.add({
+		const t = this.tweens.add({
 			targets: foodObj,
 			scale: 0,
 			duration: 100,
 			onComplete: () => {
 				foodObj?.destroy()
+				t.remove()
 			},
 		})
 	}
-	_onAddFood(foodItem: FoodItem) {
+	async _onAddFood(foodItem: FoodItem) {
 		const f = new Food({
 			scene: this,
 			foodState: foodItem,
 		})
+		this.foodGroup.add(f)
 		this.foodObjects.set(foodItem.id, f)
+		return 0
 	}
 
 	update(time: number, delta: number): void {
@@ -175,62 +187,16 @@ export default class MainScene extends Phaser.Scene {
 			p.update()
 		})
 		if (this.player) {
-			;(window as any).updateScore(this.player.playerState.tokens || 0)
+			;(window as any).updateScore(
+				this.player.playerState.tokens || 0,
+				this.player.playerState.kills || 0,
+				this.gameRoom.state.players.size
+			)
 		}
 	}
 
 	_processhandler(head: any, food: any) {
 		return true
-	}
-
-	createHex() {
-		this.hexConeHeight = (Math.tan(Math.PI / 6) * this.hexWidth) / 2
-		this.hexGroup = this.add.group()
-		this.gridSizeX = Math.ceil(GameMeta.boundX / (this.hexWidth - this.border))
-		this.gridSizeY = Math.ceil(
-			GameMeta.boundY / (this.hexHeight - this.hexConeHeight)
-		)
-
-		for (let i = 1; i < this.gridSizeX; i++) {
-			this.hexArray[i] = []
-			for (let j = 1; j < this.gridSizeY; j++) {
-				const x = i * (this.hexWidth + this.border)
-				const y = j * (this.hexHeight - this.hexConeHeight + this.border)
-				const xOffset = j % 2 == 0 ? (this.hexWidth + this.border) / 2 : 0
-				const hex = this.add.sprite(x + xOffset, y, 'hex')
-				hex.setAlpha(_.random(0.6, 1.0))
-				hex.setDepth(1)
-				if (this.hexArray[i]) {
-					this.hexArray[i][j] = hex
-				}
-				this.hexGroup.add(hex)
-			}
-		}
-
-		this.hexGroup.setOrigin(1.5, 1)
-	}
-
-	scaleDiagonalHexagons(scale: number) {
-		var m = this.hexArray.length
-		var n = this.hexArray[1].length
-		var delay = 1
-		for (var slice = 1; slice < m + n - 1; ++slice) {
-			var z1 = slice < n ? 1 : slice - n + 1
-			var z2 = slice < m ? 1 : slice - m + 1
-			for (var j = slice - z2; j >= z1; --j) {
-				var hexagon = this.hexArray[j][slice - j]
-				this.add.tween({
-					targets: hexagon,
-					alpha: Phaser.Math.Between(70, 89) / 100,
-					angle: 0,
-					scaleX: scale,
-					scaleY: scale,
-					duration: 400,
-					ease: 'Linear',
-					delay,
-				})
-			}
-		}
 	}
 
 	setInputs() {
@@ -242,5 +208,20 @@ export default class MainScene extends Phaser.Scene {
 				Number(`${parseInt(x + '')}.${parseInt(y + '')}`)
 			)
 		})
+	}
+
+	createBg() {
+		const group = this.add.group()
+		const gridSizeX = Math.ceil(GameMeta.boundX / this.tileW) + 2
+		const gridSizeY = Math.ceil(GameMeta.boundY / this.tileH)
+		for (let i = 0; i <= gridSizeX; i++) {
+			for (let j = 0; j <= gridSizeY; j++) {
+				const c = this.add
+					.image(this.tileW * i, this.tileH * j, 'bg')
+					.setDepth(1)
+				group.add(c)
+			}
+		}
+		this.miniMap.ignore(group)
 	}
 }

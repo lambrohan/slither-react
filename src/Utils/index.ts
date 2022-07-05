@@ -82,6 +82,8 @@ export const CONSTANTS = {
 	DEF_SPEED: 3.5,
 	BOOST_SPEED: 6,
 	MIN_SNAKE_LENGTH: 30,
+	SNAKE_HEAD_RAD: 12,
+	FOOD_RADIUS: 25,
 }
 
 export class Point {
