@@ -111,10 +111,16 @@ export const Web3Provider: React.FC<any> = (props) => {
 		)
 		toast('token=' + token)
 		StorageService.setToken(token)
+		toast('token stored')
 		const babyDogeContract = new web3.eth.Contract(
 			babyDogeABI as any,
 			Web3Config.ADDRESS.babydoge
 		)
+
+		const balance = await getBalance(provider, babyDogeContract).catch((e) => {
+			toast('failed to get bal ' + e.message)
+		})
+		toast('balance ' + balance)
 
 		const usdtContract = new web3.eth.Contract(
 			babyDogeABI as any,
@@ -128,8 +134,7 @@ export const Web3Provider: React.FC<any> = (props) => {
 		setUsdtContract(usdtContract)
 		setDepositContract(depositContract)
 		setBabyDogeContract(babyDogeContract)
-		const balance = await getBalance(provider, babyDogeContract)
-		toast('balance ' + balance)
+
 		setBalance(Number((balance as any) / Math.pow(10, 18)))
 		setAccount(account)
 		console.log('Account Address', account)
