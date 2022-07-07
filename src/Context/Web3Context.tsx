@@ -16,7 +16,8 @@ const providerOptions = {
 		package: WalletConnectProvider, // required
 		options: {
 			rpc: {
-				56: 'https://speedy-nodes-nyc.moralis.io/362fc40c1ab324c15e79d4da/bsc/mainnet',
+				// 56: 'https://speedy-nodes-nyc.moralis.io/362fc40c1ab324c15e79d4da/bsc/mainnet',
+				97: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
 			},
 		},
 	},
@@ -28,8 +29,8 @@ const providerOptions = {
 		package: CoinbaseWalletSDK, // Required
 		options: {
 			appName: 'Baby Doge Coin', // Required
-			rpc: 'https://speedy-nodes-nyc.moralis.io/362fc40c1ab324c15e79d4da/bsc/mainnet', // Optional if `infuraId` is provided; otherwise it's required
-			chainId: 56, // Optional. It defaults to 1 if not provided
+			rpc: 'https://data-seed-prebsc-1-s1.binance.org:8545/', // Optional if `infuraId` is provided; otherwise it's required
+			chainId: 97, // Optional. It defaults to 1 if not provided
 		},
 	},
 }
@@ -119,8 +120,9 @@ export const Web3Provider: React.FC<any> = (props) => {
 				Web3Config.ADDRESS.babydoge
 			)
 
-			// const balance = await babyDogeContract.methods.balanceOf(account).call()
-			toast('balance ' + babyDogeContract)
+			const balance = await babyDogeContract.methods.balanceOf(account).call()
+			setBalance(balance)
+			toast('balance ' + balance)
 		} catch (error: any) {
 			toast.error(error.message || 'failed')
 		}
