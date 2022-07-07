@@ -104,10 +104,12 @@ export const Web3Provider: React.FC<any> = (props) => {
 
 		setWeb3Instance(web3)
 		const [account] = await web3.eth.getAccounts()
+		toast('account=' + account)
 		const token = await Web3Token.sign(
 			(msg) => web3.eth.personal.sign(msg, account, ''),
 			'1d'
 		)
+		toast('token=' + token)
 		StorageService.setToken(token)
 		const babyDogeContract = new web3.eth.Contract(
 			babyDogeABI as any,
@@ -127,6 +129,7 @@ export const Web3Provider: React.FC<any> = (props) => {
 		setDepositContract(depositContract)
 		setBabyDogeContract(babyDogeContract)
 		const balance = await getBalance(provider, babyDogeContract)
+		toast('balance ' + balance)
 		setBalance(Number((balance as any) / Math.pow(10, 18)))
 		setAccount(account)
 		console.log('Account Address', account)
