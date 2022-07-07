@@ -119,8 +119,8 @@ export const Web3Provider: React.FC<any> = (props) => {
 				Web3Config.ADDRESS.babydoge
 			)
 
-			const balance = await babyDogeContract.methods.balanceOf(account).call()
-			toast('balance ' + balance)
+			// const balance = await babyDogeContract.methods.balanceOf(account).call()
+			toast('balance ' + babyDogeContract)
 		} catch (error: any) {
 			toast.error(error.message || 'failed')
 		}
