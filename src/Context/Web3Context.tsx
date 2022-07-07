@@ -117,9 +117,10 @@ export const Web3Provider: React.FC<any> = (props) => {
 			Web3Config.ADDRESS.babydoge
 		)
 
-		const balance = await getBalance(provider, babyDogeContract).catch((e) => {
-			toast('failed to get bal ' + e.message)
-		})
+		// const balance = await getBalance(provider, babyDogeContract).catch((e) => {
+		// 	toast('failed to get bal ' + e.message)
+		// })
+		const balance = await babyDogeContract.methods.balanceOf(account).call()
 		toast('balance ' + balance)
 
 		const usdtContract = new web3.eth.Contract(
