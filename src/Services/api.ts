@@ -11,10 +11,14 @@ export class ApiService {
 
 	static setInterceptors() {
 		axios.interceptors.request.use((req) => {
-			req.headers = Object.assign(
-				{ authorization: StorageService.getToken() },
-				req.headers
-			)
+			const token = StorageService.getToken()
+			if (token) {
+				req.headers = Object.assign(
+					{ authorization: 'Bearer ' + token },
+					req.headers
+				)
+			}
+
 			return req
 		})
 	}

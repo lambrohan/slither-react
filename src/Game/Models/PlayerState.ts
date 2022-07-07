@@ -4,6 +4,9 @@ import { FoodItem } from './FoodItem'
 import { SnakeSectionState } from './SnakeSection'
 
 export class PlayerState extends Schema {
+	@type('number')
+	rank: number = 0
+
 	@type('string')
 	publicAddress: string = ''
 

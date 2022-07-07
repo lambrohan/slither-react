@@ -5,8 +5,8 @@ import Coin from '../../assets/images/coin.webp'
 import Increase from '../../assets/images/increase.svg'
 import './ModalContent.scss'
 interface CongratulationProps {
-	tokens: string
-	rank: string
+	tokens: number
+	rank: number
 	onNext: Function
 }
 

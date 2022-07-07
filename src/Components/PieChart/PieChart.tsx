@@ -1,21 +1,19 @@
-import React, { useState } from "react";
-import { PieChart } from "react-minimal-pie-chart";
+import React, { useState } from 'react'
+import { PieChart } from 'react-minimal-pie-chart'
 
-interface PieChartDrawProps {}
+interface PieChartDrawProps {
+	win: number
+	lose: number
+}
 
-export const PieChartDraw: React.FC<PieChartDrawProps> = ({}) => {
-  const data = [
-    { title: "One", value: 10, color: "#E38627" },
-    { title: "Two", value: 15, color: "#C13C37" },
-    { title: "Three", value: 20, color: "#6A2135" },
-]
-    return (
-        <>
-            <PieChart
-                data={data}
-                
-            />
-            
-        </>
-    );
-};
+export const PieChartDraw: React.FC<PieChartDrawProps> = ({ win, lose }) => {
+	const data = [
+		{ title: 'win', value: win, color: '#00ff0080' },
+		{ title: 'lose', value: lose, color: '#ff000080' },
+	]
+	return (
+		<>
+			<PieChart data={data} animate />
+		</>
+	)
+}

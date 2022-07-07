@@ -1,6 +1,12 @@
-.modal{
 
+.overlay{
+  background: rgba(32, 32, 32, 0.26);
+
+}
+.modal{
+  z-index: 99;
   .wrapper{
+    z-index: 1000;
 
     .modal-content{
       min-width: 200px;

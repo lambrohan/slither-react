@@ -9,6 +9,9 @@ import * as Colyseus from 'colyseus.js'
 import { PlayerState } from '../Models/PlayerState'
 import { PlayerV2 } from '../GameOjbects/PlayerV2'
 import _ from 'lodash'
+import { StorageService } from '../../Services'
+import toast from 'react-hot-toast'
+import { GameSessionResponse } from '../../Repositories/session'
 
 export default class MainScene extends Phaser.Scene {
 	tileW = 584
@@ -82,34 +85,40 @@ export default class MainScene extends Phaser.Scene {
 		const client = new Colyseus.Client(
 			process.env.WS_ENDPOINT || 'ws://192.168.29.71:2567'
 		)
-		this.gameRoom = await client.joinOrCreate<GameState>('my_room', {
-			nickname: localStorage.getItem('nickname'),
-		})
+		try {
+			this.gameRoom = await client.joinOrCreate<GameState>('my_room', {
+				nickname: localStorage.getItem('nickname'),
+				accessToken: StorageService.getToken(),
+				roomName: localStorage.getItem('roomName'),
+				stakeAmtUsd: localStorage.getItem('stakeUSD'),
+			})
+		} catch (error: any) {
+			toast(error.message)
+			this.game.destroy(true)
+			;(window as any).navigateTo('/entergame')
+		}
+
 		this.gameRoom.state.foodItems.onAdd = async (f) => await this._onAddFood(f)
 		this.gameRoom.state.foodItems.onRemove = (f) => this._onRemoveFood(f)
 		this.gameRoom.state.players.onAdd = (p) => this._onPlayerAdd(p)
 		this.gameRoom.state.players.onRemove = (p) => this._onPlayerRemove(p)
+		this.gameRoom.onMessage('gameover', async (sessionId: string) => {
+			console.log('GAMEOVER')
+			await this.gameRoom.leave()
+			await this.game.destroy(true)
+			clearInterval((window as any).leaderboardInterval)
+			;(window as any).navigateTo(`/gameover?sessionId=${sessionId}`)
+		})
 	}
 
 	updateLeaderboard() {
 		if (!this.gameRoom) return
 		if (!this.gameRoom.state) return
 		const sortedPlayers: PlayerState[] = []
-		let maxScore = 0
 		this.gameRoom.state.players.forEach((p) => {
-			if (p.tokens > maxScore) {
-				sortedPlayers.unshift(p)
-				maxScore = p.tokens
-			} else {
-				sortedPlayers.push(p)
-			}
+			sortedPlayers[p.rank - 1] = p
 		})
 		this.sortedPlayers = sortedPlayers
-		const r = this.sortedPlayers.findIndex(
-			(p) => p.sessionId == this.player?.playerState.sessionId
-		)
-
-		r !== -1 ? (this.playerRank = r + 1) : ''
 		;(window as any).updateLeaderboard(sortedPlayers)
 	}
 
@@ -131,18 +140,6 @@ export default class MainScene extends Phaser.Scene {
 
 	_onPlayerRemove(playerState: PlayerState) {
 		console.log('player remove')
-		if (!playerState.sessionId) return
-		if (this.player?.playerState.sessionId === playerState.sessionId) {
-			this.gameRoom.leave()
-			setTimeout(() => {
-				clearInterval((window as any).leaderboardInterval)
-				;(window as any).onGameOver(
-					{ ...this.player?.playerState, endAt: Date.now() },
-					this.playerRank
-				)
-				this.game?.destroy(true)
-			}, 500)
-		}
 
 		this.playerObjects.get(playerState.sessionId)?.destroy()
 

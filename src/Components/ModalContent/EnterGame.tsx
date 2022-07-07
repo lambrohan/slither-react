@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import borderLine from '../../assets/images/borderLine.png'
 import Ice from '../../assets/images/Ice.png'
 import Fire from '../../assets/images/Fire.png'
@@ -6,36 +6,36 @@ import './ModalContent.scss'
 import LeftSolid from '../../assets/images/leftSolid.svg'
 import RightSolid from '../../assets/images/rightSolid.svg'
 import useWeb3Ctx from '../../Context/Web3Context'
+import { RoomRepo, RoomResponse } from '../../Repositories/room'
+import { useEffectOnce } from '../../Hooks/useEffectOnce'
+import toast from 'react-hot-toast'
+import { useNavigate } from 'react-router-dom'
+import { queryString } from '../../Utils'
 
 interface EnterGameProps {}
 
 export const EnterGame: React.FC<EnterGameProps> = ({}) => {
-	const {
-		web3Instance,
-		depositContract,
-		account,
-		babyDogeContract,
-		usdtContract,
-	} = useWeb3Ctx()
+	const { user } = useWeb3Ctx()
+	const navigate = useNavigate()
 
-	const initDeposit = async () => {
-		const amt = 100
-		const nonce = 2
-		await babyDogeContract.methods
-			.approve('0xB116c568d1c056046aD7095C941Ed6491A79cD7A', amt)
-			.send({
-				from: account,
-			})
+	const [amt, setAmt] = useState('')
+	const [rooms, setRooms] = useState<Array<RoomResponse>>([])
+	const [name, setName] = useState('')
+	const [selectedRoom, setSelectedRoom] = useState<RoomResponse>()
 
-		const response = await depositContract.methods
-			.depositTokensTest('0x0000000000000000000000000000000000000000', 0)
-			.send({
-				from: account,
-				value: 100,
-			})
-
-		console.log(response)
+	const fetchRooms = async () => {
+		const rooms = await RoomRepo.getAll()
+		setRooms(rooms)
 	}
+
+	const initPlay = async () => {}
+
+	useEffectOnce(() => {
+		fetchRooms().catch((e) => {
+			toast('failed to fetch rooms')
+		})
+	})
+
 	return (
 		<>
 			<div className="w-100 blur-background rounded-lg">
@@ -51,32 +51,36 @@ export const EnterGame: React.FC<EnterGameProps> = ({}) => {
 						src={LeftSolid}
 						alt="LeftSolid"
 					/>
-					<div className="relative">
-						<img
-							src={Ice}
-							alt=""
-							className="hoverGameImage mr-2 lg:mr-4 hover:outline-offset-4"
-						/>
-						<p className="absolute bottom-[20px] left-[24px] text-lg lg:text-2xl text-white  font-bold flex flex-col">
-							Ice Room
-							<span className="hidden lg:text-xs font-normal">
-								Game Token 0.50 standard
-							</span>
-						</p>
-					</div>
-					<div className="relative">
-						<img
-							src={Fire}
-							alt=""
-							className="hoverGameImage hover:outline-offset-4"
-						/>
-						<p className="absolute bottom-[20px] left-[24px] text-lg lg:text-2xl  text-white font-bold flex flex-col">
-							Fire Room
-							<span className="hidden lg:text-xs font-normal">
-								Game Token 0.50 - 500 standard
-							</span>
-						</p>
-					</div>
+					{rooms.length &&
+						rooms.map((r) => (
+							<div
+								className="relative"
+								key={r.id}
+								onClick={() => {
+									setSelectedRoom(r)
+								}}
+							>
+								<img
+									src={r.name === 'ice' ? Ice : Fire}
+									alt=""
+									className={`hoverGameImage mr-2 lg:mr-4  ${
+										selectedRoom?.name == r.name
+											? 'border border-white border-2'
+											: ''
+									}`}
+								/>
+								<p className="absolute bottom-[20px] left-[24px] text-lg lg:text-2xl text-white  font-bold flex flex-col">
+									{r.name}
+									<span className=" lg:text-xs font-normal">
+										Stake Worth $
+										{r.variable_stake
+											? `${r.min_usd_to_join} - ${r.max_usd_to_join}`
+											: r.min_usd_to_join}
+									</span>
+								</p>
+							</div>
+						))}
+
 					<img
 						className="h-[16px] lg:h-[32px] cursor-pointer"
 						src={RightSolid}
@@ -96,44 +100,44 @@ export const EnterGame: React.FC<EnterGameProps> = ({}) => {
 							className="text-black h-full absolute z-30 bg-white font-bold rounded-tl-lg rounded-bl-lg text-sm px-8 py-2.5 text-center inline-flex items-center"
 							type="button"
 						>
-							USD{' '}
-							<svg
-								className="w-4 h-4 ml-2"
-								fill="none"
-								stroke="currentColor"
-								viewBox="0 0 24 24"
-								xmlns="http://www.w3.org/2000/svg"
-							>
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									strokeWidth="2"
-									d="M19 9l-7 7-7-7"
-								></path>
-							</svg>
+							USD
 						</button>
 						<input
 							type="text"
+							value={amt}
+							onChange={(e) => {
+								selectedRoom?.variable_stake
+									? setAmt(e.target.value)
+									: setAmt(selectedRoom?.min_usd_to_join + '')
+							}}
 							className="indent-32 absolute z-10 text-white font-bold text-2xl h-full w-full  p-2 bg-[#0000002c] rounded-lg focus:outline-none"
 						/>
-						<button className="absolute z-30  right-[6px] top-[10px] text-white bg-[#46125D] text-[8px] py-2.5 px-10 rounded-full ">
-							SAVE
-						</button>
 					</div>
 				</div>
 
 				<div className="flex flex-col justify-start mt-4 mx-7">
-					<p className="text-white font-medium">USERNAME</p>
+					<p className="text-white font-medium mb-1">USERNAME</p>
 					<input
 						type="text"
-						placeholder="GUSOBRAL"
 						className="customInput indent-5 h-[57px] w-full  p-2 bg-[#0000002c] text-white font-bold text-medium rounded-lg focus:outline-none"
+						onChange={(e) => {
+							setName(e.target.value)
+						}}
 					/>
 				</div>
 				<div className="flex justify-center my-6">
 					<button
 						className="bg-white rounded-full px-[54px] py-[13px] font-bold"
-						onClick={initDeposit}
+						onClick={() => {
+							navigate(
+								`/game?` +
+									queryString({
+										roomName: selectedRoom?.name,
+										nickname: name,
+										stakeUSD: amt,
+									})
+							)
+						}}
 					>
 						PLAY NOW
 					</button>

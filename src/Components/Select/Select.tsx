@@ -17,7 +17,7 @@ export const Select: React.FC<SelectProps> = ({
 	handleSelect = () => {},
 }) => {
 	return (
-		<div className={`relative ${className}`}>
+		<div className={`relative ${className} z-10`}>
 			<Menu>
 				<Menu.Button className="font-bold text-white flex items-center">
 					{selection || label}
@@ -42,7 +42,7 @@ export const Select: React.FC<SelectProps> = ({
 					leaveFrom="transform scale-100 opacity-100"
 					leaveTo="transform scale-95 opacity-0"
 				>
-					<Menu.Items className="absolute bg-white w-[10rem] rounded-xl left-2/4 -translate-x-2/4 mt-4 shadow-lg">
+					<Menu.Items className="absolute bg-white min-w-[10rem] w-full rounded-xl left-2/4 -translate-x-2/4 mt-4 shadow-lg pb-2">
 						{options.map((o) => (
 							<Menu.Item
 								key={o}
