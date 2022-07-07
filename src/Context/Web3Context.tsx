@@ -103,25 +103,27 @@ export const Web3Provider: React.FC<any> = (props) => {
 		}
 
 		setWeb3Instance(web3)
-		const [account] = await web3.eth.getAccounts()
-		toast('account=' + account)
-		const token = await Web3Token.sign(
-			(msg) => web3.eth.personal.sign(msg, account, ''),
-			'1d'
-		)
-		toast('token=' + token)
-		StorageService.setToken(token)
-		toast('token stored')
-		const babyDogeContract = new web3.eth.Contract(
-			babyDogeABI as any,
-			Web3Config.ADDRESS.babydoge
-		)
 
-		// const balance = await getBalance(provider, babyDogeContract).catch((e) => {
-		// 	toast('failed to get bal ' + e.message)
-		// })
-		const balance = await babyDogeContract.methods.balanceOf(account).call()
-		toast('balance ' + balance)
+		try {
+			const [account] = await web3.eth.getAccounts()
+			toast('account=' + account)
+			const token = await Web3Token.sign(
+				(msg) => web3.eth.personal.sign(msg, account, ''),
+				'1d'
+			)
+			toast('token=' + token)
+			StorageService.setToken(token)
+			toast('token stored')
+			const babyDogeContract = new web3.eth.Contract(
+				babyDogeABI as any,
+				Web3Config.ADDRESS.babydoge
+			)
+
+			const balance = await babyDogeContract.methods.balanceOf(account).call()
+			toast('balance ' + balance)
+		} catch (error: any) {
+			toast.error(error.message || 'failed')
+		}
 
 		const usdtContract = new web3.eth.Contract(
 			babyDogeABI as any,
