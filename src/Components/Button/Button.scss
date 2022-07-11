@@ -4,6 +4,10 @@
   &:active {
     transform: scale(0.95);
   }
+
+  &:disabled{
+    opacity: 0.7
+  }
 }
 
 .btn-default{

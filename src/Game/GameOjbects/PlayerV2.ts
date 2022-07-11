@@ -1,12 +1,4 @@
-import {
-	CONSTANTS,
-	degToRad,
-	distanceFormula,
-	GameMeta,
-	getSkinAssetFromEnum,
-	Point,
-	SnakeSkinSprite,
-} from '../../Utils'
+import { CONSTANTS, GameMeta, Point, SnakeSkinSprite } from '../../Utils'
 import { PlayerState } from '../Models/PlayerState'
 import MainScene from '../Scenes/MainScene'
 
@@ -15,7 +7,6 @@ export class PlayerV2 {
 	head!: Phaser.Physics.Matter.Sprite
 	playerState!: PlayerState
 	sections = new Array<Phaser.GameObjects.Sprite>()
-	sectionGroup!: Phaser.GameObjects.Group
 	isCurrentPlayer: boolean = false
 	cursorKeys!: Phaser.Types.Input.Keyboard.CursorKeys
 	remoteRef!: Phaser.GameObjects.Arc
@@ -25,7 +16,6 @@ export class PlayerV2 {
 	playerNameText!: Phaser.GameObjects.Text
 	playerLight!: Phaser.GameObjects.PointLight
 	scale = 1
-	snakeSpacer = 3
 	snakePath!: Array<Point>
 
 	constructor(
@@ -36,7 +26,6 @@ export class PlayerV2 {
 		this.playerState = playerState
 		this.scene = scene
 		this.isCurrentPlayer = isCurrentPlayer
-		this.skin = getSkinAssetFromEnum(this.playerState.skin)
 		this.init()
 	}
 
@@ -52,8 +41,8 @@ export class PlayerV2 {
 		this.head = this.scene.matter.add.sprite(
 			this.playerState.x,
 			this.playerState.y,
-			'snake',
-			'snake_head_blue.png',
+			'eyes',
+			undefined,
 			{
 				isSensor: true,
 				friction: 0,
@@ -149,10 +138,10 @@ export class PlayerV2 {
 		}
 
 		this.playerState.sections.onRemove = () => {
-			const sec = this.sections.pop()
-			if (sec) {
-				this.sectionGroup.remove(sec)
-				sec.destroy()
+			const sec = this.sections.pop()!
+			this.scene.sectionGroup.killAndHide(sec)
+			for (let i = 0; i < this.playerState.spacer; i++) {
+				this.snakePath.pop()
 			}
 		}
 	}
@@ -168,45 +157,43 @@ export class PlayerV2 {
 	initSections(num: number) {
 		this.sections = []
 		this.snakePath = []
-		this.sectionGroup = this.scene.add.group([], {
-			defaultKey: 'snake',
-			defaultFrame: 'snake_body_blue.png',
-		})
-		for (let i = 1; i <= num - 1; i++) {
-			const sec = this.sectionGroup.create(this.head.x, this.head.y)
+
+		for (let i = 0; i < num; i++) {
+			const sec: Phaser.GameObjects.Sprite = this.scene.sectionGroup.get(
+				this.head.x,
+				this.head.y
+			)
+			sec.setFrame(this.playerState.skin)
 			sec.setDepth(2)
-			this.sections[i] = sec
+			this.sections.push(sec)
 		}
 
-		for (let i = 0; i <= num * this.snakeSpacer; i++) {
-			this.snakePath[i] = new Point(this.head.x, this.head.y, this.head.angle)
+		for (let i = 0; i < num * this.playerState.spacer; i++) {
+			this.snakePath.push(new Point(this.head.x, this.head.y, this.head.angle))
 		}
 	}
 
 	addSection() {
-		const last = this.sections[this.sections.length - 1]
-		const sec = this.sectionGroup.create(last.x, last.y)
-		sec.setDepth(2).setAngle(last.angle)
+		const sec: Phaser.GameObjects.Sprite = this.scene.sectionGroup.get(
+			this.head.x,
+			this.head.y
+		)
+		sec.setActive(true)
+		sec.setVisible(true)
+		sec.setDepth(2).setAngle(this.head.angle).setFrame(this.playerState.skin)
 		this.sections.push(sec)
-		for (
-			let i = this.snakePath.length;
-			i <= this.playerState.snakeLength * this.snakeSpacer;
-			i++
-		) {
-			this.snakePath[i] = new Point(
-				this.snakePath[i - 1].x,
-				this.snakePath[i - 1].y,
-				this.snakePath[i - 1].angle
-			)
+
+		for (let i = 0; i < this.playerState.spacer; i++) {
+			this.snakePath.push(new Point(this.head.x, this.head.y, this.head.angle))
 		}
 	}
 
 	update() {
+		this.scale = this.playerState.scale
+
 		this.head
 			.setAlpha(this.playerState.cooldown ? 0.4 : 1)
 			.setScale(this.playerState.scale)
-
-		this.scale = this.playerState.scale
 
 		// for testing only
 		// console.log(this.head.angle, this.playerState.angle)
@@ -220,13 +207,11 @@ export class PlayerV2 {
 		part.setTo(this.head.x, this.head.y, this.head.angle)
 		this.snakePath.unshift(part)
 
-		for (let i = 1; i <= this.playerState.snakeLength - 1; i++) {
+		for (let i = 0; i < this.sections.length; i++) {
+			const el = this.snakePath[i * this.playerState.spacer]
 			this.sections[i]
-				.setPosition(
-					this.snakePath[i * this.snakeSpacer].x,
-					this.snakePath[i * this.snakeSpacer].y
-				)
-				.setAngle(this.snakePath[i * this.snakeSpacer].angle)
+				.setPosition(el.x, el.y)
+				.setAngle(el.angle)
 				.setDepth(this.playerState.snakeLength + 2 - i)
 				.setAlpha(this.playerState.cooldown ? 0.4 : 1)
 				.setScale(this.playerState.scale)
@@ -294,7 +279,9 @@ export class PlayerV2 {
 			this.scene.cameras.main.stopFollow()
 			this.scene.input.removeAllListeners()
 		}
-		this.sectionGroup.destroy(true, true)
+		this.sections.forEach((s) => {
+			this.scene.sectionGroup.killAndHide(s)
+		})
 		this.head?.destroy(true)
 		this.playerNameText?.destroy()
 		this.sections = []

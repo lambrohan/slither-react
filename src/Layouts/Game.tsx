@@ -29,9 +29,12 @@ export const GameLayout: React.FC<GameProps> = ({}) => {
 	const navigate = useNavigate()
 	const { 0: params } = useSearchParams()
 	const handleGame = async () => {
-		console.log('called')
 		document.getElementById('WEB3_CONNECT_MODAL_ID')?.remove()
 		localStorage.setItem('nickname', params.get('nickname') || '')
+		localStorage.setItem('stakeUSD', params.get('stakeUSD') || '')
+		localStorage.setItem('roomName', params.get('roomName') || 'ice')
+		localStorage.setItem('color', params.get('color') || 'blue.png')
+
 		const canvasExists = document.querySelectorAll('#gamearea canvas')
 		canvasExists.forEach((el) => {
 			el.remove()
@@ -43,26 +46,6 @@ export const GameLayout: React.FC<GameProps> = ({}) => {
 			console.log('destroyed')
 			game?.destroy(true, false)
 		}
-	}
-
-	;(window as any).onGameOver = (player: PlayerState, rank: number = 0) => {
-		game?.destroy(true, false)
-		navigate(
-			`/gameover?${queryString({
-				nickname: player.nickname,
-				survivalTime: dayjs
-					.duration(player.endAt - player.startAt, 'ms')
-					.format('mm:ss'),
-				kills: player.kills,
-				tokens: player.tokens,
-				rank,
-				snakeLength: player.snakeLength,
-				playerId: player.sessionId,
-				win:
-					dayjs(player.endAt).diff(dayjs(player.startAt), 'minutes') >= 10 &&
-					player.kills >= 3,
-			})}`
-		)
 	}
 
 	useEffectOnce(() => {

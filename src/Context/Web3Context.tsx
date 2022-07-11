@@ -6,13 +6,18 @@ import Web3Modal from 'web3modal'
 import CoinbaseWalletSDK from '@coinbase/wallet-sdk'
 import babyDogeABI from '../abi/babydoge.json'
 import despositABI from '../abi/deposit.json'
+import { StorageService } from '../Services'
+import { Web3Config } from '../Utils/web3'
+import { User, UserRepo } from '../Repositories'
+import toast from 'react-hot-toast'
 const providerOptions = {
 	/* See Provider Options Section */
 	walletconnect: {
 		package: WalletConnectProvider, // required
 		options: {
 			rpc: {
-				56: 'https://speedy-nodes-nyc.moralis.io/362fc40c1ab324c15e79d4da/bsc/mainnet',
+				// 56: 'https://speedy-nodes-nyc.moralis.io/362fc40c1ab324c15e79d4da/bsc/mainnet',
+				97: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
 			},
 		},
 	},
@@ -24,8 +29,8 @@ const providerOptions = {
 		package: CoinbaseWalletSDK, // Required
 		options: {
 			appName: 'Baby Doge Coin', // Required
-			rpc: 'https://speedy-nodes-nyc.moralis.io/362fc40c1ab324c15e79d4da/bsc/mainnet', // Optional if `infuraId` is provided; otherwise it's required
-			chainId: 56, // Optional. It defaults to 1 if not provided
+			rpc: 'https://data-seed-prebsc-1-s1.binance.org:8545/', // Optional if `infuraId` is provided; otherwise it's required
+			chainId: 97, // Optional. It defaults to 1 if not provided
 		},
 	},
 }
@@ -43,79 +48,100 @@ const web3Modal = new Web3Modal({
 export type Web3ContextType = {
 	openModal: () => void
 	account: string | null
-	balance: string | number | undefined
+	balance: number | undefined
 	web3Instance: Web3
 	babyDogeContract: any
 	usdtContract: any
 	depositContract: any
+	user: User | null
+	refreshBalance: Function
 }
 export const Web3Context = createContext<Web3ContextType | null>(null)
 
 export const Web3Provider: React.FC<any> = (props) => {
 	const [account, setAccount] = useState<string | null>(null)
-	const [balance, setBalance] = useState<string | number | undefined>(undefined)
+	const [balance, setBalance] = useState<number | undefined>(undefined)
 	const [web3Instance, setWeb3Instance] = useState<any>(null)
 	const [babyDogeContract, setBabyDogeContract] = useState<any>(null)
 	const [usdtContract, setUsdtContract] = useState<any>(null)
 	const [depositContract, setDepositContract] = useState<any>(null)
+	const [user, setUser] = useState<User | null>(null)
 
 	const openModal = async () => {
 		const provider = await web3Modal.connect()
 
-		try {
-			await window.ethereum.request({
-				method: 'wallet_switchEthereumChain',
-				params: [{ chainId: '0x61' }], // chainId must be in hexadecimal numbers
-			})
-		} catch (err: any) {
-			if (err.code === 4902)
-				window.ethereum.request({
-					method: 'wallet_addEthereumChain',
-					params: [
-						{
-							chainId: '0x61',
-							chainName: 'BSC mainnet',
-							nativeCurrency: {
-								name: 'Binance Coin',
-								symbol: 'BNB',
-								decimals: 18,
-							},
-							rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545/'],
-							blockExplorerUrls: ['https://bscscan.com/'],
-						},
-					],
+		const web3 = new Web3(provider)
+		const chainId = await web3.eth.getChainId()
+		if (chainId !== 97) {
+			toast('You are not on correct network')
+			try {
+				await window.ethereum.request({
+					method: 'wallet_switchEthereumChain',
+					params: [{ chainId: '0x61' }], // chainId must be in hexadecimal numbers
 				})
+			} catch (err: any) {
+				if (err.code === 4902)
+					window.ethereum.request({
+						method: 'wallet_addEthereumChain',
+						params: [
+							{
+								chainId: '0x61',
+								chainName: 'BSC mainnet',
+								nativeCurrency: {
+									name: 'Binance Coin',
+									symbol: 'BNB',
+									decimals: 18,
+								},
+								rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545/'],
+								blockExplorerUrls: ['https://bscscan.com/'],
+							},
+						],
+					})
+			}
 		}
 
-		const web3 = new Web3(provider)
 		setWeb3Instance(web3)
 		const [account] = await web3.eth.getAccounts()
+		const token = await Web3Token.sign(
+			(msg) => web3.eth.personal.sign(msg, account, ''),
+			'1d'
+		)
+		StorageService.setToken(token)
 		const babyDogeContract = new web3.eth.Contract(
 			babyDogeABI as any,
-			'0x24043F6738bD40772179fb334f5289261CC7e829'
+			Web3Config.ADDRESS.babydoge
 		)
+		const balance = await babyDogeContract.methods.balanceOf(account).call()
 
 		const usdtContract = new web3.eth.Contract(
 			babyDogeABI as any,
-			'0x288274bE90365785d40a035337bA68945A5499D9'
+			Web3Config.ADDRESS.usdt
 		)
 		const depositContract = new web3.eth.Contract(
 			despositABI as any,
-			'0xaECce2E8D0d98B8D3D229b5875AdBF122d1DA80A'
+			Web3Config.ADDRESS.deposit
 		)
 
 		setUsdtContract(usdtContract)
 		setDepositContract(depositContract)
 		setBabyDogeContract(babyDogeContract)
-		const balance = await getBalance(provider, babyDogeContract)
-		setBalance(balance)
+
+		setBalance(Number((balance as any) / Math.pow(10, 18)))
 		setAccount(account)
 		console.log('Account Address', account)
+
+		try {
+			const u = await UserRepo.findOrCreate()
+			setUser(u)
+		} catch (error) {
+			toast.error('unable to get user')
+		}
 	}
 
 	return (
 		<Web3Context.Provider
 			value={{
+				user,
 				account,
 				openModal,
 				balance,
@@ -123,6 +149,10 @@ export const Web3Provider: React.FC<any> = (props) => {
 				babyDogeContract,
 				depositContract,
 				usdtContract,
+				refreshBalance: async (contract: any) => {
+					const balance = await contract.methods.balanceOf(account).call()
+					setBalance(Number((balance as any) / Math.pow(10, 18)))
+				},
 			}}
 		>
 			{props.children}
@@ -132,21 +162,4 @@ export const Web3Provider: React.FC<any> = (props) => {
 
 export default function useWeb3Ctx(): Web3ContextType {
 	return useContext(Web3Context) as Web3ContextType
-}
-
-export const getBalance = (provider: any, contract: any): Promise<string> => {
-	return new Promise(async (resolve, reject) => {
-		try {
-			const web3 = new Web3(provider)
-			const [account] = await web3.eth.getAccounts()
-
-			const balance = (await contract.methods
-				.balanceOf(account)
-				.call()) as string
-
-			resolve(balance)
-		} catch (error) {
-			reject(error)
-		}
-	})
 }

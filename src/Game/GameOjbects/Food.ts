@@ -43,6 +43,16 @@ export class Food extends Phaser.Physics.Matter.Sprite {
 		this.setScale(this.foodState.scale)
 		this.mainScene.miniMap.ignore(this)
 	}
+
+	reuse(foodItem: FoodItem) {
+		this.foodState = foodItem
+		this.scene.add.existing(this)
+		this.setActive(true)
+		this.setPosition(0, 0)
+		this.setScale(this.foodState.scale)
+		this.setFrame(getFoodAsset(this.foodState.type))
+		console.log('reused')
+	}
 }
 
 export function getFoodAsset(type: FoodAssetType) {

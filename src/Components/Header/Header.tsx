@@ -3,11 +3,13 @@ import { GameQualityOptions } from '../../Utils'
 import { Button } from '../Button/Button'
 import { Select } from '../Select/Select'
 import useWeb3Ctx from '../../Context/Web3Context'
+import { useNavigate } from 'react-router-dom'
 interface HeaderProps {}
 
 export const Header: React.FC<HeaderProps> = ({}) => {
 	const [quality, setQuality] = useState(GameQualityOptions[0])
 	const { account, openModal, balance } = useWeb3Ctx()
+	const navigate = useNavigate()
 
 	return (
 		<header
@@ -19,31 +21,26 @@ export const Header: React.FC<HeaderProps> = ({}) => {
 				{balance == undefined ? (
 					''
 				) : (
-					<h4 className="text-white text-xl font-semibold tracking-wider">
-						{(Number(balance) / Math.pow(10, 9)).toFixed(4)}{' '}
-						<span className="tracking-normal ml-2 font-normal uppercase text-sm">
+					<h4 className="text-white font-semibold tracking-wider">
+						<span className="text-xs md:text-md">
+							{Number(balance).toFixed(4)}{' '}
+						</span>
+						<span className="tracking-normal ml-2 font-normal uppercase text-xs md:text-sm">
 							Baby Doge Coin
 						</span>
-						
 					</h4>
 				)}
 			</div>
 
 			<div className="flex items-center">
-				<Select
-					options={GameQualityOptions}
-					label="GRAPHICS"
-					className="md:mr-8 mr-2 text-sm"
-					handleSelect={(val) => {
-						setQuality(val)
-					}}
-					selection={quality}
-				/>
-
 				{account ? (
-					<h4 className="text-xs md:max-w-[200px] max-w-[80px] text-ellipsis overflow-hidden text-white">
-						{account}
-					</h4>
+					<Button
+						onClick={() => {
+							navigate('/dashboard')
+						}}
+					>
+						<span className="px-4">Dashboard</span>
+					</Button>
 				) : (
 					<Button
 						className="ml-4"

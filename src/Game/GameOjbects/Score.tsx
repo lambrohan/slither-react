@@ -34,7 +34,6 @@ export const Score: React.FC<ScoreProps> = ({}) => {
 
 	useEffect(() => {
 		const interval = setInterval(() => {
-			console.log('set')
 			setTimerText(
 				dayjs.duration(dayjs().diff(startedAt, 's'), 's').format('mm:ss')
 			)
@@ -46,7 +45,7 @@ export const Score: React.FC<ScoreProps> = ({}) => {
 	}, [])
 
 	return (
-		<div className="absolute left-12 bottom-12 text-white font-bold text-lg text-center flex flex-col items-center">
+		<div className="absolute left-8 bottom-8 text-white  text-xs md:text-lg text-center flex flex-col items-center opacity-50 ">
 			<h4>Score</h4>
 			<div className="bg-primary p-2 rounded-full min-w-[8rem] mt-2">
 				<h4 style={{ transform: `scale(${scale})` }}>{score} Mil.</h4>

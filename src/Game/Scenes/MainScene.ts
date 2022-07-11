@@ -1,14 +1,16 @@
-import { GameMeta, generateFood, getCenter, SPRITE_LABELS } from '../../Utils'
-import Phaser, { GameObjects } from 'phaser'
+import { GameMeta } from '../../Utils'
+import Phaser from 'phaser'
 import { FoodItem } from '../Models'
 import { GamePad } from '../GameOjbects/Gamepad'
 import { GameState } from '../Models/GameState'
-import { Food } from '../GameOjbects/Food'
+import { Food, getFoodAsset } from '../GameOjbects/Food'
 import { Room } from 'colyseus.js'
 import * as Colyseus from 'colyseus.js'
 import { PlayerState } from '../Models/PlayerState'
 import { PlayerV2 } from '../GameOjbects/PlayerV2'
 import _ from 'lodash'
+import { StorageService } from '../../Services'
+import toast from 'react-hot-toast'
 
 export default class MainScene extends Phaser.Scene {
 	tileW = 584
@@ -17,7 +19,7 @@ export default class MainScene extends Phaser.Scene {
 	gridSizeY: number = 0
 	player: PlayerV2 | null = null
 	foodGroup!: Phaser.GameObjects.Group
-	foodObjects: Map<String, Food> = new Map()
+	foodObjects: Map<String, Phaser.GameObjects.Sprite> = new Map()
 	players: Array<PlayerV2> = []
 	gameRoom!: Room<GameState>
 	playerObjects: Map<String, PlayerV2> = new Map()
@@ -28,6 +30,7 @@ export default class MainScene extends Phaser.Scene {
 	playerRank = 0
 	container!: Phaser.GameObjects.Container
 	miniMap!: Phaser.Cameras.Scene2D.Camera
+	sectionGroup!: Phaser.GameObjects.Group
 
 	constructor() {
 		super('main')
@@ -37,9 +40,13 @@ export default class MainScene extends Phaser.Scene {
 		this.load.image('bg', '/bg.png')
 		this.load.atlas('food', '/food.png', '/food.json')
 		this.load.atlas('snake', '/snake.png', '/snake.json')
+		this.load.image('eyes', '/eyes.png')
 	}
 
 	create() {
+		this.sectionGroup = this.add.group([], {
+			defaultKey: 'snake',
+		})
 		this.miniMap = this.cameras
 			.add(
 				this.sys.canvas.width - GameMeta.boundX / 12,
@@ -82,34 +89,45 @@ export default class MainScene extends Phaser.Scene {
 		const client = new Colyseus.Client(
 			process.env.WS_ENDPOINT || 'ws://192.168.29.71:2567'
 		)
-		this.gameRoom = await client.joinOrCreate<GameState>('my_room', {
-			nickname: localStorage.getItem('nickname'),
-		})
+		const roomName = localStorage.getItem('roomName')
+		if (!roomName) {
+			toast.error('Please select a room first')
+			;(window as any).navigateTo('/')
+			return
+		}
+		try {
+			this.gameRoom = await client.joinOrCreate<GameState>(roomName, {
+				nickname: localStorage.getItem('nickname'),
+				accessToken: StorageService.getToken(),
+				stakeAmtUsd: localStorage.getItem('stakeUSD'),
+				skin: localStorage.getItem('color'),
+			})
+		} catch (error: any) {
+			toast(error.message)
+			this.game.destroy(true)
+			;(window as any).navigateTo('/entergame')
+		}
+
 		this.gameRoom.state.foodItems.onAdd = async (f) => await this._onAddFood(f)
 		this.gameRoom.state.foodItems.onRemove = (f) => this._onRemoveFood(f)
 		this.gameRoom.state.players.onAdd = (p) => this._onPlayerAdd(p)
 		this.gameRoom.state.players.onRemove = (p) => this._onPlayerRemove(p)
+		this.gameRoom.onMessage('gameover', async (sessionId: string) => {
+			console.log('GAMEOVER')
+			await this.game.destroy(true)
+			clearInterval((window as any).leaderboardInterval)
+			;(window as any).navigateTo(`/gameover?sessionId=${sessionId}`)
+		})
 	}
 
 	updateLeaderboard() {
 		if (!this.gameRoom) return
 		if (!this.gameRoom.state) return
 		const sortedPlayers: PlayerState[] = []
-		let maxScore = 0
 		this.gameRoom.state.players.forEach((p) => {
-			if (p.tokens > maxScore) {
-				sortedPlayers.unshift(p)
-				maxScore = p.tokens
-			} else {
-				sortedPlayers.push(p)
-			}
+			sortedPlayers[p.rank - 1] = p
 		})
 		this.sortedPlayers = sortedPlayers
-		const r = this.sortedPlayers.findIndex(
-			(p) => p.sessionId == this.player?.playerState.sessionId
-		)
-
-		r !== -1 ? (this.playerRank = r + 1) : ''
 		;(window as any).updateLeaderboard(sortedPlayers)
 	}
 
@@ -131,18 +149,6 @@ export default class MainScene extends Phaser.Scene {
 
 	_onPlayerRemove(playerState: PlayerState) {
 		console.log('player remove')
-		if (!playerState.sessionId) return
-		if (this.player?.playerState.sessionId === playerState.sessionId) {
-			this.gameRoom.leave()
-			setTimeout(() => {
-				clearInterval((window as any).leaderboardInterval)
-				;(window as any).onGameOver(
-					{ ...this.player?.playerState, endAt: Date.now() },
-					this.playerRank
-				)
-				this.game?.destroy(true)
-			}, 500)
-		}
 
 		this.playerObjects.get(playerState.sessionId)?.destroy()
 
@@ -150,25 +156,42 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	_onRemoveFood(foodItem: FoodItem) {
-		const foodObj = this.foodObjects.get(foodItem.id)!
-		this.foodObjects.delete(foodItem.id)
-		const t = this.tweens.add({
+		const foodObj = this.foodObjects.get(foodItem.id)
+		if (!foodObj) return
+		this.tweens.add({
 			targets: foodObj,
 			scale: 0,
-			duration: 100,
+			duration: 150,
 			onComplete: () => {
-				foodObj?.destroy()
-				t.remove()
+				this.foodGroup.killAndHide(foodObj)
+				this.tweens.killTweensOf(foodObj)
 			},
 		})
 	}
 	async _onAddFood(foodItem: FoodItem) {
-		const f = new Food({
-			scene: this,
-			foodState: foodItem,
-		})
-		this.foodGroup.add(f)
+		const frame = getFoodAsset(foodItem.type)
+		const f: Phaser.GameObjects.Sprite = this.foodGroup.get(
+			foodItem.x,
+			foodItem.y,
+			'food',
+			frame
+		)
+		f.setFrame(frame)
 		this.foodObjects.set(foodItem.id, f)
+		f.setDepth(2)
+		f.setScale(0)
+		f.setAlpha(0)
+		f.setVisible(true)
+		f.setActive(true)
+		this.tweens.add({
+			targets: f,
+			alpha: 1,
+			duration: Phaser.Math.Between(200, 1000),
+			scale: foodItem.scale,
+			onComplete: () => {
+				this.tweens.killTweensOf(f)
+			},
+		})
 		return 0
 	}
 

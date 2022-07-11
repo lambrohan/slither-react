@@ -80,8 +80,8 @@ export const CONSTANTS = {
 	ROT_LERP: 0.08,
 	PREF_DISTANCE: 8,
 	DEF_SPEED: 3.5,
-	BOOST_SPEED: 6,
-	MIN_SNAKE_LENGTH: 30,
+	BOOST_SPEED: 5,
+	MIN_SNAKE_LENGTH: 2,
 	SNAKE_HEAD_RAD: 12,
 	FOOD_RADIUS: 25,
 }
@@ -104,11 +104,11 @@ export class Point {
 }
 
 export enum FoodAssetType {
-	RED = 0,
-	ORANGE = 1,
-	BLUE = 2,
-	COIN = 4,
-	GREEN = 3,
+	RED,
+	BLUE,
+	GREEN,
+	COIN,
+	ORANGE,
 }
 
 export enum SnakeSkin {

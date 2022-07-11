@@ -13,12 +13,12 @@ import { useNavigate } from 'react-router-dom'
 import dayjs from 'dayjs'
 
 export interface GameOverProps {
-	snakeLength: string
+	snakeLength: number
 	survivalTime: string
-	kills: string
-	tokens: string
+	kills: number
+	tokens: number
 	playerId: string
-	rank: string
+	rank: number
 	win: boolean
 	nickname: string
 }
@@ -113,7 +113,7 @@ export const GameOver: React.FC<GameOverProps> = ({
 						<br />
 						<p className="whiteColor">Tokens Eaten</p>
 
-						<h2 className="StatsTime">{tokens} Mil.</h2>
+						<h2 className="StatsTime">{tokens}</h2>
 					</div>
 				</div>
 				<br />
@@ -130,9 +130,7 @@ export const GameOver: React.FC<GameOverProps> = ({
 					<button
 						className="PlayAgainBtn"
 						onClick={() => {
-							navigate(
-								`/game?nickname=${localStorage.getItem('nickname') || ''}`
-							)
+							navigate(`/entergame`)
 						}}
 					>
 						Play again
