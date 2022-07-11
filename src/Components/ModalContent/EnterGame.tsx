@@ -11,24 +11,25 @@ import { useEffectOnce } from '../../Hooks/useEffectOnce'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 import { queryString } from '../../Utils'
+import { textures } from '../../assets/snakesprites.json'
 
 interface EnterGameProps {}
 
 export const EnterGame: React.FC<EnterGameProps> = ({}) => {
-	const { user } = useWeb3Ctx()
 	const navigate = useNavigate()
 
 	const [amt, setAmt] = useState('')
 	const [rooms, setRooms] = useState<Array<RoomResponse>>([])
 	const [name, setName] = useState('')
 	const [selectedRoom, setSelectedRoom] = useState<RoomResponse>()
+	const [selectedColor, setSelectedColor] = useState(
+		textures[0].frames[0].filename
+	)
 
 	const fetchRooms = async () => {
 		const rooms = await RoomRepo.getAll()
 		setRooms(rooms)
 	}
-
-	const initPlay = async () => {}
 
 	useEffectOnce(() => {
 		fetchRooms().catch((e) => {
@@ -63,7 +64,7 @@ export const EnterGame: React.FC<EnterGameProps> = ({}) => {
 								<img
 									src={r.name === 'ice' ? Ice : Fire}
 									alt=""
-									className={`hoverGameImage mr-2 lg:mr-4  ${
+									className={`hoverGameImage mr-2 lg:mr-4 min-h-[8rem] object-cover  ${
 										selectedRoom?.name == r.name
 											? 'border border-white border-2'
 											: ''
@@ -71,7 +72,7 @@ export const EnterGame: React.FC<EnterGameProps> = ({}) => {
 								/>
 								<p className="absolute bottom-[20px] left-[24px] text-lg lg:text-2xl text-white  font-bold flex flex-col">
 									{r.name}
-									<span className=" lg:text-xs font-normal">
+									<span className="text-xs md:text-base font-normal">
 										Stake Worth $
 										{r.variable_stake
 											? `${r.min_usd_to_join} - ${r.max_usd_to_join}`
@@ -125,6 +126,30 @@ export const EnterGame: React.FC<EnterGameProps> = ({}) => {
 						}}
 					/>
 				</div>
+				<h4 className="text-center mt-4 text-white">Select Skin Color</h4>
+				<div className="flex items-center justify-center items-center mt-4 mb-8 flex-wrap">
+					{textures[0].frames.map((c) => (
+						<img
+							onClick={() => {
+								setSelectedColor(c.filename)
+							}}
+							className={`mx-2 w-8 h-8 border-2 shadow-xl transition ease  rounded-full cursor-pointer overflow-hidden ${
+								selectedColor == c.filename
+									? 'border-white'
+									: 'border-transparent'
+							}`}
+							key={c.filename}
+							title={c.filename}
+							src="/snake.png"
+							style={{
+								objectPosition: `${-c.frame.x - c.frame.w / 2}px ${
+									-c.frame.y - c.frame.h / 2
+								}px`,
+								objectFit: 'none',
+							}}
+						/>
+					))}
+				</div>
 				<div className="flex justify-center my-6">
 					<button
 						className="bg-white rounded-full px-[54px] py-[13px] font-bold"
@@ -135,6 +160,7 @@ export const EnterGame: React.FC<EnterGameProps> = ({}) => {
 										roomName: selectedRoom?.name,
 										nickname: name,
 										stakeUSD: amt,
+										color: selectedColor,
 									})
 							)
 						}}

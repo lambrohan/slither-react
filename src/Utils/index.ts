@@ -104,11 +104,11 @@ export class Point {
 }
 
 export enum FoodAssetType {
-	RED = 0,
-	ORANGE = 1,
-	BLUE = 2,
-	COIN = 4,
-	GREEN = 3,
+	RED,
+	BLUE,
+	GREEN,
+	COIN,
+	ORANGE,
 }
 
 export enum SnakeSkin {

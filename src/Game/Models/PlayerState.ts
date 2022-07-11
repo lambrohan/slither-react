@@ -4,6 +4,9 @@ import { FoodItem } from './FoodItem'
 import { SnakeSectionState } from './SnakeSection'
 
 export class PlayerState extends Schema {
+	@type('string')
+	skin: string = ''
+
 	@type('number')
 	rank: number = 0
 
@@ -28,9 +31,6 @@ export class PlayerState extends Schema {
 
 	@type('int8')
 	snakeLength: number = 0
-
-	@type('int8')
-	skin: SnakeSkin = SnakeSkin.GREEN_WHITE_LINE
 
 	@type([SnakeSectionState])
 	sections: ArraySchema<SnakeSectionState> = new ArraySchema()
@@ -58,4 +58,7 @@ export class PlayerState extends Schema {
 
 	@type('boolean')
 	cooldown = false
+
+	@type('int16')
+	spacer: number = 1
 }

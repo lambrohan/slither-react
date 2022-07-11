@@ -35,10 +35,13 @@ export const AnimatedRoutes: React.FC<AnimatedRoutesProps> = ({}) => {
 							element={<CongratulationPage />}
 						></Route>
 						<Route path="/GameOver" element={<GameOverPage />}></Route>
-						<Route path="/game" element={<GameLayout />}></Route>
+
 						<Route path="EnterGame" element={<EnterGamePage />}></Route>
 					</Route>
 					<Route path="PrivacyPolicy" element={<PrivacyPolicyPage />}></Route>
+				</Route>
+				<Route element={<ProtectedRoute isAllowed={!!user} />}>
+					<Route path="/game" element={<GameLayout />}></Route>
 				</Route>
 
 				<Route path="*" element={<Error />} />

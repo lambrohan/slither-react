@@ -27,7 +27,6 @@ export const Dashboard: React.FC<DashboardProps> = ({}) => {
 		depositContract,
 		babyDogeContract,
 		refreshBalance,
-		web3Provider,
 	} = useWeb3Ctx()
 	const [wallet, setWallet] = useState<Wallet | null>(null)
 	const [showDepositModal, setDepositModalState] = useState(false)
@@ -43,7 +42,7 @@ export const Dashboard: React.FC<DashboardProps> = ({}) => {
 
 	const refreshWallet = async () => {
 		if (!account) return
-		await refreshBalance(web3Provider)
+		await refreshBalance(babyDogeContract)
 		const wallet = await WalletRepo.getWallet()
 		const dash = await UserRepo.getDashInfo()
 		if (!wallet) return
@@ -56,18 +55,18 @@ export const Dashboard: React.FC<DashboardProps> = ({}) => {
 	const initDeposit = async (currency: CURRENCY, amount: number) => {
 		setDepositLoading(true)
 		let response: DepositResponse
-		const multiplyer = Math.pow(10, 18)
+		const depositAmt = BigInt(amount * Math.pow(10, 18))
 
 		try {
 			switch (currency) {
 				case 'BNB':
-					response = await initBNBDeposit(amount * multiplyer)
+					response = await initBNBDeposit(depositAmt)
 					break
 				case 'BABYDOGE':
-					response = await initBabyDogeDeposit(amount * multiplyer)
+					response = await initBabyDogeDeposit(depositAmt)
 					break
 				case 'USDT':
-					response = await initUSDTDeposit(amount * multiplyer)
+					response = await initUSDTDeposit(depositAmt)
 					break
 			}
 
@@ -91,42 +90,45 @@ export const Dashboard: React.FC<DashboardProps> = ({}) => {
 		}
 	}
 
-	const initBNBDeposit = async (amount: number) => {
+	const initBNBDeposit = async (amount: bigint) => {
 		console.log('initbnbdeposit')
 
 		return await depositContract.methods
-			.depositTokensTest('0x0000000000000000000000000000000000000000', amount)
+			.depositTokensTest(
+				'0x0000000000000000000000000000000000000000',
+				amount + ''
+			)
 			.send({
 				from: account,
-				value: amount,
+				value: amount + '',
 			})
 	}
-	const initBabyDogeDeposit = async (amount: number) => {
+	const initBabyDogeDeposit = async (amount: bigint) => {
 		console.log('initbabydogedeposit')
 		await babyDogeContract.methods
-			.approve(Web3Config.ADDRESS.deposit, amount + '')
+			.approve(Web3Config.ADDRESS.deposit, amount)
 			.send({
 				from: account,
 			})
 
 		return await depositContract.methods
-			.depositTokensTest(Web3Config.ADDRESS.babydoge, amount + '')
+			.depositTokensTest(Web3Config.ADDRESS.babydoge, amount)
 			.send({
 				from: account,
 			})
 	}
 
-	const initUSDTDeposit = async (amount: number) => {
+	const initUSDTDeposit = async (amount: bigint) => {
 		console.log('initusdtdeposit')
 
 		await babyDogeContract.methods
-			.approve(Web3Config.ADDRESS.deposit, amount + '')
+			.approve(Web3Config.ADDRESS.deposit, amount)
 			.send({
 				from: account,
 			})
 
 		return await depositContract.methods
-			.depositTokensTest(Web3Config.ADDRESS.usdt, amount + '')
+			.depositTokensTest(Web3Config.ADDRESS.usdt, amount)
 			.send({
 				from: account,
 			})
@@ -136,10 +138,13 @@ export const Dashboard: React.FC<DashboardProps> = ({}) => {
 		try {
 			setDepositLoading(true)
 			const res = await depositContract.methods
-				.withdrawTokensTest(amt * Math.pow(10, 18) + '')
+				.withdrawTokensTest(BigInt(amt * Math.pow(10, 18)).toString())
 				.send({
 					from: account,
 				})
+			console.log(res)
+
+			await refreshBalance(babyDogeContract)
 
 			setDepositLoading(false)
 			setWithdrawModal(false)
@@ -160,7 +165,10 @@ export const Dashboard: React.FC<DashboardProps> = ({}) => {
 						<img src={BorderLine} alt="BorderLine" />
 						<div className="flex items-center justify-center flex-col py-5">
 							<p className="text-4xl mb-[20px] font-bold text-[#FFCE01]">
-								${Number(balance * usdRate).toFixed(4)}
+								$
+								{balance !== undefined
+									? Number(balance * usdRate).toFixed(4)
+									: ''}
 							</p>
 							<div>
 								<a href="https://pancakeswap.finance/swap">
@@ -218,8 +226,8 @@ export const Dashboard: React.FC<DashboardProps> = ({}) => {
 
 						{/* if data */}
 						{dashboardData && (
-							<div className="flex flex-row overflow-y-auto lg:overflow-y-hidden">
-								<div className="w-1/4 lg:w-1/2 dash-border-right">
+							<div className="flex md:flex-row overflow-y-auto lg:overflow-y-hidden flex-col">
+								<div className="w-full md:w-1/4 lg:w-1/2 dash-border-right">
 									<div className="flex flex-col lg:flex-row items-center p-5">
 										<img
 											className="h-[42px] lg:h-[56px] mr-2"
@@ -256,7 +264,7 @@ export const Dashboard: React.FC<DashboardProps> = ({}) => {
 										/>
 									</div>
 								</div>
-								<div className="w-3/8 lg:w-1/4 dash-border-right p-4 lg:p-6 flex flex-col">
+								<div className="w-full md:w-3/8 lg:w-1/4 dash-border-right p-4 lg:p-6 flex flex-col">
 									<div className="flex flex-row items-center mb-3 lg:mb-10">
 										<div className="mr-6">
 											<p className="font-bold text-xs text-[#FFCE01]">Win</p>
@@ -270,14 +278,6 @@ export const Dashboard: React.FC<DashboardProps> = ({}) => {
 												{dashboardData.totalLossMatches}
 											</span>
 										</div>
-										{/* <div>
-											<p className="font-bold text-xs text-[#FFCE01]">
-												Walkover
-											</p>
-											<span className="font-bold text-[21px] text-white">
-												14
-											</span>
-										</div> */}
 									</div>
 									<div className="mb-2">
 										<p className="font-bold text-xs text-[#FFCE01]">

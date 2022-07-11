@@ -48,30 +48,27 @@ const web3Modal = new Web3Modal({
 export type Web3ContextType = {
 	openModal: () => void
 	account: string | null
-	balance: number
+	balance: number | undefined
 	web3Instance: Web3
 	babyDogeContract: any
 	usdtContract: any
 	depositContract: any
 	user: User | null
 	refreshBalance: Function
-	web3Provider: any
 }
 export const Web3Context = createContext<Web3ContextType | null>(null)
 
 export const Web3Provider: React.FC<any> = (props) => {
 	const [account, setAccount] = useState<string | null>(null)
-	const [balance, setBalance] = useState<number>(0)
+	const [balance, setBalance] = useState<number | undefined>(undefined)
 	const [web3Instance, setWeb3Instance] = useState<any>(null)
 	const [babyDogeContract, setBabyDogeContract] = useState<any>(null)
 	const [usdtContract, setUsdtContract] = useState<any>(null)
 	const [depositContract, setDepositContract] = useState<any>(null)
 	const [user, setUser] = useState<User | null>(null)
-	const [web3Provider, setProvider] = useState<any>(undefined)
 
 	const openModal = async () => {
 		const provider = await web3Modal.connect()
-		setProvider(provider)
 
 		const web3 = new Web3(provider)
 		const chainId = await web3.eth.getChainId()
@@ -104,28 +101,17 @@ export const Web3Provider: React.FC<any> = (props) => {
 		}
 
 		setWeb3Instance(web3)
-
-		try {
-			const [account] = await web3.eth.getAccounts()
-			toast('account=' + account)
-			const token = await Web3Token.sign(
-				(msg) => web3.eth.personal.sign(msg, account, ''),
-				'1d'
-			)
-			toast('token=' + token)
-			StorageService.setToken(token)
-			toast('token stored')
-			const babyDogeContract = new web3.eth.Contract(
-				babyDogeABI as any,
-				Web3Config.ADDRESS.babydoge
-			)
-
-			const balance = await babyDogeContract.methods.balanceOf(account).call()
-			setBalance(balance)
-			toast('balance ' + balance)
-		} catch (error: any) {
-			toast.error(error.message || 'failed')
-		}
+		const [account] = await web3.eth.getAccounts()
+		const token = await Web3Token.sign(
+			(msg) => web3.eth.personal.sign(msg, account, ''),
+			'1d'
+		)
+		StorageService.setToken(token)
+		const babyDogeContract = new web3.eth.Contract(
+			babyDogeABI as any,
+			Web3Config.ADDRESS.babydoge
+		)
+		const balance = await babyDogeContract.methods.balanceOf(account).call()
 
 		const usdtContract = new web3.eth.Contract(
 			babyDogeABI as any,
@@ -155,7 +141,6 @@ export const Web3Provider: React.FC<any> = (props) => {
 	return (
 		<Web3Context.Provider
 			value={{
-				web3Provider,
 				user,
 				account,
 				openModal,
@@ -164,8 +149,8 @@ export const Web3Provider: React.FC<any> = (props) => {
 				babyDogeContract,
 				depositContract,
 				usdtContract,
-				refreshBalance: async (p: any) => {
-					const balance = await getBalance(p, babyDogeContract)
+				refreshBalance: async (contract: any) => {
+					const balance = await contract.methods.balanceOf(account).call()
 					setBalance(Number((balance as any) / Math.pow(10, 18)))
 				},
 			}}
@@ -177,21 +162,4 @@ export const Web3Provider: React.FC<any> = (props) => {
 
 export default function useWeb3Ctx(): Web3ContextType {
 	return useContext(Web3Context) as Web3ContextType
-}
-
-export const getBalance = (provider: any, contract: any): Promise<string> => {
-	return new Promise(async (resolve, reject) => {
-		try {
-			const web3 = new Web3(provider)
-			const [account] = await web3.eth.getAccounts()
-
-			const balance = (await contract.methods
-				.balanceOf(account)
-				.call()) as string
-
-			resolve(balance)
-		} catch (error) {
-			reject(error)
-		}
-	})
 }

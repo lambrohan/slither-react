@@ -34,6 +34,7 @@ export const GameLayout: React.FC<GameProps> = ({}) => {
 		localStorage.setItem('nickname', params.get('nickname') || '')
 		localStorage.setItem('stakeUSD', params.get('stakeUSD') || '')
 		localStorage.setItem('roomName', params.get('roomName') || 'ice')
+		localStorage.setItem('color', params.get('color') || 'blue.png')
 
 		const canvasExists = document.querySelectorAll('#gamearea canvas')
 		canvasExists.forEach((el) => {

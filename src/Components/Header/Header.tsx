@@ -21,9 +21,11 @@ export const Header: React.FC<HeaderProps> = ({}) => {
 				{balance == undefined ? (
 					''
 				) : (
-					<h4 className="text-white text-xl font-semibold tracking-wider">
-						{Number(balance).toFixed(4)}{' '}
-						<span className="tracking-normal ml-2 font-normal uppercase text-sm">
+					<h4 className="text-white font-semibold tracking-wider">
+						<span className="text-xs md:text-md">
+							{Number(balance).toFixed(4)}{' '}
+						</span>
+						<span className="tracking-normal ml-2 font-normal uppercase text-xs md:text-sm">
 							Baby Doge Coin
 						</span>
 					</h4>
@@ -31,16 +33,6 @@ export const Header: React.FC<HeaderProps> = ({}) => {
 			</div>
 
 			<div className="flex items-center">
-				<Select
-					options={GameQualityOptions}
-					label="GRAPHICS"
-					className="md:mr-8 mr-2 text-sm"
-					handleSelect={(val) => {
-						setQuality(val)
-					}}
-					selection={quality}
-				/>
-
 				{account ? (
 					<Button
 						onClick={() => {
