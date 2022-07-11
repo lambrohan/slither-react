@@ -9,8 +9,8 @@ export class SnakeV3 {
 	scene: MainScene
 	snakePath: Array<Point> = []
 	target = 0
-	numSnakeSections = 50
-	snakeSpacer = 5
+	numSnakeSections = 2
+	snakeSpacer = 20
 	current = false
 	spacer = 30
 	constructor(scene: MainScene, current = false) {
@@ -19,9 +19,15 @@ export class SnakeV3 {
 		this.current = current
 		this.initSections()
 
-		// setInterval(() => {
-		// 	this.grow()
-		// }, 500)
+		setTimeout(() => {
+			console.log('grow')
+			this.grow()
+		}, 2000)
+
+		setTimeout(() => {
+			console.log('pop')
+			this.reduce()
+		}, 5000)
 	}
 
 	initSections() {
@@ -52,13 +58,13 @@ export class SnakeV3 {
 		} else {
 			setInterval(() => {
 				this.target = Math.random()
-			}, 1000)
+			}, 5000)
 		}
 
 		for (let i = 0; i < this.numSnakeSections; i++) {
 			const x = this.head.x - i * this.spacer
 			const sec = this.group.create(x, this.head.y)
-			sec.setDepth(this.numSnakeSections + 2 - i).setScale(1.8)
+			sec.setDepth(this.numSnakeSections + 2 - i)
 			this.sections[i] = sec
 		}
 		for (let i = 0; i < this.numSnakeSections * this.snakeSpacer; i++) {
@@ -68,14 +74,20 @@ export class SnakeV3 {
 
 	grow() {
 		const last = this.sections[this.sections.length - 1]
-		const sec = this.scene.add.sprite(
-			last.x,
-			last.y,
-			'snake',
-			'snake_body_blue.png'
-		)
-		this.sections[this.numSnakeSections] = sec
-		this.numSnakeSections++
+		const sec = this.group.create(last.x, last.y)
+		sec.setDepth(2)
+		this.sections.push(sec)
+		for (let i = 0; i < this.snakeSpacer; i++) {
+			this.snakePath.push(new Point(last.x, last.y, last.angle))
+		}
+	}
+
+	reduce() {
+		const sec = this.sections.pop()
+		sec?.destroy(true)
+		for (let i = 0; i < this.snakeSpacer; i++) {
+			this.snakePath.pop()
+		}
 	}
 
 	update() {
