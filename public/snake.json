@@ -4,135 +4,177 @@
 			"image": "snake.png",
 			"format": "RGBA8888",
 			"size": {
-				"w": 26,
-				"h": 178
+				"w": 816,
+				"h": 102
 			},
 			"scale": 1,
 			"frames": [
 				{
-					"filename": "snake_head_blue.png",
+					"filename": "blue.png",
 					"rotated": false,
-					"trimmed": true,
+					"trimmed": false,
 					"sourceSize": {
-						"w": 24,
-						"h": 38
+						"w": 100,
+						"h": 100
 					},
 					"spriteSourceSize": {
 						"x": 0,
-						"y": 3,
-						"w": 24,
-						"h": 34
+						"y": 0,
+						"w": 100,
+						"h": 100
 					},
 					"frame": {
 						"x": 1,
 						"y": 1,
-						"w": 24,
-						"h": 34
+						"w": 100,
+						"h": 100
 					}
 				},
 				{
-					"filename": "snake_head_purple.png",
+					"filename": "cyan.png",
 					"rotated": false,
-					"trimmed": true,
+					"trimmed": false,
 					"sourceSize": {
-						"w": 25,
-						"h": 33
+						"w": 100,
+						"h": 100
 					},
 					"spriteSourceSize": {
-						"x": 1,
+						"x": 0,
+						"y": 0,
+						"w": 100,
+						"h": 100
+					},
+					"frame": {
+						"x": 103,
 						"y": 1,
-						"w": 24,
-						"h": 31
-					},
-					"frame": {
-						"x": 1,
-						"y": 37,
-						"w": 24,
-						"h": 31
+						"w": 100,
+						"h": 100
 					}
 				},
 				{
-					"filename": "snake_head_green.png",
+					"filename": "gray.png",
 					"rotated": false,
 					"trimmed": false,
 					"sourceSize": {
-						"w": 24,
-						"h": 29
+						"w": 100,
+						"h": 100
 					},
 					"spriteSourceSize": {
 						"x": 0,
 						"y": 0,
-						"w": 24,
-						"h": 29
+						"w": 100,
+						"h": 100
 					},
 					"frame": {
-						"x": 1,
-						"y": 70,
-						"w": 24,
-						"h": 29
+						"x": 205,
+						"y": 1,
+						"w": 100,
+						"h": 100
 					}
 				},
 				{
-					"filename": "snake_body_blue.png",
+					"filename": "green.png",
 					"rotated": false,
 					"trimmed": false,
 					"sourceSize": {
-						"w": 24,
-						"h": 24
+						"w": 100,
+						"h": 100
 					},
 					"spriteSourceSize": {
 						"x": 0,
 						"y": 0,
-						"w": 24,
-						"h": 24
+						"w": 100,
+						"h": 100
 					},
 					"frame": {
-						"x": 1,
-						"y": 101,
-						"w": 24,
-						"h": 24
+						"x": 307,
+						"y": 1,
+						"w": 100,
+						"h": 100
 					}
 				},
 				{
-					"filename": "snake_body_green.png",
+					"filename": "orange.png",
 					"rotated": false,
 					"trimmed": false,
 					"sourceSize": {
-						"w": 24,
-						"h": 24
+						"w": 100,
+						"h": 100
 					},
 					"spriteSourceSize": {
 						"x": 0,
 						"y": 0,
-						"w": 24,
-						"h": 24
+						"w": 100,
+						"h": 100
 					},
 					"frame": {
-						"x": 1,
-						"y": 127,
-						"w": 24,
-						"h": 24
+						"x": 409,
+						"y": 1,
+						"w": 100,
+						"h": 100
 					}
 				},
 				{
-					"filename": "snake_body_purple.png",
+					"filename": "purple.png",
 					"rotated": false,
 					"trimmed": false,
 					"sourceSize": {
-						"w": 24,
-						"h": 24
+						"w": 100,
+						"h": 100
 					},
 					"spriteSourceSize": {
 						"x": 0,
 						"y": 0,
-						"w": 24,
-						"h": 24
+						"w": 100,
+						"h": 100
 					},
 					"frame": {
-						"x": 1,
-						"y": 153,
-						"w": 24,
-						"h": 24
+						"x": 511,
+						"y": 1,
+						"w": 100,
+						"h": 100
+					}
+				},
+				{
+					"filename": "red.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 100,
+						"h": 100
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 100,
+						"h": 100
+					},
+					"frame": {
+						"x": 613,
+						"y": 1,
+						"w": 100,
+						"h": 100
+					}
+				},
+				{
+					"filename": "yellow.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 100,
+						"h": 100
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 100,
+						"h": 100
+					},
+					"frame": {
+						"x": 715,
+						"y": 1,
+						"w": 100,
+						"h": 100
 					}
 				}
 			]
@@ -141,6 +183,6 @@
 	"meta": {
 		"app": "https://www.codeandweb.com/texturepacker",
 		"version": "3.0",
-		"smartupdate": "$TexturePacker:SmartUpdate:e111f16f4b2ae87d4f1a244fbdd2dbbc:3ca59ea63dcd1d0ff7dce4322f9b8dd8:2a194967d71da88bdc69ff162da0bdf1$"
+		"smartupdate": "$TexturePacker:SmartUpdate:aef53b3eb772e51d2044e158ae66dca2:c3c7c45d6c84fc42e01d0106b326d933:2a194967d71da88bdc69ff162da0bdf1$"
 	}
 }

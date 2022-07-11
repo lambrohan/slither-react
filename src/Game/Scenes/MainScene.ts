@@ -39,12 +39,10 @@ export default class MainScene extends Phaser.Scene {
 
 	preload() {
 		this.load.image('hex', '/hex.svg')
-		this.load.atlas('slither', '/spritesheet.png', '/slither.json')
-		this.load.json('shapes', '/slither_physics.json')
-		this.load.atlas('gamepad', '/gamepad.png', '/gamepad.json')
+		this.load.image('eyes', '/eyes.png')
+
 		this.load.atlas('food', '/food.png', '/food.json')
 		this.load.atlas('snake', '/snake.png', '/snake.json')
-		this.load.image('snake_body', '/snake_body.png')
 	}
 
 	create() {

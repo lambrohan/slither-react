@@ -1,15 +1,18 @@
+import _ from 'lodash'
 import { GameMeta, Point } from '../../Utils'
 import MainScene from '../Scenes/MainScene'
 
 export class SnakeV3 {
 	head!: Phaser.GameObjects.Sprite
 	sections: Array<Phaser.GameObjects.Sprite>
+	group!: Phaser.GameObjects.Group
 	scene: MainScene
 	snakePath: Array<Point> = []
 	target = 0
 	numSnakeSections = 50
 	snakeSpacer = 5
 	current = false
+	spacer = 30
 	constructor(scene: MainScene, current = false) {
 		this.scene = scene
 		this.sections = []
@@ -22,31 +25,18 @@ export class SnakeV3 {
 	}
 
 	initSections() {
+		this.group = this.scene.add.group([], {
+			defaultKey: 'snake',
+			defaultFrame: 'blue.png',
+		})
 		this.sections = []
 		this.snakePath = []
 		this.head = this.scene.add.sprite(
 			Math.random() * 100,
 			Math.random() * 1000,
-			'snake',
-			'snake_head_blue.png'
+			'eyes'
 		)
 		this.head.setDepth(this.numSnakeSections + 3)
-		this.head.setScale(2)
-
-		for (let i = 1; i <= this.numSnakeSections - 1; i++) {
-			const sec = this.scene.add.sprite(
-				this.head.x,
-				this.head.y,
-				'snake',
-				'snake_body_blue.png'
-			)
-			sec.setDepth(this.numSnakeSections + 2 - i).setScale(1.8)
-			this.sections[i] = sec
-		}
-
-		for (let i = 0; i <= this.numSnakeSections * this.snakeSpacer; i++) {
-			this.snakePath[i] = new Point(this.head.x, this.head.y, this.head.angle)
-		}
 
 		if (this.current) {
 			this.scene.input.on('pointermove', (pointer: any) => {
@@ -64,6 +54,16 @@ export class SnakeV3 {
 				this.target = Math.random()
 			}, 1000)
 		}
+
+		for (let i = 0; i < this.numSnakeSections; i++) {
+			const x = this.head.x - i * this.spacer
+			const sec = this.group.create(x, this.head.y)
+			sec.setDepth(this.numSnakeSections + 2 - i).setScale(1.8)
+			this.sections[i] = sec
+		}
+		for (let i = 0; i < this.numSnakeSections * this.snakeSpacer; i++) {
+			this.snakePath.push(new Point(this.head.x, this.head.y, this.head.angle))
+		}
 	}
 
 	grow() {
@@ -79,7 +79,9 @@ export class SnakeV3 {
 	}
 
 	update() {
-		console.log(this.numSnakeSections, this.sections.length)
+		if (this.head.x >= GameMeta.boundX) {
+			this.head.setX(0)
+		}
 		const angle = Phaser.Math.Angle.RotateTo(
 			this.head.rotation,
 			this.target,
@@ -93,17 +95,13 @@ export class SnakeV3 {
 			)
 		this.head.setPosition(this.head.x + a.x, this.head.y + a.y)
 
-		let part = this.snakePath.pop()!
-		part.setTo(this.head.x, this.head.y)
+		const part = this.snakePath.pop()!
+		part.setTo(this.head.x, this.head.y, this.head.angle)
 		this.snakePath.unshift(part)
 
-		for (let i = 1; i <= this.numSnakeSections - 1; i++) {
-			this.sections[i]
-				.setPosition(
-					this.snakePath[i * this.snakeSpacer].x,
-					this.snakePath[i * this.snakeSpacer].y
-				)
-				.setAngle(this.snakePath[i * this.snakeSpacer].angle)
+		for (let i = 0; i < this.sections.length; i++) {
+			const el = this.snakePath[i * this.snakeSpacer]
+			this.sections[i].setPosition(el.x, el.y).setAngle(el.angle)
 		}
 	}
 }
