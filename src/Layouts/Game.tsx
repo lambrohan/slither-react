@@ -29,7 +29,6 @@ export const GameLayout: React.FC<GameProps> = ({}) => {
 	const navigate = useNavigate()
 	const { 0: params } = useSearchParams()
 	const handleGame = async () => {
-		console.log('called')
 		document.getElementById('WEB3_CONNECT_MODAL_ID')?.remove()
 		localStorage.setItem('nickname', params.get('nickname') || '')
 		localStorage.setItem('stakeUSD', params.get('stakeUSD') || '')

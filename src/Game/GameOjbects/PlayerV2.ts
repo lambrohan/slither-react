@@ -138,9 +138,11 @@ export class PlayerV2 {
 		}
 
 		this.playerState.sections.onRemove = () => {
-			const sec = this.sections[this.sections.length - 1]
+			const sec = this.sections.pop()!
 			this.scene.sectionGroup.killAndHide(sec)
-			this.sections.pop()
+			for (let i = 0; i < this.playerState.spacer; i++) {
+				this.snakePath.pop()
+			}
 		}
 	}
 
@@ -156,53 +158,42 @@ export class PlayerV2 {
 		this.sections = []
 		this.snakePath = []
 
-		for (let i = 1; i <= num - 1; i++) {
+		for (let i = 0; i < num; i++) {
 			const sec: Phaser.GameObjects.Sprite = this.scene.sectionGroup.get(
 				this.head.x,
 				this.head.y
 			)
 			sec.setFrame(this.playerState.skin)
 			sec.setDepth(2)
-			this.sections[i] = sec
+			this.sections.push(sec)
 		}
 
-		for (let i = 0; i <= num * this.playerState.spacer; i++) {
-			this.snakePath[i] = new Point(this.head.x, this.head.y, this.head.angle)
+		for (let i = 0; i < num * this.playerState.spacer; i++) {
+			this.snakePath.push(new Point(this.head.x, this.head.y, this.head.angle))
 		}
 	}
 
 	addSection() {
-		const last = this.sections[this.sections.length - 1]
 		const sec: Phaser.GameObjects.Sprite = this.scene.sectionGroup.get(
 			this.head.x,
 			this.head.y
 		)
-		sec.setDepth(2).setAngle(last.angle).setFrame(this.playerState.skin)
+		sec.setActive(true)
+		sec.setVisible(true)
+		sec.setDepth(2).setAngle(this.head.angle).setFrame(this.playerState.skin)
 		this.sections.push(sec)
 
-		console.log(
-			this.snakePath.length,
-			this.playerState.snakeLength * this.playerState.spacer
-		)
-		for (
-			let i = this.snakePath.length;
-			i <= this.playerState.snakeLength * this.playerState.spacer;
-			i++
-		) {
-			this.snakePath[i] = new Point(
-				this.snakePath[i - 1].x,
-				this.snakePath[i - 1].y,
-				this.snakePath[i - 1].angle
-			)
+		for (let i = 0; i < this.playerState.spacer; i++) {
+			this.snakePath.push(new Point(this.head.x, this.head.y, this.head.angle))
 		}
 	}
 
 	update() {
+		this.scale = this.playerState.scale
+
 		this.head
 			.setAlpha(this.playerState.cooldown ? 0.4 : 1)
 			.setScale(this.playerState.scale)
-
-		this.scale = this.playerState.scale
 
 		// for testing only
 		// console.log(this.head.angle, this.playerState.angle)
@@ -216,13 +207,11 @@ export class PlayerV2 {
 		part.setTo(this.head.x, this.head.y, this.head.angle)
 		this.snakePath.unshift(part)
 
-		for (let i = 1; i <= this.playerState.snakeLength - 1; i++) {
+		for (let i = 0; i < this.sections.length; i++) {
+			const el = this.snakePath[i * this.playerState.spacer]
 			this.sections[i]
-				.setPosition(
-					this.snakePath[i * this.playerState.spacer].x,
-					this.snakePath[i * this.playerState.spacer].y
-				)
-				.setAngle(this.snakePath[i * this.playerState.spacer].angle)
+				.setPosition(el.x, el.y)
+				.setAngle(el.angle)
 				.setDepth(this.playerState.snakeLength + 2 - i)
 				.setAlpha(this.playerState.cooldown ? 0.4 : 1)
 				.setScale(this.playerState.scale)

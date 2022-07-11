@@ -34,7 +34,6 @@ export const Score: React.FC<ScoreProps> = ({}) => {
 
 	useEffect(() => {
 		const interval = setInterval(() => {
-			console.log('set')
 			setTimerText(
 				dayjs.duration(dayjs().diff(startedAt, 's'), 's').format('mm:ss')
 			)

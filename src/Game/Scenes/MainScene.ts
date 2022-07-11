@@ -169,7 +169,6 @@ export default class MainScene extends Phaser.Scene {
 		})
 	}
 	async _onAddFood(foodItem: FoodItem) {
-		console.log('onaddfood')
 		const frame = getFoodAsset(foodItem.type)
 		const f: Phaser.GameObjects.Sprite = this.foodGroup.get(
 			foodItem.x,
