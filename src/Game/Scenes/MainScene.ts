@@ -47,21 +47,23 @@ export default class MainScene extends Phaser.Scene {
 		this.sectionGroup = this.add.group([], {
 			defaultKey: 'snake',
 		})
+		const miniMapScaleFactor = this.game.device.os.desktop ? 12 : 24
+		const zoom = this.game.device.os.desktop ? 0.08 : 0.04
 		this.miniMap = this.cameras
 			.add(
-				this.sys.canvas.width - GameMeta.boundX / 12,
-				this.sys.canvas.height - GameMeta.boundY / 12,
-				GameMeta.boundX / 12,
-				GameMeta.boundY / 12
+				this.sys.canvas.width - GameMeta.boundX / miniMapScaleFactor,
+				this.sys.canvas.height - GameMeta.boundY / miniMapScaleFactor,
+				GameMeta.boundX / miniMapScaleFactor,
+				GameMeta.boundY / miniMapScaleFactor
 			)
-			.setZoom(0.08)
+			.setZoom(zoom)
 			.setName('mini')
 		this.miniMap
 			.setBounds(0, 0, GameMeta.boundX, GameMeta.boundY)
 			.setBackgroundColor(0x80000000)
 		this.foodGroup = this.add.group()
 
-		this.debugFPS = this.add.text(4, 4, '', { color: '#ff0000' })
+		this.debugFPS = this.add.text(4, 10, '', { color: '#ff0000' })
 		this.debugFPS.setDepth(10)
 		this.debugFPS.setScrollFactor(0, 0)
 
