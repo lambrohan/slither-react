@@ -39,7 +39,7 @@ export const Congratulation: React.FC<CongratulationProps> = ({
 							</div>
 							<div>
 								<p className="text-[49px] font-bold text-white flex items-center justify-center">
-									{tokens}
+									{tokens / Math.pow(10, 6)}Mil
 								</p>
 							</div>
 						</div>
