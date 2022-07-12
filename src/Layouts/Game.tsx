@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { GameConfig } from '../Game/index'
 import { useEffectOnce } from '../Hooks/useEffectOnce'
 import { Score } from '../Game/GameOjbects/Score'
@@ -27,6 +27,7 @@ const pageVariants = {
 export const GameLayout: React.FC<GameProps> = ({}) => {
 	let game: Phaser.Game
 	const navigate = useNavigate()
+	const [roomName, setRoomName] = useState('')
 	const { 0: params } = useSearchParams()
 	const handleGame = async () => {
 		document.getElementById('WEB3_CONNECT_MODAL_ID')?.remove()
@@ -34,6 +35,7 @@ export const GameLayout: React.FC<GameProps> = ({}) => {
 		localStorage.setItem('stakeUSD', params.get('stakeUSD') || '')
 		localStorage.setItem('roomName', params.get('roomName') || 'ice')
 		localStorage.setItem('color', params.get('color') || 'blue.png')
+		setRoomName(localStorage.getItem('roomName') || '')
 
 		const canvasExists = document.querySelectorAll('#gamearea canvas')
 		canvasExists.forEach((el) => {
@@ -63,7 +65,7 @@ export const GameLayout: React.FC<GameProps> = ({}) => {
 				id="game-area"
 				className="w-full max-h-screen overflow-hidden duration-300 linear"
 			>
-				<RoomHeader />
+				<RoomHeader roomName={roomName} />
 				<Score />
 				<Leaderboard />
 			</div>

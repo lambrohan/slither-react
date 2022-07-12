@@ -1,8 +1,10 @@
 import React from 'react'
 
-interface RoomHeaderProps {}
+interface RoomHeaderProps {
+	roomName: string
+}
 
-export const RoomHeader: React.FC<RoomHeaderProps> = ({}) => {
+export const RoomHeader: React.FC<RoomHeaderProps> = ({ roomName }) => {
 	return (
 		<div className="w-full absolute top-0 left-0">
 			<div className="relative w-full flex flex-col items-center">
@@ -16,8 +18,11 @@ export const RoomHeader: React.FC<RoomHeaderProps> = ({}) => {
 						backgroundSize: 'cover',
 					}}
 				>
-					<p className="text-lg text-white text-center uppercase font-semibold mx-4 my-1">
-						Fire Room
+					<p
+						className="text-lg text-white text-center uppercase font-semibold mx-4 my-1"
+						id="room-header"
+					>
+						{roomName}
 					</p>
 				</div>
 			</div>
