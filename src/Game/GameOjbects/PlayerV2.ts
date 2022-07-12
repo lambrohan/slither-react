@@ -56,7 +56,7 @@ export class PlayerV2 {
 			}
 		)
 		this.head.setAngle(this.playerState.angle)
-		this.head.setDepth(1000)
+		this.head.setDepth(this.playerState.snakeLength + 3)
 
 		this.setRemoteRef()
 
@@ -161,10 +161,13 @@ export class PlayerV2 {
 		for (let i = 0; i < num; i++) {
 			const sec: Phaser.GameObjects.Sprite = this.scene.sectionGroup.get(
 				this.head.x,
-				this.head.y
+				this.head.y,
+				'snake',
+				this.playerState.skin,
+				true
 			)
-			sec.setFrame(this.playerState.skin)
-			sec.setDepth(2)
+			sec.setActive(true)
+			sec.setDepth(num + 2 - i)
 			this.sections.push(sec)
 		}
 
@@ -177,12 +180,15 @@ export class PlayerV2 {
 		const first = this.sections[0]
 		const sec: Phaser.GameObjects.Sprite = this.scene.sectionGroup.get(
 			first.x,
-			first.y
+			first.y,
+			'snake',
+			this.playerState.skin,
+			true
 		)
 		sec.setActive(true)
 		sec.setVisible(true)
 		sec
-			.setDepth(first.depth)
+			.setDepth(first.depth + 1)
 			.setAngle(first.angle)
 			.setFrame(this.playerState.skin)
 		this.sections.push(sec)
@@ -198,6 +204,7 @@ export class PlayerV2 {
 		this.head
 			.setAlpha(this.playerState.cooldown ? 0.4 : 1)
 			.setScale(this.playerState.scale)
+			.setDepth(this.sections.length + 4)
 
 		// for testing only
 		// console.log(this.head.angle, this.playerState.angle)
