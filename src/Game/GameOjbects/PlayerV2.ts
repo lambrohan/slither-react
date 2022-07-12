@@ -174,17 +174,21 @@ export class PlayerV2 {
 	}
 
 	addSection() {
+		const first = this.sections[0]
 		const sec: Phaser.GameObjects.Sprite = this.scene.sectionGroup.get(
-			this.head.x,
-			this.head.y
+			first.x,
+			first.y
 		)
 		sec.setActive(true)
 		sec.setVisible(true)
-		sec.setDepth(2).setAngle(this.head.angle).setFrame(this.playerState.skin)
+		sec
+			.setDepth(first.depth)
+			.setAngle(first.angle)
+			.setFrame(this.playerState.skin)
 		this.sections.push(sec)
 
 		for (let i = 0; i < this.playerState.spacer; i++) {
-			this.snakePath.push(new Point(this.head.x, this.head.y, this.head.angle))
+			this.snakePath.push(new Point(first.x, first.y, first.angle))
 		}
 	}
 
@@ -212,7 +216,7 @@ export class PlayerV2 {
 			this.sections[i]
 				.setPosition(el.x, el.y)
 				.setAngle(el.angle)
-				.setDepth(this.playerState.snakeLength + 2 - i)
+				.setDepth(this.playerState.snakeLength + 3 - i)
 				.setAlpha(this.playerState.cooldown ? 0.4 : 1)
 				.setScale(this.playerState.scale)
 		}

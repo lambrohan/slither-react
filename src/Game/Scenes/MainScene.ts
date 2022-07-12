@@ -173,16 +173,16 @@ export default class MainScene extends Phaser.Scene {
 		const f: Phaser.GameObjects.Sprite = this.foodGroup.get(
 			foodItem.x,
 			foodItem.y,
-			'food',
-			frame
+			'food'
 		)
+		this.miniMap.ignore(f)
 		f.setFrame(frame)
-		this.foodObjects.set(foodItem.id, f)
 		f.setDepth(2)
 		f.setScale(0)
 		f.setAlpha(0)
 		f.setVisible(true)
 		f.setActive(true)
+		this.foodObjects.set(foodItem.id, f)
 		this.tweens.add({
 			targets: f,
 			alpha: 1,

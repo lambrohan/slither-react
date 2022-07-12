@@ -133,19 +133,20 @@ export const EnterGame: React.FC<EnterGameProps> = ({}) => {
 							onClick={() => {
 								setSelectedColor(c.filename)
 							}}
-							className={`mx-2 w-8 h-8 border-2 shadow-xl transition ease  rounded-full cursor-pointer overflow-hidden ${
+							className={`mx-2 border-2 shadow-xl transition ease  rounded-full cursor-pointer overflow-hidden  ${
 								selectedColor == c.filename
 									? 'border-white'
 									: 'border-transparent'
 							}`}
 							key={c.filename}
-							title={c.filename}
+							title={c.filename.split('.')[0]}
 							src="/snake.png"
 							style={{
-								objectPosition: `${-c.frame.x - c.frame.w / 2}px ${
-									-c.frame.y - c.frame.h / 2
-								}px`,
+								objectPosition: `${-c.frame.x}px ${-c.frame.y}px`,
 								objectFit: 'none',
+								width: c.frame.w + 'px',
+								height: c.frame.h + 'px',
+								transform: 'scale(0.8)',
 							}}
 						/>
 					))}
