@@ -128,11 +128,11 @@ export class PlayerV2 {
 			})
 		}
 
-		this.initSections(this.playerState.snakeLength)
+		this.initSections(1)
 
 		this.playerState.sections.onAdd = () => {
 			console.log('add section')
-			if (this.playerState.snakeLength > CONSTANTS.MIN_SNAKE_LENGTH) {
+			if (this.playerState.snakeLength > 1) {
 				this.addSection()
 			}
 		}
@@ -223,7 +223,7 @@ export class PlayerV2 {
 			this.sections[i]
 				.setPosition(el.x, el.y)
 				.setAngle(el.angle)
-				.setDepth(this.playerState.snakeLength + 3 - i)
+				.setDepth(this.playerState.snakeLength + 2 - i)
 				.setAlpha(this.playerState.cooldown ? 0.4 : 1)
 				.setScale(this.playerState.scale)
 		}
