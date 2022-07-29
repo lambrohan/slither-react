@@ -18,8 +18,8 @@ export function getCenter(scene: any): { x: number; y: number } {
 }
 
 export const GameMeta = {
-	boundX: 3000,
-	boundY: 3000,
+	boundX: 12000,
+	boundY: 12000,
 	boundPadding: 20,
 }
 

@@ -47,7 +47,7 @@ export default class MainScene extends Phaser.Scene {
 		this.sectionGroup = this.add.group([], {
 			defaultKey: 'snake',
 		})
-		const miniMapScaleFactor = this.game.device.os.desktop ? 12 : 24
+		const miniMapScaleFactor = this.game.device.os.desktop ? 48 : 96
 		const zoom = this.game.device.os.desktop ? 0.08 : 0.04
 		this.miniMap = this.cameras
 			.add(
