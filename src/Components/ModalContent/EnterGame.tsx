@@ -59,6 +59,9 @@ export const EnterGame: React.FC<EnterGameProps> = ({}) => {
 								key={r.id}
 								onClick={() => {
 									setSelectedRoom(r)
+									if (!r.variable_stake) {
+										setAmt(r.min_usd_to_join)
+									}
 								}}
 							>
 								<img
@@ -106,6 +109,7 @@ export const EnterGame: React.FC<EnterGameProps> = ({}) => {
 						<input
 							type="text"
 							value={amt}
+							disabled={!selectedRoom}
 							onChange={(e) => {
 								selectedRoom?.variable_stake
 									? setAmt(e.target.value)
