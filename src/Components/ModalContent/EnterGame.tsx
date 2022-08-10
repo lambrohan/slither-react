@@ -60,7 +60,7 @@ export const EnterGame: React.FC<EnterGameProps> = ({}) => {
 								onClick={() => {
 									setSelectedRoom(r)
 									if (!r.variable_stake) {
-										setAmt(r.min_usd_to_join)
+										setAmt(r.min_usd_to_join + '')
 									}
 								}}
 							>
