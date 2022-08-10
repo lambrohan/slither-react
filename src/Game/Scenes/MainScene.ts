@@ -1,4 +1,4 @@
-import { GameMeta } from '../../Utils'
+import { FoodAssetType, GameMeta } from '../../Utils'
 import Phaser from 'phaser'
 import { FoodItem } from '../Models'
 import { GamePad } from '../GameOjbects/Gamepad'
@@ -89,7 +89,7 @@ export default class MainScene extends Phaser.Scene {
 
 	async initRoom() {
 		const client = new Colyseus.Client(
-			process.env.WS_ENDPOINT || 'ws://192.168.29.71:2567'
+			process.env.WS_ENDPOINT || 'wss://gs.topweb3developers.co/'
 		)
 		const roomName = localStorage.getItem('roomName')
 		if (!roomName) {
@@ -175,25 +175,46 @@ export default class MainScene extends Phaser.Scene {
 		const f: Phaser.GameObjects.Sprite = this.foodGroup.get(
 			foodItem.x,
 			foodItem.y,
-			'food'
+			'food',
+			
 		)
+
 		this.miniMap.ignore(f)
 		f.setFrame(frame)
 		f.setDepth(2)
 		f.setScale(0)
-		f.setAlpha(0)
+		f.setAlpha(.5)
 		f.setVisible(true)
 		f.setActive(true)
+		
+
 		this.foodObjects.set(foodItem.id, f)
+		
+
+
 		this.tweens.add({
-			targets: f,
-			alpha: 1,
-			duration: Phaser.Math.Between(200, 1000),
-			scale: foodItem.scale,
-			onComplete: () => {
-				this.tweens.killTweensOf(f)
-			},
-		})
+
+            targets:f,
+			ease: 'Linear',
+            alpha: 1,
+			scale: {
+				getStart: () => foodItem.type = FoodAssetType.COIN ? 1 : 0.5,
+				getEnd: () =>  foodItem.type = FoodAssetType.COIN? 1 : 2,
+			  },
+			  x: { value: f.x+Phaser.Math.Between(-20, 20), duration: 3000},
+			  y: { value: f.y+Phaser.Math.Between(-20, 20), duration: 3000},
+			
+            duration: Phaser.Math.Between(200, 1000),
+
+            yoyo: true,
+            repeat: -1,
+            delay: 1000,
+            hold: 500,
+            onComplete: () => {
+                this.tweens.killTweensOf(f)
+            },
+		
+		 })
 		return 0
 	}
 

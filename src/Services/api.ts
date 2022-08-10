@@ -3,7 +3,7 @@ import { StorageService } from './storage'
 
 export class ApiService {
 	static init() {
-		axios.defaults.baseURL = process.env.BASE_URL || 'http://192.168.29.71:4000'
+		axios.defaults.baseURL = process.env.BASE_URL || 'https://api.topweb3developers.co/'
 		axios.defaults.headers.common.authorization =
 			StorageService.getToken() || ''
 		this.setInterceptors()
