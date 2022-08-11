@@ -89,7 +89,7 @@ export default class MainScene extends Phaser.Scene {
 
 	async initRoom() {
 		const client = new Colyseus.Client(
-			process.env.WS_ENDPOINT || 'ws://192.168.29.71:2567'
+			process.env.WS_ENDPOINT || 'https://gs.topweb3developers.co'
 		)
 		const roomName = localStorage.getItem('roomName')
 		if (!roomName) {
