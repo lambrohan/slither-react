@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import borderLine from '../../assets/images/borderLine.png'
 import Ice from '../../assets/images/Ice.png'
 import Fire from '../../assets/images/Fire.png'
@@ -59,8 +59,8 @@ export const EnterGame: React.FC<EnterGameProps> = ({}) => {
 								key={r.id}
 								onClick={() => {
 									setSelectedRoom(r)
-									if (!r.variable_stake) {
-										setAmt(r.min_usd_to_join + '')
+									if (r.name === 'ice') {
+										setAmt('0.5')
 									}
 								}}
 							>
@@ -111,10 +111,17 @@ export const EnterGame: React.FC<EnterGameProps> = ({}) => {
 							value={amt}
 							disabled={!selectedRoom}
 							onChange={(e) => {
+								if (
+									selectedRoom?.name == 'fire' &&
+									(Number(e.target.value) < 0 || Number(e.target.value) >= 500)
+								) {
+									return
+								}
 								selectedRoom?.variable_stake
 									? setAmt(e.target.value)
 									: setAmt(selectedRoom?.min_usd_to_join + '')
 							}}
+							disabled={!selectedRoom}
 							className="indent-32 absolute z-10 text-white font-bold text-2xl h-full w-full  p-2 bg-[#0000002c] rounded-lg focus:outline-none"
 						/>
 					</div>
@@ -124,14 +131,14 @@ export const EnterGame: React.FC<EnterGameProps> = ({}) => {
 					<p className="text-white font-medium mb-1">USERNAME</p>
 					<input
 						type="text"
-						className="customInput indent-5 h-[57px] w-full  p-2 bg-[#0000002c] text-white font-bold text-medium rounded-lg focus:outline-none"
+						className="customInput indent-5 h-[57px] w-full p-2 bg-[#0000002c] text-white font-bold text-medium rounded-lg focus:outline-none"
 						onChange={(e) => {
 							setName(e.target.value)
 						}}
 					/>
 				</div>
 				<h4 className="text-center mt-4 text-white">Select Skin Color</h4>
-				<div className="flex items-center justify-center items-center mt-4 mb-8 flex-wrap">
+				<div className="flex items-center justify-center mt-4 mb-8 flex-wrap">
 					{textures[0].frames.map((c) => (
 						<img
 							onClick={() => {
