@@ -121,7 +121,6 @@ export const EnterGame: React.FC<EnterGameProps> = ({}) => {
 									? setAmt(e.target.value)
 									: setAmt(selectedRoom?.min_usd_to_join + '')
 							}}
-							disabled={!selectedRoom}
 							className="indent-32 absolute z-10 text-white font-bold text-2xl h-full w-full  p-2 bg-[#0000002c] rounded-lg focus:outline-none"
 						/>
 					</div>
